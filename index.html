@@ -11,7 +11,7 @@
 :root {
   --bg: #f5f6f8; --surface: #ffffff; --fg: #17191f; --muted: #5d6474; --line: #dde1e8;
   --lula: #c8242f; --lula-soft: #f6d9db; --flavio: #1f5fbf; --flavio-soft: #d6e3f7;
-  --accent: #127a5a; --warn: #a86400;
+  --accent: #127a5a; --warn: #a86400; --bad: #b3261e; --ok-soft: #dcefe7; --warn-soft: #f6e7cc; --bad-soft: #f6d6d3;
   --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --f-narrow: "Archivo Narrow", "Arial Narrow", Arial, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
@@ -21,13 +21,13 @@
   :root:not([data-theme="light"]) {
     --bg: #111318; --surface: #1a1d24; --fg: #e9ebf0; --muted: #9aa2b2; --line: #2c313b;
     --lula: #ff5c66; --lula-soft: #3a1d21; --flavio: #6aa2ff; --flavio-soft: #1b2a44;
-    --accent: #3fc79a; --warn: #f0a742; color-scheme: dark;
+    --accent: #3fc79a; --warn: #f0a742; --bad: #ff7a70; --ok-soft: #173a2e; --warn-soft: #3d2e14; --bad-soft: #3f1d1b; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #111318; --surface: #1a1d24; --fg: #e9ebf0; --muted: #9aa2b2; --line: #2c313b;
   --lula: #ff5c66; --lula-soft: #3a1d21; --flavio: #6aa2ff; --flavio-soft: #1b2a44;
-  --accent: #3fc79a; --warn: #f0a742; color-scheme: dark;
+  --accent: #3fc79a; --warn: #f0a742; --bad: #ff7a70; --ok-soft: #173a2e; --warn-soft: #3d2e14; --bad-soft: #3f1d1b; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -72,6 +72,16 @@ h2 { font-size: 1.05rem; margin: 0 0 12px; }
 .kpi { border-top: 1px solid var(--line); padding-top: 8px; }
 .kpi b { display: block; font: 600 1.15rem var(--f-mono); font-variant-numeric: tabular-nums; }
 .kpi span { font-size: .8rem; color: var(--muted); }
+.conf { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+.pill { font: 600 .8rem var(--f-narrow); text-transform: uppercase; letter-spacing: .06em; padding: 4px 10px; border-radius: 999px; }
+.pill.b { background: var(--bad-soft); color: var(--bad); }
+.pill.m { background: var(--warn-soft); color: var(--warn); }
+.pill.a, .pill.ma { background: var(--ok-soft); color: var(--accent); }
+.meter { display: inline-flex; gap: 3px; }
+.meter i { width: 18px; height: 6px; border-radius: 3px; background: var(--line); }
+.meter i.on { background: currentColor; }
+.conf .why { font-size: .85rem; color: var(--muted); flex: 1 1 320px; min-width: 0; }
+select { font: .85rem var(--f-mono); padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 .banner { border-radius: 8px; padding: 10px 12px; font-size: .88rem; background: var(--flavio-soft); color: var(--fg); }
 .banner.sim { background: var(--lula-soft); }
 
@@ -120,6 +130,7 @@ details summary { cursor: pointer; font-weight: 600; }
       <button id="btnUpdate" class="primary" type="button">Atualizar</button>
       <label class="chk"><input id="auto" type="checkbox"> atualizar a cada 60 s</label>
       <label class="chk"><input id="sim" type="checkbox"> modo simulação</label>
+      <label class="chk">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
     </div>
   </header>
   <div id="status" class="status">Carregando…</div>
@@ -137,6 +148,12 @@ details summary { cursor: pointer; font-weight: 600; }
       <div class="kpi"><b id="kParc">–</b><span>parcial Lula × Flávio (válidos)</span></div>
       <div class="kpi"><b id="kRest">–</b><span>votos válidos que faltam (estim.)</span></div>
       <div class="kpi"><b id="kPoll">–</b><span>média das pesquisas (Lula)</span></div>
+    </div>
+    <div class="conf" aria-live="polite">
+      <span class="eyebrow" style="margin:0">Confiabilidade</span>
+      <span class="pill b" id="relPill">–</span>
+      <span class="meter" id="relMeter" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="why" id="relWhy"></span>
     </div>
   </section>
 
@@ -190,6 +207,7 @@ details summary { cursor: pointer; font-weight: 600; }
         <p><b>2. Pesquisas.</b> A média das pesquisas (ponderada pela raiz da amostra e pela recência) define um deslocamento nacional uniforme, aplicado em escala logística sobre a base de cada UF. O resultado é o "esperado pré-apuração".</p>
         <p><b>3. Apuração.</b> Para cada UF, a diferença entre a parcial e o esperado indica se o estado está votando acima ou abaixo do previsto. Como as primeiras seções apuradas não são uma amostra aleatória (capitais costumam vir antes), essa diferença recebe peso que cresce com a fração apurada. O que sobra é preenchido pela tendência nacional das UFs já apuradas, encolhida em direção às pesquisas.</p>
         <p><b>4. Incerteza.</b> Monte Carlo com erro nacional (cauda t de 4 graus), erro por UF e erro no comparecimento, todos encolhendo conforme a apuração avança. A probabilidade é a fração de simulações em que cada candidato termina com mais votos válidos.</p>
+        <p><b>5. Confiabilidade.</b> Baixa com menos de 20% apurado, Moderada a partir de 20%, Alta com 60% apurado e intervalo de 90% menor que 1,2 ponto, Muito alta com 90% apurado e intervalo menor que 0,6 ponto. O nível de confiança (80% a 99%) só muda a largura do intervalo mostrado, não a probabilidade.</p>
         <p>É um modelo estatístico e não substitui o resultado oficial do TSE.</p>
       </div>
     </details>
@@ -433,16 +451,20 @@ function runModel(base, ufs, br) {
     r.pWin = ufWins[r.uf] / S;
   });
   const projL = (countedL + rows.reduce((a, r) => a + r.remaining * r.remShare, 0)) / (countedL + countedF + remTotal);
-  return {pL: lWins / S, projL, q05: q(0.05), q95: q(0.95), median: q(0.5), shares, rows, pollL, delta, k, D, countedL, countedF, remTotal, br, fracRem};
+  return {pL: lWins / S, projL, sorted, q05: q(0.05), q95: q(0.95), median: q(0.5), shares, rows, pollL, delta, k, D, countedL, countedF, remTotal, br, fracRem};
 }
 
 // ---------- Renderização ----------
 function render(res, info) {
   const pF = 1 - res.pL;
+  const lvl = num($("conf").value) || 0.9, lvlTxt = Math.round(lvl * 100) + "%";
+  const qq = p => res.sorted[Math.min(res.sorted.length - 1, Math.max(0, Math.floor(p * res.sorted.length)))];
+  const lo = qq((1 - lvl) / 2), hi = qq(1 - (1 - lvl) / 2);
   $("pL").textContent = fmtPct(res.pL); $("pF").textContent = fmtPct(pF);
   $("barL").style.width = (res.pL * 100) + "%"; $("barF").style.width = (pF * 100) + "%";
-  $("mL").textContent = `projeção ${fmtPct(res.projL)} · 90%: ${fmtPct(res.q05)}–${fmtPct(res.q95)}`;
-  $("mF").textContent = `projeção ${fmtPct(1 - res.projL)} · 90%: ${fmtPct(1 - res.q95)}–${fmtPct(1 - res.q05)}`;
+  $("mL").textContent = `projeção ${fmtPct(res.projL)} · ${lvlTxt}: ${fmtPct(lo)}–${fmtPct(hi)}`;
+  $("mF").textContent = `projeção ${fmtPct(1 - res.projL)} · ${lvlTxt}: ${fmtPct(1 - hi)}–${fmtPct(1 - lo)}`;
+  renderReliability(res, lo, hi, lvlTxt);
   const cv = res.countedL + res.countedF;
   const pst = res.br && res.br.pst ? res.br.pst / 100 : (res.br ? res.br.frac : NaN);
   $("kSec").textContent = fmtPct(pst, 2);
@@ -455,7 +477,8 @@ function render(res, info) {
     <tr><td>Parcial (válidos)</td><td>${cv ? fmtPct(res.countedL / cv) : "–"}</td><td>${cv ? fmtPct(res.countedF / cv) : "–"}</td></tr>
     <tr><td>Esperado pelas pesquisas</td><td>${fmtPct(res.pollL)}</td><td>${fmtPct(1 - res.pollL)}</td></tr>
     <tr><td>Projeção final</td><td class="lead-l">${fmtPct(res.projL)}</td><td class="lead-f">${fmtPct(1 - res.projL)}</td></tr>
-    <tr><td>Intervalo de 90%</td><td>${fmtPct(res.q05)}–${fmtPct(res.q95)}</td><td>${fmtPct(1 - res.q95)}–${fmtPct(1 - res.q05)}</td></tr>`;
+    <tr><td>Intervalo de ${lvlTxt}</td><td>${fmtPct(lo)}–${fmtPct(hi)}</td><td>${fmtPct(1 - hi)}–${fmtPct(1 - lo)}</td></tr>
+    <tr><td>Margem de erro (${lvlTxt})</td><td colspan="2">± ${((hi - lo) / 2 * 100).toFixed(2).replace(".", ",")} pontos</td></tr>`;
   $("projNote").textContent = `Comparecimento estimado: ${fmtPct(res.k, 0)} dos votos válidos do 1º turno. Tendência nacional da apuração vs. esperado: ${(res.D >= 0 ? "+" : "") + (res.D / 4 * 100).toFixed(1).replace(".", ",")} pt para Lula.`;
 
   $("ufBody").innerHTML = res.rows.slice().sort((a, b) => b.total - a.total).map(r => {
@@ -467,6 +490,30 @@ function render(res, info) {
       <td class="${lead}">${fmtPct(r.final)}</td><td>${fmtInt(r.remaining)}</td></tr>`;
   }).join("");
   drawHist(res.shares);
+}
+
+// Confiabilidade: quanto confiar na estimativa, pela fração apurada e pela largura do intervalo de 90%
+function reliability(res) {
+  const counted = 1 - res.fracRem;
+  const w90 = (res.q95 - res.q05) * 100;
+  const ufsComVoto = res.rows.filter(r => r.counted2 > 0).length;
+  let nivel, cls, barras;
+  if (counted >= 0.9 && w90 < 0.6) { nivel = "Muito alta"; cls = "ma"; barras = 4; }
+  else if (counted >= 0.6 && w90 < 1.2) { nivel = "Alta"; cls = "a"; barras = 3; }
+  else if (counted >= 0.2) { nivel = "Moderada"; cls = "m"; barras = 2; }
+  else { nivel = "Baixa"; cls = "b"; barras = 1; }
+  return {nivel, cls, barras, counted, w90, ufsComVoto};
+}
+function renderReliability(res, lo, hi, lvlTxt) {
+  const r = reliability(res);
+  const pill = $("relPill"); pill.textContent = r.nivel; pill.className = "pill " + r.cls;
+  const m = $("relMeter"); m.style.color = getComputedStyle(pill).color;
+  [...m.children].forEach((el, i) => el.classList.toggle("on", i < r.barras));
+  const virada = Math.min(res.pL, 1 - res.pL);
+  const base = r.counted < 0.02
+    ? "Quase nada apurado: a estimativa vem das pesquisas e do perfil das UFs, e pesquisas de 2º turno costumam errar 2 a 3 pontos."
+    : `${fmtPct(r.counted, 0)} dos votos esperados já apurados, em ${r.ufsComVoto} de ${res.rows.length} UFs.`;
+  $("relWhy").textContent = `${base} Intervalo de ${lvlTxt}: ${((hi - lo) * 100).toFixed(1).replace(".", ",")} pontos de largura. Chance de o líder atual da projeção perder: ${fmtPct(virada)}.`;
 }
 
 function drawHist(shares) {
@@ -521,6 +568,7 @@ $("pollBody").addEventListener("click", e => {
 $("addPoll").onclick = () => { polls.push({inst: "Nova", data: "2026-10-24", n: 2000, l: 50, f: 50}); store.set("polls2026", polls); renderPolls(); recompute(); };
 $("resetPoll").onclick = () => { polls = POLLS_DEFAULT.map(p => ({...p})); store.set("polls2026", polls); renderPolls(); recompute(); };
 ["pNat", "pUf", "pOrd", "pSims"].forEach(id => $(id).addEventListener("change", recompute));
+$("conf").addEventListener("change", () => { if (lastResult) render(lastResult); });
 
 // ---------- Ciclo de atualização ----------
 let lastData = null, busy = false;
