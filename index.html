@@ -31,6 +31,9 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
+body.aba-res .so-proj { display: none !important; }
+body:not(.aba-res) .so-res { display: none !important; }
+body.aba-res .seg { grid-template-columns: 1fr 1fr; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -43,7 +46,7 @@ header.top { display: grid; gap: 4px; }
 h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
 body.modo-sim .tabs button[aria-selected="true"] { background: var(--lula); color: #fff; }
@@ -108,7 +111,10 @@ select { font: .85rem var(--f-mono); padding: 4px 6px; border-radius: 6px; borde
 .ufbar { height: 10px; border-radius: 5px; display: flex; overflow: hidden; background: var(--line); }
 .ufbar i:first-child { background: var(--lula); } .ufbar i:last-child { background: var(--flavio); }
 tr.sel td { background: var(--flavio-soft); }
-#ufBody tr { cursor: pointer; }
+#ufBody tr, #resBody tr { cursor: pointer; }
+.mini { display: none; }
+th, td { padding: 6px 5px; }
+td small.abs { display: block; font-size: .74rem; color: var(--muted); font-weight: 400; }
 .banner { border-radius: 8px; padding: 10px 12px; font-size: .88rem; background: var(--flavio-soft); color: var(--fg); }
 .banner.sim { background: var(--lula-soft); }
 
@@ -152,8 +158,11 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 360px; }
+  .tabs { max-width: 480px; }
+  body.aba-res .seg { grid-template-columns: repeat(2, auto); }
   .hide-sm { display: table-cell; }
+  .mini { display: inline-block; }
+  th, td { padding: 6px 8px; }
   #btnUpdate { position: static; min-height: 40px; font-size: .95rem; box-shadow: none; }
   body { padding-bottom: 48px; }
 }
@@ -168,20 +177,37 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <p class="sub">2º turno presidencial · apuração do TSE, perfil de capitais, grandes cidades e interior no 1º turno, e pesquisas da véspera</p>
     </div>
   </header>
-  <nav class="tabs" role="tablist" aria-label="Fonte dos dados">
-    <button type="button" role="tab" id="tabVivo" aria-selected="true">Ao vivo (TSE)</button>
+  <nav class="tabs" role="tablist" aria-label="O que ver">
+    <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
+    <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
     <button type="button" role="tab" id="tabSim" aria-selected="false">Simulação</button>
   </nav>
   <div class="controls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
     <button id="btnReset" type="button" hidden>Reiniciar simulação</button>
     <label class="chk" id="autoWrap"><input id="auto" type="checkbox"> atualizar a cada 60 s</label>
-    <label class="chk">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
+    <label class="chk so-proj">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
   </div>
   <div id="status" class="status">Carregando…</div>
   <div id="banner" class="banner" hidden></div>
 
-  <section class="panel" aria-label="Probabilidade de vitória">
+  <section class="panel so-res" aria-label="Resultado oficial">
+    <p class="eyebrow">Resultado oficial do TSE até agora · votos válidos</p>
+    <div class="score">
+      <div class="cand l"><span class="nm">Lula (PT) · 13</span><span class="prob" id="rL">–</span><span class="meta" id="rvL"></span></div>
+      <div class="cand f"><span class="nm">Flávio Bolsonaro (PL) · 22</span><span class="prob" id="rF">–</span><span class="meta" id="rvF"></span></div>
+    </div>
+    <div class="bar" aria-hidden="true"><div class="bl" id="rbarL" style="width:50%"></div><div class="bf" id="rbarF" style="width:50%"></div><div class="mid"></div></div>
+    <div class="kpis">
+      <div class="kpi"><b id="rSec">–</b><span>seções totalizadas (Brasil)</span></div>
+      <div class="kpi"><b id="rDif">–</b><span id="rDifL">diferença de votos</span></div>
+      <div class="kpi"><b id="rVv">–</b><span>votos válidos apurados</span></div>
+      <div class="kpi"><b id="rHora">–</b><span>última atualização do TSE</span></div>
+    </div>
+    <p class="note" style="margin-top:12px">Números oficiais, sem nenhuma estimativa. Para saber quem tende a ganhar, veja a aba Projeção.</p>
+  </section>
+
+  <section class="panel so-proj" aria-label="Probabilidade de vitória">
     <p class="eyebrow">Probabilidade de vitória</p>
     <div class="score">
       <div class="cand l"><span class="nm">Lula (PT) · 13</span><span class="prob" id="pL">–</span><span class="meta" id="mL"></span></div>
@@ -206,9 +232,9 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px">
       <p class="eyebrow" style="margin:0">Mapa por UF · toque num estado</p>
       <div class="seg" role="group" aria-label="O que o mapa mostra">
-        <button type="button" data-modo="final" aria-pressed="true">Projeção final</button>
+        <button type="button" class="so-proj" data-modo="final" aria-pressed="true">Projeção final</button>
         <button type="button" data-modo="parcial" aria-pressed="false">Parcial</button>
-        <button type="button" data-modo="prob" aria-pressed="false">Chance na UF</button>
+        <button type="button" class="so-proj" data-modo="prob" aria-pressed="false">Chance na UF</button>
         <button type="button" data-modo="apurado" aria-pressed="false">% apurado</button>
       </div>
     </div>
@@ -220,7 +246,25 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
-  <div class="grid2">
+  <section class="panel so-res" aria-label="Resultado por região">
+    <p class="eyebrow">Resultado por região</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Região</th><th>Apurado</th><th>Lula</th><th>Flávio</th></tr></thead>
+      <tbody id="regBody"></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel so-res" aria-label="Resultado por UF">
+    <p class="eyebrow">Resultado por unidade da federação</p>
+    <div class="tbl"><table>
+      <thead><tr><th>UF</th><th>Apurado</th><th>Lula</th><th>Flávio</th></tr></thead>
+      <tbody id="resBody"></tbody>
+    </table></div>
+  </section>
+
+
+
+  <div class="grid2 so-proj">
     <section class="panel">
       <p class="eyebrow">Distribuição do resultado final projetado</p>
       <canvas id="hist" width="600" height="190" aria-label="Histograma da porcentagem final de Lula nas simulações"></canvas>
@@ -236,15 +280,15 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </section>
   </div>
 
-  <section class="panel">
-    <p class="eyebrow">Por unidade da federação</p>
+  <section class="panel so-proj">
+    <p class="eyebrow">Projeção por unidade da federação</p>
     <div class="tbl"><table>
       <thead><tr><th>UF</th><th>Apurado</th><th class="hide-sm">Lula 1º t. (base)</th><th class="hide-sm">Esperado pré-apuração</th><th>Parcial Lula</th><th>Projeção final Lula</th><th>Faltam (válidos)</th></tr></thead>
       <tbody id="ufBody"></tbody>
     </table></div>
   </section>
 
-  <section class="panel">
+  <section class="panel so-proj">
     <p class="eyebrow">Pesquisas de 2º turno (votos válidos) · editáveis</p>
     <div class="tbl"><table>
       <thead><tr><th>Instituto</th><th>Fim da coleta</th><th>Amostra</th><th>Lula %</th><th>Flávio %</th><th></th></tr></thead>
@@ -256,7 +300,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
-  <section class="panel">
+  <section class="panel so-proj">
     <details>
       <summary>Parâmetros do modelo e como funciona</summary>
       <div class="params">
@@ -696,6 +740,7 @@ function render(res, info) {
     <tr><td>Parcial (válidos)</td><td>${cv ? fmtPct(res.countedL / cv) : "–"}</td><td>${cv ? fmtPct(res.countedF / cv) : "–"}</td></tr>
     <tr><td>Esperado pelas pesquisas</td><td>${fmtPct(res.pollL)}</td><td>${fmtPct(1 - res.pollL)}</td></tr>
     <tr><td>Projeção final</td><td class="lead-l">${fmtPct(res.projL)}</td><td class="lead-f">${fmtPct(1 - res.projL)}</td></tr>
+    <tr><td>Votos projetados no fim</td><td>${fmtInt(res.projL * (res.countedL + res.countedF + res.remTotal))}</td><td>${fmtInt((1 - res.projL) * (res.countedL + res.countedF + res.remTotal))}</td></tr>
     <tr><td>Intervalo de ${lvlTxt}</td><td>${fmtPct(lo)}–${fmtPct(hi)}</td><td>${fmtPct(1 - hi)}–${fmtPct(1 - lo)}</td></tr>
     <tr><td>Margem de erro (${lvlTxt})</td><td colspan="2">± ${((hi - lo) / 2 * 100).toFixed(2).replace(".", ",")} pontos</td></tr>`;
   $("projNote").textContent = `Comparecimento estimado: ${fmtPct(res.k, 0)} dos votos válidos do 1º turno. Tendência nacional da apuração vs. esperado: ${(res.D >= 0 ? "+" : "") + (res.D / 4 * 100).toFixed(1).replace(".", ",")} pt para Lula.`;
@@ -710,6 +755,43 @@ function render(res, info) {
   }).join("");
   drawHist(res.shares);
   drawMap(res);
+  renderResultado(res);
+}
+
+const REGIOES = [["Norte", ["ac", "am", "ap", "pa", "ro", "rr", "to"]], ["Nordeste", ["al", "ba", "ce", "ma", "pb", "pe", "pi", "rn", "se"]],
+  ["Centro-Oeste", ["df", "go", "ms", "mt"]], ["Sudeste", ["es", "mg", "rj", "sp"]], ["Sul", ["pr", "rs", "sc"]], ["Exterior", ["zz"]]];
+// Célula com a porcentagem e, embaixo, o número absoluto de votos
+const celVotos = (v, tot, cls, lider) => `<td class="${lider && tot ? cls : ""}">${tot ? fmtPct(v / tot) : "–"}<small class="abs">${fmtInt(v)}</small></td>`;
+// Aba Resultado: só os números oficiais apurados, sem estimativa
+function renderResultado(res) {
+  const L = res.br && res.br.l + res.br.f > 0 ? res.br.l : res.countedL;
+  const F = res.br && res.br.l + res.br.f > 0 ? res.br.f : res.countedF;
+  const V = L + F;
+  $("rL").textContent = V ? fmtPct(L / V, 2) : "–"; $("rF").textContent = V ? fmtPct(F / V, 2) : "–";
+  $("rvL").textContent = fmtInt(L) + " votos"; $("rvF").textContent = fmtInt(F) + " votos";
+  $("rbarL").style.width = (V ? L / V * 100 : 50) + "%"; $("rbarF").style.width = (V ? F / V * 100 : 50) + "%";
+  const pst = res.br && res.br.pst ? res.br.pst / 100 : (res.br ? res.br.frac : NaN);
+  $("rSec").textContent = fmtPct(pst, 2);
+  $("rDif").textContent = V ? fmtInt(Math.abs(L - F)) : "–";
+  $("rDifL").textContent = !V ? "diferença de votos" : L >= F ? "votos de vantagem para Lula" : "votos de vantagem para Flávio";
+  $("rVv").textContent = fmtInt(V);
+  $("rHora").textContent = lastData && lastData.sim ? "simulação" : (res.br && res.br.hora ? res.br.hora.split(" ").pop() : "–");
+  $("resBody").innerHTML = res.rows.slice().sort((a, b) => b.total - a.total).map(r => {
+    const tot = r.counted2, l = r.obs;
+    return `<tr data-uf="${r.uf}"${r.uf === ufSel ? ' class="sel"' : ""}><td class="uf">${UF_NOME[r.uf]}</td>
+      <td><span class="mini"><i style="width:${(r.frac * 100).toFixed(1)}%"></i></span> ${fmtPct(r.frac, 0)}</td>
+      ${celVotos(r.u.l, tot, "lead-l", l >= .5)}${celVotos(r.u.f, tot, "lead-f", l < .5)}</tr>`;
+  }).join("");
+  // Regiões: soma das UFs
+  const reg = REGIOES.map(([nome, ufs]) => {
+    const rs = res.rows.filter(r => ufs.includes(r.uf));
+    const l = rs.reduce((a, r) => a + r.u.l, 0), f = rs.reduce((a, r) => a + r.u.f, 0);
+    const te = rs.reduce((a, r) => a + (r.u.te || r.total), 0), ap = rs.reduce((a, r) => a + r.frac * (r.u.te || r.total), 0);
+    return {nome, l, f, frac: te ? ap / te : 0};
+  });
+  $("regBody").innerHTML = reg.map(g => `<tr><td class="uf">${g.nome}</td>
+      <td><span class="mini"><i style="width:${(g.frac * 100).toFixed(1)}%"></i></span> ${fmtPct(g.frac, 0)}</td>
+      ${celVotos(g.l, g.l + g.f, "lead-l", g.l >= g.f)}${celVotos(g.f, g.l + g.f, "lead-f", g.f > g.l)}</tr>`).join("");
 }
 
 // Confiabilidade: quanto confiar na estimativa, pela fração apurada e pela largura do intervalo de 90%
@@ -826,19 +908,28 @@ async function update() {
   } finally { busy = false; $("btnUpdate").disabled = false; }
 }
 $("btnUpdate").onclick = update;
-let modoSim = false;
+let modoSim = false, aba = "proj";
+function setAba(a) {
+  aba = a;
+  $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj"); $("tabSim").setAttribute("aria-selected", a === "sim");
+  document.body.classList.toggle("aba-res", a === "res");
+  if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
+  if (a !== "res" && mapaModo === "parcial") setMapaModo("final");
+  if ((a === "sim") !== modoSim) setModo(a === "sim");
+  else if (lastResult) render(lastResult);
+}
 function setModo(sim) {
   if (sim === modoSim) return;
   modoSim = sim; simState = null; lastData = null;
-  $("tabVivo").setAttribute("aria-selected", !sim); $("tabSim").setAttribute("aria-selected", sim);
   $("btnUpdate").textContent = sim ? "Avançar apuração" : "Atualizar";
   $("btnReset").hidden = !sim; $("autoWrap").hidden = sim;
   if (sim) { $("auto").checked = false; clearInterval(timer); }
   document.body.classList.toggle("modo-sim", sim);
   update();
 }
-$("tabVivo").onclick = () => setModo(false);
-$("tabSim").onclick = () => setModo(true);
+$("tabRes").onclick = () => setAba("res");
+$("tabProj").onclick = () => setAba("proj");
+$("tabSim").onclick = () => setAba("sim");
 $("btnReset").onclick = () => { simState = null; update(); };
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
@@ -913,7 +1004,7 @@ function selectUF(uf, quiet) {
   const r = lastResult.rows.find(x => x.uf === uf); if (!r) return;
   ufSel = uf;
   $("mapa").querySelectorAll("path").forEach(p => p.classList.toggle("sel", p.dataset.uf === uf));
-  document.querySelectorAll("#ufBody tr").forEach(tr => tr.classList.toggle("sel", tr.dataset.uf === uf));
+  document.querySelectorAll("#ufBody tr, #resBody tr").forEach(tr => tr.classList.toggle("sel", tr.dataset.uf === uf));
   const lead = r.final >= 0.5 ? "Lula" : "Flávio";
   $("ufCard").innerHTML = `<h3>${UF_EXTENSO[uf]}</h3>
     <div class="ufbar" aria-hidden="true"><i style="width:${(r.final * 100).toFixed(1)}%"></i><i style="width:${((1 - r.final) * 100).toFixed(1)}%"></i></div>
@@ -932,12 +1023,15 @@ function selectUF(uf, quiet) {
       <tbody>${r.units.slice().sort((a, b) => b.total - a.total).map(x => `<tr><td class="uf">${x.nome}</td><td>${fmtPct(x.frac, 0)}</td><td>${Number.isFinite(x.obs) ? fmtPct(x.obs) : "–"}</td><td class="${x.final >= .5 ? "lead-l" : "lead-f"}">${fmtPct(x.final)}</td></tr>`).join("")}</tbody>
     </table></div>` : ""}`;
 }
+$("resBody").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr && tr.dataset.uf) selectUF(tr.dataset.uf); });
 $("ufBody").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr && tr.dataset.uf) selectUF(tr.dataset.uf); });
-document.querySelector(".seg").addEventListener("click", e => {
-  const m = e.target.dataset && e.target.dataset.modo; if (!m) return;
+function setMapaModo(m) {
   mapaModo = m;
   document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.modo === m));
   if (lastResult) drawMap(lastResult);
+}
+document.querySelector(".seg").addEventListener("click", e => {
+  const m = e.target.dataset && e.target.dataset.modo; if (m) setMapaModo(m);
 });
 
 renderPolls();
