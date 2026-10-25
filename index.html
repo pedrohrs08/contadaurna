@@ -30,6 +30,7 @@
   --accent: #3fc79a; --warn: #f0a742; --bad: #ff7a70; --ok-soft: #173a2e; --warn-soft: #3d2e14; --bad-soft: #3f1d1b; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -38,13 +39,17 @@ body {
   padding-block: 20px 48px;
 }
 .wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 20px; }
-header.top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
-h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+header.top { display: grid; gap: 4px; }
+h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
-.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
+.tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
+body.modo-sim .tabs button[aria-selected="true"] { background: var(--lula); color: #fff; }
 button {
   font: 600 .95rem var(--f-display); border-radius: 8px; border: 1px solid var(--line);
-  background: var(--surface); color: var(--fg); padding: 9px 14px; cursor: pointer;
+  background: var(--surface); color: var(--fg); padding: 9px 14px; cursor: pointer; min-height: 40px;
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: #fff; padding: 10px 18px; }
 button:disabled { opacity: .55; cursor: wait; }
@@ -52,12 +57,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 label.chk { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: .9rem; }
 .status { font: .82rem var(--f-mono); color: var(--muted); }
 .status.err { color: var(--warn); }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; min-width: 0; }
 .eyebrow { font: 600 .74rem var(--f-narrow); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
 h2 { font-size: 1.05rem; margin: 0 0 12px; }
 
 /* Placar */
-.score { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.score { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .cand { display: grid; gap: 4px; }
 .cand .nm { font: 600 1rem var(--f-narrow); text-transform: uppercase; letter-spacing: .04em; }
 .cand .prob { font: 800 clamp(2.4rem, 7vw, 3.8rem)/1 var(--f-display); font-variant-numeric: tabular-nums; }
@@ -68,7 +73,7 @@ h2 { font-size: 1.05rem; margin: 0 0 12px; }
 .bar .bl { background: var(--lula); transition: width .6s ease; }
 .bar .bf { background: var(--flavio); transition: width .6s ease; }
 .bar .mid { position: absolute; left: 50%; top: -3px; bottom: -3px; width: 2px; background: var(--fg); opacity: .6; }
-.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 16px; }
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 16px; }
 .kpi { border-top: 1px solid var(--line); padding-top: 8px; }
 .kpi b { display: block; font: 600 1.15rem var(--f-mono); font-variant-numeric: tabular-nums; }
 .kpi span { font-size: .8rem; color: var(--muted); }
@@ -83,14 +88,14 @@ h2 { font-size: 1.05rem; margin: 0 0 12px; }
 .conf .why { font-size: .85rem; color: var(--muted); flex: 1 1 320px; min-width: 0; }
 select { font: .85rem var(--f-mono); padding: 4px 6px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
 /* Mapa */
-.mapgrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.mapgrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: start; }
 .mapbox { position: relative; }
 .mapbox svg { width: 100%; height: auto; display: block; }
 .mapbox path { stroke: var(--surface); stroke-width: 1; cursor: pointer; transition: opacity .15s; }
 .mapbox path:hover, .mapbox path.sel { stroke: var(--fg); stroke-width: 2; }
 .mapbox path:focus-visible { outline: none; stroke: var(--accent); stroke-width: 3; }
 .mapbox text { font: 600 9px var(--f-narrow); fill: var(--fg); pointer-events: none; paint-order: stroke; stroke: var(--surface); stroke-width: 2.5px; }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; width: 100%; }
 .seg button { border: 0; border-radius: 0; padding: 6px 10px; font-size: .82rem; background: var(--surface); }
 .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 .scale { display: flex; align-items: center; gap: 8px; font: .78rem var(--f-mono); color: var(--muted); margin-top: 8px; }
@@ -104,12 +109,11 @@ select { font: .85rem var(--f-mono); padding: 4px 6px; border-radius: 6px; borde
 .ufbar i:first-child { background: var(--lula); } .ufbar i:last-child { background: var(--flavio); }
 tr.sel td { background: var(--flavio-soft); }
 #ufBody tr { cursor: pointer; }
-@media (max-width: 760px) { .mapgrid { grid-template-columns: 1fr; } }
 .banner { border-radius: 8px; padding: 10px 12px; font-size: .88rem; background: var(--flavio-soft); color: var(--fg); }
 .banner.sim { background: var(--lula-soft); }
 
 /* Histograma */
-.grid2 { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 canvas { width: 100%; height: 190px; display: block; }
 .legend { display: flex; gap: 16px; font-size: .82rem; color: var(--muted); flex-wrap: wrap; }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
@@ -135,9 +139,23 @@ details summary { cursor: pointer; font-weight: 600; }
 .params label { display: grid; gap: 4px; font-size: .82rem; color: var(--muted); }
 .note { font-size: .84rem; color: var(--muted); max-width: 75ch; }
 .note p { margin: 6px 0; }
-@media (max-width: 760px) {
-  .grid2 { grid-template-columns: 1fr; }
-  .kpis { grid-template-columns: repeat(2, 1fr); }
+.hide-sm { display: none; }
+/* Celular: botão principal fixo embaixo, fácil de alcançar com o polegar */
+#btnUpdate { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; min-height: 52px; font-size: 1.05rem; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+@media (min-width: 761px) {
+  h1 { font-size: 1.6rem; }
+  .panel { padding: 18px; }
+  .score { gap: 16px; }
+  .kpis { grid-template-columns: repeat(4, 1fr); }
+  .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
+  .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
+  .tabs { max-width: 360px; }
+  .hide-sm { display: table-cell; }
+  #btnUpdate { position: static; min-height: 40px; font-size: .95rem; box-shadow: none; }
+  body { padding-bottom: 48px; }
 }
 @media (prefers-reduced-motion: reduce) { .bar .bl, .bar .bf { transition: none; } }
 </style>
@@ -147,15 +165,19 @@ details summary { cursor: pointer; font-weight: 600; }
   <header class="top">
     <div>
       <h1>Placar de Probabilidade 2026</h1>
-      <p class="sub">2º turno presidencial · apuração do TSE + perfil de cada UF no 1º turno + pesquisas da véspera</p>
-    </div>
-    <div class="controls">
-      <button id="btnUpdate" class="primary" type="button">Atualizar</button>
-      <label class="chk"><input id="auto" type="checkbox"> atualizar a cada 60 s</label>
-      <label class="chk"><input id="sim" type="checkbox"> modo simulação</label>
-      <label class="chk">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
+      <p class="sub">2º turno presidencial · apuração do TSE, perfil de capitais, grandes cidades e interior no 1º turno, e pesquisas da véspera</p>
     </div>
   </header>
+  <nav class="tabs" role="tablist" aria-label="Fonte dos dados">
+    <button type="button" role="tab" id="tabVivo" aria-selected="true">Ao vivo (TSE)</button>
+    <button type="button" role="tab" id="tabSim" aria-selected="false">Simulação</button>
+  </nav>
+  <div class="controls">
+    <button id="btnUpdate" class="primary" type="button">Atualizar</button>
+    <button id="btnReset" type="button" hidden>Reiniciar simulação</button>
+    <label class="chk" id="autoWrap"><input id="auto" type="checkbox"> atualizar a cada 60 s</label>
+    <label class="chk">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
+  </div>
   <div id="status" class="status">Carregando…</div>
   <div id="banner" class="banner" hidden></div>
 
@@ -217,7 +239,7 @@ details summary { cursor: pointer; font-weight: 600; }
   <section class="panel">
     <p class="eyebrow">Por unidade da federação</p>
     <div class="tbl"><table>
-      <thead><tr><th>UF</th><th>Apurado</th><th>Lula 1º t. (base)</th><th>Esperado pré-apuração</th><th>Parcial Lula</th><th>Projeção final Lula</th><th>Faltam (válidos)</th></tr></thead>
+      <thead><tr><th>UF</th><th>Apurado</th><th class="hide-sm">Lula 1º t. (base)</th><th class="hide-sm">Esperado pré-apuração</th><th>Parcial Lula</th><th>Projeção final Lula</th><th>Faltam (válidos)</th></tr></thead>
       <tbody id="ufBody"></tbody>
     </table></div>
   </section>
@@ -244,9 +266,9 @@ details summary { cursor: pointer; font-weight: 600; }
         <label>Simulações Monte Carlo<input id="pSims" type="number" step="1000" value="20000"></label>
       </div>
       <div class="note">
-        <p><b>1. Perfil de cada UF.</b> A base de cada estado é a fatia de Lula entre Lula e Flávio no 1º turno de 2026 (arquivos oficiais do TSE, eleição 6257). Isso resume o perfil do eleitorado local: quem votou em quem há três semanas.</p>
+        <p><b>1. Perfil de cada local.</b> Cada UF é dividida em capitais e grandes cidades (cerca de 140) e o resto do estado. A base de cada uma é a fatia de Lula entre Lula e Flávio no 1º turno de 2026 (arquivos oficiais do TSE, eleição 6257), que resume o perfil do eleitorado local. Se os arquivos municipais não estiverem disponíveis, o app usa a UF inteira.</p>
         <p><b>2. Pesquisas.</b> A média das pesquisas (ponderada pela raiz da amostra e pela recência) define um deslocamento nacional uniforme, aplicado em escala logística sobre a base de cada UF. O resultado é o "esperado pré-apuração".</p>
-        <p><b>3. Apuração.</b> Para cada UF, a diferença entre a parcial e o esperado indica se o estado está votando acima ou abaixo do previsto. Como as primeiras seções apuradas não são uma amostra aleatória (capitais costumam vir antes), essa diferença recebe peso que cresce com a fração apurada. O que sobra é preenchido pela tendência nacional das UFs já apuradas, encolhida em direção às pesquisas.</p>
+        <p><b>3. Apuração.</b> Para cada cidade e para o resto de cada UF, a diferença entre a parcial e o esperado mostra se o local está votando acima ou abaixo do previsto. Essa diferença recebe peso que cresce com a fração apurada. O que falta é preenchido pela tendência da própria UF, puxada para a tendência nacional e para as pesquisas. Como capitais costumam ser apuradas antes do interior, separar os dois corrige boa parte do viés da ordem de apuração. Os parâmetros não foram calibrados com 2018 e 2022.</p>
         <p><b>4. Incerteza.</b> Monte Carlo com erro nacional (cauda t de 4 graus), erro por UF e erro no comparecimento, todos encolhendo conforme a apuração avança. A probabilidade é a fração de simulações em que cada candidato termina com mais votos válidos.</p>
         <p><b>5. Confiabilidade.</b> Baixa com menos de 20% apurado, Moderada a partir de 20%, Alta com 60% apurado e intervalo de 90% menor que 1,2 ponto, Muito alta com 90% apurado e intervalo menor que 0,6 ponto. O nível de confiança (80% a 99%) só muda a largura do intervalo mostrado, não a probabilidade.</p>
         <p>É um modelo estatístico e não substitui o resultado oficial do TSE.</p>
@@ -348,7 +370,7 @@ function parseFile(j) {
   else frac = num(s.pst) / 100;
   let vv = num(v.vv);
   if (!vv) vv = cands.reduce((a, c) => a + num(c.vap), 0);
-  return {l: byN[N_LULA] || 0, f: byN[N_FLAVIO] || 0, vv, frac: Math.min(1, Math.max(0, frac)), pst: num(s.pst), te, st: num(s.st), ts: num(s.ts), hora: [j.dg, j.hg].filter(Boolean).join(" ")};
+  return {l: byN[N_LULA] || 0, f: byN[N_FLAVIO] || 0, vv, frac: Math.min(1, Math.max(0, frac)), pst: num(s.pst), te, est, st: num(s.st), ts: num(s.ts), hora: [j.dg, j.hg].filter(Boolean).join(" ")};
 }
 
 async function load1T() {
@@ -371,6 +393,90 @@ async function load2T() {
   });
   if (Object.keys(ufs).length < 20) throw new Error(`falha ao ler ${fails} arquivos do 2º turno`);
   return {ufs, br};
+}
+
+// ---------- Municípios: capitais e grandes cidades ----------
+// Cada UF vira "grandes cidades + resto da UF". Assim o modelo sabe se a parcial veio das capitais
+// (que costumam ser apuradas antes) ou do interior. Baixar os 5.570 municípios a cada minuto pesaria demais no TSE.
+const GRANDES = {
+  sp: "SAO PAULO|GUARULHOS|CAMPINAS|SAO BERNARDO DO CAMPO|SANTO ANDRE|OSASCO|SOROCABA|RIBEIRAO PRETO|SAO JOSE DOS CAMPOS|SANTOS|MAUA|MOGI DAS CRUZES|DIADEMA|JUNDIAI|CARAPICUIBA|PIRACICABA|BAURU|SAO JOSE DO RIO PRETO|ITAQUAQUECETUBA|FRANCA|PRAIA GRANDE|LIMEIRA|SUZANO|TABOAO DA SERRA|SUMARE|BARUERI|EMBU DAS ARTES|SAO VICENTE|GUARUJA|COTIA|PRESIDENTE PRUDENTE|MARILIA|ARARAQUARA|AMERICANA|INDAIATUBA|SAO CARLOS|JACAREI|TAUBATE|HORTOLANDIA",
+  rj: "RIO DE JANEIRO|SAO GONCALO|DUQUE DE CAXIAS|NOVA IGUACU|NITEROI|BELFORD ROXO|CAMPOS DOS GOYTACAZES|SAO JOAO DE MERITI|PETROPOLIS|VOLTA REDONDA|MAGE|MACAE|ITABORAI",
+  mg: "BELO HORIZONTE|UBERLANDIA|CONTAGEM|JUIZ DE FORA|BETIM|MONTES CLAROS|RIBEIRAO DAS NEVES|UBERABA|GOVERNADOR VALADARES|IPATINGA|SETE LAGOAS|DIVINOPOLIS",
+  ba: "SALVADOR|FEIRA DE SANTANA|VITORIA DA CONQUISTA|CAMACARI|JUAZEIRO|ITABUNA|LAURO DE FREITAS",
+  pr: "CURITIBA|LONDRINA|MARINGA|PONTA GROSSA|CASCAVEL|SAO JOSE DOS PINHAIS|FOZ DO IGUACU|COLOMBO",
+  rs: "PORTO ALEGRE|CAXIAS DO SUL|CANOAS|PELOTAS|SANTA MARIA|GRAVATAI|VIAMAO|NOVO HAMBURGO|SAO LEOPOLDO",
+  pe: "RECIFE|JABOATAO DOS GUARARAPES|OLINDA|CARUARU|PETROLINA|PAULISTA",
+  ce: "FORTALEZA|CAUCAIA|JUAZEIRO DO NORTE|MARACANAU|SOBRAL",
+  pa: "BELEM|ANANINDEUA|SANTAREM|MARABA",
+  sc: "FLORIANOPOLIS|JOINVILLE|BLUMENAU|SAO JOSE|CHAPECO|ITAJAI",
+  go: "GOIANIA|APARECIDA DE GOIANIA|ANAPOLIS|RIO VERDE",
+  ma: "SAO LUIS|IMPERATRIZ|SAO JOSE DE RIBAMAR", am: "MANAUS", es: "VITORIA|VILA VELHA|SERRA|CARIACICA",
+  pb: "JOAO PESSOA|CAMPINA GRANDE", rn: "NATAL|MOSSORO|PARNAMIRIM", al: "MACEIO|ARAPIRACA", pi: "TERESINA",
+  mt: "CUIABA|VARZEA GRANDE|RONDONOPOLIS", ms: "CAMPO GRANDE|DOURADOS", se: "ARACAJU", ro: "PORTO VELHO",
+  to: "PALMAS", ac: "RIO BRANCO", ap: "MACAPA", rr: "BOA VISTA",
+};
+const norm = t => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().trim();
+const munPath = (ele, uf, cd) => `${CICLO}/${ele}/dados/${uf}/${uf}${cd}-c0001-e${ele.padStart(6, "0")}-u.json`;
+let munList = null;   // {uf: [{cd, nm}]} só das grandes cidades
+let munBase = null;   // {cd: parse do 1º turno}
+let munCur = {};      // {cd: parse do 2º turno}, guarda a última leitura boa
+let munStatus = "";
+
+async function pool(items, n, fn) { // baixa no máximo n arquivos ao mesmo tempo
+  const out = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({length: n}, async () => { while (i < items.length) { const k = i++; try { out[k] = await fn(items[k]); } catch { out[k] = null; } } }));
+  return out;
+}
+async function loadMunList() {
+  let cfg = null;
+  for (const ele of [ELE_2T, ELE_1T]) {
+    try { cfg = await getJSON(`${CICLO}/${ele}/config/mun-e${ele.padStart(6, "0")}-cm.json`); break; } catch {}
+  }
+  if (!cfg) throw new Error("lista de municípios indisponível");
+  const out = {};
+  (function walk(node) {
+    if (Array.isArray(node)) return node.forEach(walk);
+    if (!node || typeof node !== "object") return;
+    if (Array.isArray(node.mu) && node.cd) {
+      const uf = String(node.cd).toLowerCase();
+      const want = new Set((GRANDES[uf] || "").split("|").filter(Boolean));
+      const found = node.mu.filter(m => want.has(norm(m.nm))).map(m => ({cd: String(m.cd), nm: m.nm}));
+      if (found.length) out[uf] = found;
+      return;
+    }
+    for (const k in node) if (typeof node[k] === "object") walk(node[k]);
+  })(cfg);
+  if (Object.keys(out).length < 10) throw new Error("lista de municípios em formato inesperado");
+  return out;
+}
+const munItems = () => Object.entries(munList).flatMap(([uf, ms]) => ms.map(m => ({uf, ...m})));
+async function loadMunBase() {
+  const items = munItems();
+  const res = await pool(items, 8, it => getJSON(munPath(ELE_1T, it.uf, it.cd)));
+  const out = {};
+  res.forEach((j, i) => { if (j) { const p = parseFile(j); if (p.l + p.f > 0) out[items[i].uf + items[i].cd] = p; } });
+  return out;
+}
+async function loadMunCur() {
+  const items = munItems().filter(it => munBase[it.uf + it.cd]);
+  const res = await pool(items, 8, it => getJSON(munPath(ELE_2T, it.uf, it.cd)));
+  let ok = 0;
+  res.forEach((j, i) => { if (j) { munCur[items[i].uf + items[i].cd] = parseFile(j); ok++; } });
+  return ok;
+}
+async function loadMunicipal() {
+  try {
+    if (!munList) munList = await loadMunList();
+    if (!munBase) munBase = await loadMunBase();
+    const ok = await loadMunCur();
+    const n = Object.keys(munBase).length;
+    munStatus = `modelo por município: ${n} grandes cidades (${ok} lidas agora)`;
+    return true;
+  } catch (e) {
+    console.warn("municípios:", e);
+    munStatus = `modelo por município indisponível (${e.message}); usando só as UFs`;
+    return false;
+  }
 }
 
 // ---------- Simulação (sem TSE) ----------
@@ -413,6 +519,35 @@ function pollAverage() {
   return sw ? s / sw : 0.5;
 }
 
+// Monta as unidades do modelo: em cada UF, as grandes cidades com dados + o "resto da UF".
+// Sem dados municipais, a UF inteira é uma unidade só (como antes).
+function buildUnits(base, ufs, mb, mc) {
+  const units = [];
+  const zero = {l: 0, f: 0, vv: 0, frac: 0, te: 0, est: 0};
+  for (const uf of UFS) {
+    const b = base[uf]; if (!b || b.l + b.f <= 0) continue;
+    const u = ufs[uf] || zero;
+    const ms = (mb && munList && munList[uf] || []).filter(m => mb[uf + m.cd]);
+    const lidas = ms.filter(m => mc[uf + m.cd]).length;
+    if (!ms.length || lidas < ms.length * 0.9 || !(u.te > 0)) {
+      units.push({uf, key: uf, nome: "UF inteira", b1: b, cur: u});
+      continue;
+    }
+    const s1 = {l: 0, f: 0, vv: 0}, sc = {l: 0, f: 0, vv: 0, te: 0, est: 0};
+    for (const m of ms) {
+      const b1 = mb[uf + m.cd], c = mc[uf + m.cd] || {...zero, te: b1.te};
+      units.push({uf, key: uf + m.cd, nome: m.nm, b1, cur: c});
+      s1.l += b1.l; s1.f += b1.f; s1.vv += b1.vv;
+      sc.l += c.l; sc.f += c.f; sc.vv += c.vv; sc.te += c.te || b1.te; sc.est += c.est || 0;
+    }
+    const restoTe = Math.max(1, u.te - sc.te);
+    const restoFrac = Math.min(1, Math.max(0, ((u.est || 0) - sc.est) / restoTe));
+    units.push({uf, key: uf + "-resto", nome: "Resto da UF", b1: {l: Math.max(1, b.l - s1.l), f: Math.max(1, b.f - s1.f), vv: Math.max(1, b.vv - s1.vv)},
+      cur: {l: Math.max(0, u.l - sc.l), f: Math.max(0, u.f - sc.f), vv: Math.max(0, u.vv - sc.vv), frac: restoFrac}});
+  }
+  return units;
+}
+
 function runModel(base, ufs, br) {
   const P = {
     nat: num($("pNat").value) / 100 * 4 || 0.08,     // pontos -> logit (perto de 50%, 1 pt ≈ 0,04)
@@ -421,81 +556,111 @@ function runModel(base, ufs, br) {
     sims: Math.min(200000, Math.max(1000, num($("pSims").value) || 20000)),
   };
   const pollL = pollAverage();
-  const list = UFS.filter(uf => base[uf] && base[uf].l + base[uf].f > 0);
+  const sim = lastData && lastData.sim;
+  const units = buildUnits(base, ufs, sim ? null : munBase, munCur);
+  const ufList = [...new Set(units.map(x => x.uf))];
 
   // Comparecimento: razão votos válidos 2º/1º turno nas partes já apuradas
   let num2 = 0, den1 = 0;
-  list.forEach(uf => { const u = ufs[uf]; if (u && u.frac > 0.02) { num2 += u.vv; den1 += base[uf].vv * u.frac; } });
+  units.forEach(x => { if (x.cur.frac > 0.02) { num2 += x.cur.vv; den1 += x.b1.vv * x.cur.frac; } });
   const k = den1 > 0 ? Math.min(1.15, Math.max(0.85, num2 / den1)) : 1.0;
 
-  // Esperado pré-apuração: base do 1º turno + deslocamento nacional uniforme que reproduz a média das pesquisas
-  const rows = list.map(uf => {
-    const b = base[uf], u = ufs[uf] || {l: 0, f: 0, vv: 0, frac: 0};
-    const baseShare = clampP(b.l / (b.l + b.f));
-    const total = b.vv * k;
-    const counted2 = u.l + u.f;
-    const remaining = Math.max(0, total * (1 - u.frac));
-    return {uf, baseShare, total, u, counted2, remaining, frac: u.frac};
+  units.forEach(x => {
+    x.baseShare = clampP(x.b1.l / (x.b1.l + x.b1.f));
+    x.total = x.b1.vv * k;
+    x.frac = x.cur.frac;
+    x.counted2 = x.cur.l + x.cur.f;
+    x.remaining = Math.max(0, x.total * (1 - x.frac));
   });
-  const wtotal = rows.reduce((a, r) => a + r.total, 0);
+  // Esperado pré-apuração: base do 1º turno + deslocamento nacional uniforme que reproduz a média das pesquisas
+  const wtotal = units.reduce((a, x) => a + x.total, 0);
   let delta = 0;
   for (let it = 0; it < 60; it++) {
-    const m = rows.reduce((a, r) => a + r.total * inv(logit(r.baseShare) + delta), 0) / wtotal;
+    const m = units.reduce((a, x) => a + x.total * inv(logit(x.baseShare) + delta), 0) / wtotal;
     delta += (logit(pollL) - logit(m));
   }
-  rows.forEach(r => r.prior = inv(logit(r.baseShare) + delta));
+  units.forEach(x => x.prior = inv(logit(x.baseShare) + delta));
 
   // Sinal da apuração: desvio em relação ao esperado, com peso crescente conforme a fração apurada
   const sE = P.uf, sU = P.ord;
   let dn = 0, dd = 0;
-  rows.forEach(r => {
-    r.w = sE * sE / (sE * sE + Math.pow(1 - r.frac, 1.6) * sU * sU);
-    if (r.counted2 > 0 && r.frac > 0) {
-      r.obs = r.u.l / r.counted2;
-      r.dev = logit(clampP(r.obs)) - logit(r.prior);
-      dn += r.counted2 * r.w * r.dev; dd += r.counted2 * r.w;
-    } else { r.obs = NaN; r.dev = 0; }
+  units.forEach(x => {
+    x.w = sE * sE / (sE * sE + Math.pow(1 - x.frac, 1.6) * sU * sU);
+    if (x.counted2 > 0 && x.frac > 0) {
+      x.obs = x.cur.l / x.counted2;
+      x.dev = logit(clampP(x.obs)) - logit(x.prior);
+      dn += x.counted2 * x.w * x.dev; dd += x.counted2 * x.w;
+    } else { x.obs = NaN; x.dev = 0; }
   });
   const n0 = 1.5e6; // votos "virtuais" das pesquisas: segura a tendência nacional no começo da apuração
   const D = dd > 0 ? dn / (dd + n0) : 0;
-  rows.forEach(r => { r.remShare = inv(logit(r.prior) + r.w * r.dev + (1 - r.w) * D); });
+  // Tendência de cada UF: o que já se viu nas unidades dela, puxado para a tendência nacional
+  const Duf = {};
+  ufList.forEach(uf => {
+    let a = 0, b = 0;
+    units.forEach(x => { if (x.uf === uf && x.counted2 > 0) { a += x.counted2 * x.w * x.dev; b += x.counted2 * x.w; } });
+    Duf[uf] = (a + 3e5 * D) / (b + 3e5);
+  });
+  units.forEach(x => { x.remShare = inv(logit(x.prior) + x.w * x.dev + (1 - x.w) * Duf[x.uf]); });
 
-  const countedL = rows.reduce((a, r) => a + r.u.l, 0), countedF = rows.reduce((a, r) => a + r.u.f, 0);
-  const remTotal = rows.reduce((a, r) => a + r.remaining, 0);
+  const countedL = units.reduce((a, x) => a + x.cur.l, 0), countedF = units.reduce((a, x) => a + x.cur.f, 0);
+  const remTotal = units.reduce((a, x) => a + x.remaining, 0);
   const fracRem = remTotal / Math.max(1, remTotal + countedL + countedF);
+  const ufRem = {}, ufTot = {};
+  units.forEach(x => { ufRem[x.uf] = (ufRem[x.uf] || 0) + x.remaining; ufTot[x.uf] = (ufTot[x.uf] || 0) + x.remaining + x.counted2; });
 
   // Monte Carlo
   const S = P.sims, shares = new Float32Array(S);
-  const ufWins = {}; rows.forEach(r => ufWins[r.uf] = 0);
+  const ufWins = {}; ufList.forEach(uf => ufWins[uf] = 0);
+  const ufIdx = {}; ufList.forEach((uf, i) => ufIdx[uf] = i);
+  const accL = new Float64Array(ufList.length), accF = new Float64Array(ufList.length), eU = new Float64Array(ufList.length);
   let lWins = 0;
   const natSd = P.nat * Math.sqrt(fracRem);
   const ordSd = P.ord * 0.35; // viés comum da ordem de apuração
+  const multi = units.length > ufList.length;
   for (let s = 0; s < S; s++) {
     const eN = randt4() * natSd;
     const eO = randn() * ordSd;
     const eT = randn() * 0.03;
+    for (let i = 0; i < ufList.length; i++) { eU[i] = randn() * P.uf * Math.sqrt(ufRem[ufList[i]] / Math.max(1, ufTot[ufList[i]])); accL[i] = 0; accF[i] = 0; }
     let L = countedL, F = countedF;
-    for (const r of rows) {
-      if (r.remaining <= 0) { if (r.u.l > r.u.f) ufWins[r.uf]++; continue; }
-      const rf = 1 - r.frac;
-      const x = logit(r.remShare) + eN * (1 - r.w * 0.5) + eO * rf * (r.counted2 > 0 ? 1 : 0) + randn() * P.uf * Math.sqrt(rf);
-      const sh = inv(x);
-      const rem = r.remaining * (1 + eT + randn() * 0.02);
-      const lu = r.u.l + rem * sh, fu = r.u.f + rem * (1 - sh);
+    for (const x of units) {
+      const i = ufIdx[x.uf];
+      accL[i] += x.cur.l; accF[i] += x.cur.f;
+      if (x.remaining <= 0) continue;
+      const rf = 1 - x.frac;
+      const xx = logit(x.remShare) + eN * (1 - x.w * 0.5) + eO * rf * (x.counted2 > 0 ? 1 : 0) + eU[i] + (multi ? randn() * P.uf * 0.7 * Math.sqrt(rf) : 0);
+      const sh = inv(xx);
+      const rem = x.remaining * (1 + eT + randn() * 0.02);
+      accL[i] += rem * sh; accF[i] += rem * (1 - sh);
       L += rem * sh; F += rem * (1 - sh);
-      if (lu > fu) ufWins[r.uf]++;
     }
+    for (let i = 0; i < ufList.length; i++) if (accL[i] > accF[i]) ufWins[ufList[i]]++;
     shares[s] = L / (L + F);
     if (L > F) lWins++;
   }
   const sorted = Array.from(shares).sort((a, b) => a - b);
   const q = p => sorted[Math.min(S - 1, Math.floor(p * S))];
-  rows.forEach(r => {
-    r.final = (r.u.l + r.remaining * r.remShare) / Math.max(1, r.counted2 + r.remaining);
-    r.pWin = ufWins[r.uf] / S;
+  units.forEach(x => { x.final = (x.cur.l + x.remaining * x.remShare) / Math.max(1, x.counted2 + x.remaining); });
+
+  // Linhas por UF (tabela e mapa) agregando as unidades
+  const rows = ufList.map(uf => {
+    const us = units.filter(x => x.uf === uf);
+    const b = base[uf], u = ufs[uf] || {l: 0, f: 0, frac: 0};
+    const counted2 = us.reduce((a, x) => a + x.counted2, 0), cl = us.reduce((a, x) => a + x.cur.l, 0);
+    const remaining = us.reduce((a, x) => a + x.remaining, 0);
+    const total = us.reduce((a, x) => a + x.total, 0);
+    const projLuf = us.reduce((a, x) => a + x.cur.l + x.remaining * x.remShare, 0);
+    return {uf, units: us, total, counted2, remaining, frac: u.frac, u,
+      baseShare: clampP(b.l / (b.l + b.f)),
+      prior: us.reduce((a, x) => a + x.total * x.prior, 0) / Math.max(1, total),
+      obs: counted2 > 0 ? cl / counted2 : NaN,
+      final: projLuf / Math.max(1, counted2 + remaining),
+      pWin: ufWins[uf] / S};
   });
-  const projL = (countedL + rows.reduce((a, r) => a + r.remaining * r.remShare, 0)) / (countedL + countedF + remTotal);
-  return {pL: lWins / S, projL, sorted, q05: q(0.05), q95: q(0.95), median: q(0.5), shares, rows, pollL, delta, k, D, countedL, countedF, remTotal, br, fracRem};
+  const projL = (countedL + units.reduce((a, x) => a + x.remaining * x.remShare, 0)) / (countedL + countedF + remTotal);
+  const munUnits = units.filter(x => x.key !== x.uf && !String(x.key).endsWith("-resto")).length;
+  return {pL: lWins / S, projL, sorted, q05: q(0.05), q95: q(0.95), median: q(0.5), shares, rows, units, munUnits, pollL, delta, k, D, countedL, countedF, remTotal, br, fracRem};
 }
 
 // ---------- Renderização ----------
@@ -529,7 +694,7 @@ function render(res, info) {
     const lead = r.final >= 0.5 ? "lead-l" : "lead-f";
     return `<tr data-uf="${r.uf}"${r.uf === ufSel ? ' class="sel"' : ""}><td class="uf">${UF_NOME[r.uf]}</td>
       <td><span class="mini"><i style="width:${(r.frac * 100).toFixed(1)}%"></i></span> ${fmtPct(r.frac, 0)}</td>
-      <td>${fmtPct(r.baseShare)}</td><td>${fmtPct(r.prior)}</td>
+      <td class="hide-sm">${fmtPct(r.baseShare)}</td><td class="hide-sm">${fmtPct(r.prior)}</td>
       <td>${Number.isFinite(r.obs) ? fmtPct(r.obs) : "–"}</td>
       <td class="${lead}">${fmtPct(r.final)}</td><td>${fmtInt(r.remaining)}</td></tr>`;
   }).join("");
@@ -622,17 +787,18 @@ function recompute() { if (!lastData) return; const r = runModel(lastData.base, 
 
 async function update() {
   if (busy) return; busy = true; $("btnUpdate").disabled = true;
-  const sim = $("sim").checked;
+  const sim = modoSim;
   try {
     let data;
     if (sim) {
-      data = simulateData();
+      data = simulateData(); data.sim = true;
       $("banner").hidden = false; $("banner").className = "banner sim";
-      $("banner").textContent = "Modo simulação: números inventados para demonstrar o app. Cada clique em Atualizar avança a apuração simulada.";
+      $("banner").textContent = "Simulação: números inventados para você ver como o app reage durante uma apuração. Cada toque em \"Avançar apuração\" apura mais um pedaço.";
     } else {
       setStatus("Buscando dados no TSE…");
       if (!base1T) base1T = await load1T();
       const {ufs, br} = await load2T();
+      await loadMunicipal();
       data = {base: base1T, ufs, br};
       $("banner").hidden = true;
       if (!br || br.st === 0) { $("banner").hidden = false; $("banner").className = "banner"; $("banner").textContent = "O TSE ainda não publicou votos do 2º turno: a probabilidade abaixo vem só das pesquisas e do perfil das UFs."; }
@@ -640,14 +806,27 @@ async function update() {
     lastData = data;
     const r = runModel(data.base, data.ufs, data.br); lastResult = r; render(r);
     const hora = data.br && data.br.hora ? ` · TSE: ${data.br.hora}` : "";
-    setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor local" : "TSE direto"}${hora}`}`);
+    setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor local" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
   } catch (e) {
     console.error(e);
-    setStatus(`Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000, ou marque "modo simulação" para ver o app funcionando.`, true);
+    setStatus(`Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000, ou abra a aba "Simulação" para ver o app funcionando.`, true);
   } finally { busy = false; $("btnUpdate").disabled = false; }
 }
 $("btnUpdate").onclick = update;
-$("sim").onchange = () => { simState = null; lastData = null; update(); };
+let modoSim = false;
+function setModo(sim) {
+  if (sim === modoSim) return;
+  modoSim = sim; simState = null; lastData = null;
+  $("tabVivo").setAttribute("aria-selected", !sim); $("tabSim").setAttribute("aria-selected", sim);
+  $("btnUpdate").textContent = sim ? "Avançar apuração" : "Atualizar";
+  $("btnReset").hidden = !sim; $("autoWrap").hidden = sim;
+  if (sim) { $("auto").checked = false; clearInterval(timer); }
+  document.body.classList.toggle("modo-sim", sim);
+  update();
+}
+$("tabVivo").onclick = () => setModo(false);
+$("tabSim").onclick = () => setModo(true);
+$("btnReset").onclick = () => { simState = null; update(); };
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
 window.addEventListener("resize", () => lastResult && drawHist(lastResult.shares));
@@ -734,7 +913,11 @@ function selectUF(uf, quiet) {
       <dt>Válidos que faltam</dt><dd>${fmtInt(r.remaining)}</dd>
       <dt>Lula no 1º turno (base)</dt><dd>${fmtPct(r.baseShare)}</dd>
       <dt>Esperado pré-apuração</dt><dd>${fmtPct(r.prior)}</dd>
-    </dl>`;
+    </dl>${r.units && r.units.length > 1 ? `
+    <div class="tbl"><table>
+      <thead><tr><th>Cidade</th><th>Apurado</th><th>Parcial Lula</th><th>Projeção Lula</th></tr></thead>
+      <tbody>${r.units.slice().sort((a, b) => b.total - a.total).map(x => `<tr><td class="uf">${x.nome}</td><td>${fmtPct(x.frac, 0)}</td><td>${Number.isFinite(x.obs) ? fmtPct(x.obs) : "–"}</td><td class="${x.final >= .5 ? "lead-l" : "lead-f"}">${fmtPct(x.final)}</td></tr>`).join("")}</tbody>
+    </table></div>` : ""}`;
 }
 $("ufBody").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr && tr.dataset.uf) selectUF(tr.dataset.uf); });
 document.querySelector(".seg").addEventListener("click", e => {
