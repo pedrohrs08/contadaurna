@@ -485,13 +485,23 @@ const SIM_BASE = {ac:[.33,.6],al:[.62,2.3],am:[.50,2.6],ap:[.47,.55],ba:[.70,11.
 let simState = null;
 function simulateData() {
   if (!simState) {
-    const swing = randn() * 0.06, out1 = {};
+    const out1 = {};
     UFS.forEach(uf => { const [b, el] = SIM_BASE[uf]; const vv = el * 1e6 * 0.75; out1[uf] = {l: vv * b * .93, f: vv * (1 - b) * .93, vv, frac: 1}; });
+    // Sorteia o resultado "verdadeiro" em torno de 50% (desvio de 2 pontos),
+    // para que cada simulação tenha a mesma chance de terminar com qualquer um dos dois vencendo.
+    const alvo = randn() * 0.08;
+    const tot = UFS.reduce((a, uf) => a + out1[uf].vv, 0);
+    let swing = 0;
+    for (let it = 0; it < 40; it++) {
+      const m = UFS.reduce((a, uf) => a + out1[uf].vv * inv(logit(SIM_BASE[uf][0]) + swing), 0) / tot;
+      swing += alvo - logit(m);
+    }
     const truth = {}; UFS.forEach(uf => truth[uf] = inv(logit(SIM_BASE[uf][0]) + swing + randn() * 0.05));
-    simState = {base: out1, truth, t: 0, speed: {}};
+    const truthL = UFS.reduce((a, uf) => a + out1[uf].vv * truth[uf], 0) / tot;
+    simState = {base: out1, truth, truthL, t: 0, speed: {}};
     UFS.forEach(uf => simState.speed[uf] = 0.6 + Math.random() * 0.8);
   }
-  simState.t = Math.min(1, simState.t + 0.12);
+  simState.t = Math.min(1.7, simState.t + 0.15); // até o estado mais lento chegar a 100%
   const ufs = {}; let tl = 0, tf = 0, tv = 0, te = 0, tc = 0;
   UFS.forEach(uf => {
     const b = simState.base[uf];
@@ -793,7 +803,10 @@ async function update() {
     if (sim) {
       data = simulateData(); data.sim = true;
       $("banner").hidden = false; $("banner").className = "banner sim";
-      $("banner").textContent = "Simulação: números inventados para você ver como o app reage durante uma apuração. Cada toque em \"Avançar apuração\" apura mais um pedaço.";
+      const fim = data.br.frac >= 0.999;
+      $("banner").textContent = fim
+        ? `Fim da simulação. O resultado sorteado foi Lula ${fmtPct(simState.truthL)} × Flávio ${fmtPct(1 - simState.truthL)}. Toque em "Reiniciar simulação" para sortear outra eleição.`
+        : `Simulação com números inventados: o app sorteou um resultado secreto, com chance igual para os dois, e vai apurando aos poucos. Cada toque em "Avançar apuração" apura mais um pedaço; veja se o placar acerta o vencedor antes do fim. Apurado: ${fmtPct(data.br.frac, 0)}.`;
     } else {
       setStatus("Buscando dados no TSE…");
       if (!base1T) base1T = await load1T();
