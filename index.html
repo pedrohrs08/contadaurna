@@ -241,6 +241,9 @@ td.alto { color: var(--bad); font-weight: 600; }
 .fk table { max-width: 560px; }
 .fk td:first-child { white-space: normal; font-family: var(--f-display); }
 .fk .fontes { font-size: .82rem; color: var(--muted); }
+.fk .link-direto { margin-left: auto; font: 600 .8rem var(--f-narrow); }
+.fk { scroll-margin-top: 12px; }
+.fk:target { outline: 3px solid var(--ok); outline-offset: 2px; }
 .logs-top { display: grid; gap: 8px; }
 .logs-top .big { display: block; font: 800 clamp(2.2rem, 7vw, 3.2rem)/1 var(--f-display); color: var(--accent); }
 .logs-top .meta { font-size: .9rem; color: var(--muted); }
@@ -1677,6 +1680,7 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "venezuela-prorrogacao",
     data: "26/10/2026",
     selo: "Enganoso",
     titulo: "\"Maduro prorrogou as eleições para aplicar uma fraude. Lula acaba de fazer o mesmo\"",
@@ -1709,6 +1713,7 @@ Lula da Silva acaba de fazer o mesmo no Brasil.
     ],
   },
   {
+    id: "lula-100-por-cento",
     data: "26/10/2026",
     titulo: "\"Lula pegou 100% dos votos dos outros candidatos + 3 milhões que nem votaram\"",
     texto: `Lula fechou com 64 milhões de votos.
@@ -1753,14 +1758,23 @@ Ou seja: ele pegou 100% dos votos de todos os outros candidatos + 3 milhões de 
 function renderFakes() {
   $("fkResumo").textContent = `${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}. Em cada um, o texto aparece na íntegra, como circulou, e logo abaixo o parecer com os números oficiais.`;
   const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk">
-    <header><span class="selo">${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><h3>${esc(f.titulo)}</h3></header>
+  $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk" id="fake-${f.id}">
+    <header><span class="selo">${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
     <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
     <div class="parecer"><p class="eyebrow" style="margin:0">Parecer</p><p class="curto">${f.curto}</p>${f.parecer}</div>
     <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
   </article>`).join("");
 }
 renderFakes();
+// Link direto para um parecer: contadaurna.com.br/#fake-<id> (#fake abre só a aba)
+function abrirHash() {
+  const m = location.hash.match(/^#fake(?:-([\w-]+))?$/);
+  if (!m) return;
+  setAba("fake");
+  const el = m[1] && document.getElementById("fake-" + m[1]);
+  if (el) requestAnimationFrame(() => el.scrollIntoView({block: "start"}));
+}
+window.addEventListener("hashchange", abrirHash);
 
 // ---------- Aba Cronologia ----------
 // tipo: "fato" (aconteceu e está registrado), "opiniao" (declarações e versões em disputa), "fake" (desmentido pelos dados)
@@ -1912,6 +1926,7 @@ renderCrono();
 renderPolls();
 marcarArquivos();
 setAba("cron");
+abrirHash();
 update();
 </script>
 </body>
