@@ -174,6 +174,8 @@ details summary { cursor: pointer; font-weight: 600; }
 .cen .bar { margin-top: 2px; height: 10px; }
 .cen .placar.votos { flex-wrap: wrap; gap: 4px 12px; font: 600 .95rem var(--f-display); }
 .cen .placar.votos b { font: 800 1.25rem var(--f-mono); font-variant-numeric: tabular-nums; }
+.selo-hip { justify-self: start; font: 800 .72rem var(--f-narrow); text-transform: uppercase; letter-spacing: .05em; color: var(--warn); background: var(--warn-soft); border-radius: 6px; padding: 3px 8px; }
+.kpis .selo-hip { grid-column: 1 / -1; }
 .cen .meta { font: .82rem var(--f-mono); color: var(--muted); }
 .veredito { border-radius: 10px; padding: 12px 14px; font-size: .95rem; margin-top: 12px; background: var(--ok-soft); }
 .veredito b { display: block; font-size: 1.05rem; }
@@ -500,6 +502,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> Os cartões abaixo saem das suposições que você coloca mais abaixo e não são dados oficiais. O dado real é a contagem dos logs das urnas, no quadro acima.</p>
     <div class="cenarios">
       <div class="cen">
+        <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
         <h3>Horário normal (estimativa) · oficial menos os votos supostos depois das 17h</h3>
         <div class="placar"><span class="l" id="prNL">–</span><span class="f" id="prNF">–</span></div>
         <div class="bar" aria-hidden="true"><div class="bl" id="prNbL" style="width:50%"></div><div class="bf" id="prNbF" style="width:50%"></div><div class="mid"></div></div>
@@ -516,6 +519,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <div class="prbtns"><button type="button" id="prMin" class="primary">Qual o mínimo para Flávio ganhar?</button></div>
     <div class="minbox" id="prMinBox" hidden aria-live="polite"></div>
     <div class="kpis">
+      <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
       <div class="kpi"><b id="prVotos">–</b><span>votos válidos depois das 17h (estim.)</span></div>
       <div class="kpi"><b id="prSaldo">–</b><span id="prSaldoL">saldo da prorrogação</span></div>
       <div class="kpi"><b id="prPrec">–</b><span>% para Lula na prorrogação que mudaria o vencedor</span></div>
@@ -548,12 +552,14 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
     <div class="cenarios" style="margin-top:12px">
       <div class="cen">
+        <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
         <h3>Com todas as seções abertas (hipótese)</h3>
         <div class="placar"><span class="l" id="hpL">–</span><span class="f" id="hpF">–</span></div>
         <div class="bar" aria-hidden="true"><div class="bl" id="hpbL" style="width:50%"></div><div class="bf" id="hpbF" style="width:50%"></div><div class="mid"></div></div>
         <span class="meta" id="hpM"></span>
       </div>
       <div class="cen">
+        <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
         <h3>Votos a mais nas seções que fecharam</h3>
         <div class="placar votos"><span class="l">Lula <b id="hpVL">–</b></span><span class="f">Flávio <b id="hpVF">–</b></span></div>
         <span class="meta" id="hpVM"></span>
@@ -578,6 +584,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   <section class="panel so-pro" aria-label="Suposições por região">
     <p class="eyebrow">Suposições por região · edite à vontade</p>
     <div class="tbl"><table>
+      <caption style="caption-side:top;text-align:left;padding-bottom:6px"><span class="selo-hip">Simulação hipotética · não é resultado oficial</span></caption>
       <thead id="prRegHead"><tr><th>Região</th><th>Seções %</th><th>Abertas %</th><th>Lula %</th><th>Votos</th></tr></thead>
       <tbody id="prRegBody"></tbody>
     </table></div>
@@ -1815,7 +1822,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-26T13:00-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-26T16:20-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
 ];
 $("atualizado").dateTime = ATUALIZADO;
