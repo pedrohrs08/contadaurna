@@ -1678,6 +1678,38 @@ proPadrao();
 const FAKES = [
   {
     data: "26/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Maduro prorrogou as eleições para aplicar uma fraude. Lula acaba de fazer o mesmo\"",
+    texto: `🇧🇷 | Nas últimas eleições da Venezuela, Nicolás Maduro também prorrogou as eleições para aplicar uma fraude eleitoral.
+
+Lula da Silva acaba de fazer o mesmo no Brasil.
+
+[imagem com fotos de Maduro e de Lula]
+@gabrielbraholka`,
+    curto: "Enganoso. Na última eleição da Venezuela (2024) o horário não foi prorrogado e a fraude denunciada foi o sumiço das atas das seções. Quando a Venezuela prorrogou, em 2015, a oposição venceu. No Brasil, quem prorrogou foi o ministro Zanin, não Lula, e os cerca de 35 mil votos depois das 17h não chegam a 1% da diferença.",
+    parecer: `
+      <p><b>Venezuela, 2024 (a eleição mais recente):</b> o voto terminou às 18h. O CNE só deixou votar quem já estava na fila, regra comum em eleições, não uma prorrogação. A fraude denunciada foi outra: o CNE declarou Maduro vencedor sem mostrar as atas de cada seção, enquanto a oposição publicou cerca de 80% delas, que davam vitória a Edmundo González.</p>
+      <p><b>Venezuela, 2015:</b> aí, sim, o CNE prorrogou o fechamento das 18h para as 19h nas eleições legislativas, sob protesto da oposição. E a oposição venceu com folga: ficou com pelo menos 99 das 167 cadeiras. A prorrogação não decidiu aquela eleição.</p>
+      <p><b>Brasil, 2026:</b></p>
+      <ul>
+        <li>Quem prorrogou foi o ministro Cristiano Zanin, do STF, a pedido da coligação de Lula. Lula não tem poder para isso. A campanha de Flávio também tinha pedido mais tempo de votação ao TSE, em 17 cidades atingidas por chuvas.</li>
+        <li>O TSE limitou a medida às seções que ainda estavam abertas; as que já tinham fechado não reabriram.</li>
+        <li>Entraram cerca de 35 mil votos depois das 17h no país inteiro. A diferença foi de 4.430.191 votos. Mesmo que todos fossem de Lula, ele venceria por 4,39 milhões.</li>
+        <li>Ao contrário da Venezuela de 2024, o boletim de cada urna é público e qualquer pessoa pode conferir a soma.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> criticar a decisão de Zanin. Juristas, o próprio presidente do TSE e parlamentares criticaram o momento e a forma da prorrogação, e há pedidos de impeachment contra o ministro. Mas dizer que ela serviu para "aplicar uma fraude" não se sustenta pelos números. Detalhes na aba Impactos da Extensão e na Cronologia.</p>`,
+    fontes: [
+      ["Poder360: horário na Venezuela em 2024", "https://www.poder360.com.br/poder-internacional/prazo-termina-na-venezuela-mas-eleitores-nas-filas-ainda-podem-votar/"],
+      ["Crusoé: CNE sem mostrar as atas", "https://crusoe.com.br/?p=262183"],
+      ["TVN: prorrogação de 2015", "https://www.tvn-2.com/mundo/suramerica/oposicion-venezolana-rechazo-prorrogar-votacion_1_1710004.html"],
+      ["América TV: resultado de 2015", "https://www.americatv.com.pe/noticias/internacionales/venezuela-oposicion-anticipa-triunfo-elecciones-legislativas-n209872"],
+      ["Lupa: campanha de Flávio também pediu prorrogação", "https://www.agencialupa.org/eleicoes/2026/10/25/em-video-que-sugere-fraude-nikolas-ferreira-omite-problemas-reais-no-transporte-e-que-pl-tambem-pediu-prorrogacao/"],
+      ["Correio, com dados do G1: votos depois das 17h", "https://www.correio24horas.com.br/eleicoes/quantos-votos-foram-registrados-apos-as-17h-na-eleicao-presidencial-levantamento-mostra-total-1026"],
+      ["Resultados oficiais do TSE", "https://resultados.tse.jus.br/"],
+    ],
+  },
+  {
+    data: "26/10/2026",
     titulo: "\"Lula pegou 100% dos votos dos outros candidatos + 3 milhões que nem votaram\"",
     texto: `Lula fechou com 64 milhões de votos.
 
@@ -1722,7 +1754,7 @@ function renderFakes() {
   $("fkResumo").textContent = `${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}. Em cada um, o texto aparece na íntegra, como circulou, e logo abaixo o parecer com os números oficiais.`;
   const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk">
-    <header><span class="selo">Não procede</span><span class="quando">${f.data}</span><h3>${esc(f.titulo)}</h3></header>
+    <header><span class="selo">${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><h3>${esc(f.titulo)}</h3></header>
     <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
     <div class="parecer"><p class="eyebrow" style="margin:0">Parecer</p><p class="curto">${f.curto}</p>${f.parecer}</div>
     <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
