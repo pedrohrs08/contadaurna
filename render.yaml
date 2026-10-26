@@ -1,9 +1,13 @@
-# Configuração do Render (render.com): New > Blueprint > escolha este repositório
+# Configuração do Render (render.com): New > Blueprint > escolha este repositório.
+# Site estático com os dados finais salvos em tse/ (gerados por "python3 congelar.py"):
+# sai por CDN, aguenta muitos acessos e não "dorme".
 services:
   - type: web
-    name: placar-2026
-    runtime: python
-    plan: free
-    buildCommand: "true"
-    startCommand: python3 servir.py --nuvem
-    healthCheckPath: /
+    name: placar2026
+    runtime: static
+    buildCommand: mkdir -p site && cp -r index.html tse site/
+    staticPublishPath: site
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=600

@@ -36,6 +36,9 @@ body:not([data-aba="res"]) .so-res { display: none !important; }
 body:not([data-aba="pro"]) .so-pro { display: none !important; }
 body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner { display: none !important; }
 body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
+/* Site estático com os dados finais: não há o que atualizar fora da simulação */
+body.congelado:not(.modo-sim) #btnUpdate, body.congelado #autoWrap { display: none !important; }
+body.congelado:not(.modo-sim) { padding-bottom: 48px; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -449,6 +452,7 @@ let polls = store.get("polls2026", null) || POLLS_DEFAULT.map(p => ({...p}));
 let base1T = null;           // {uf: {l, f, vv}}
 let lastResult = null;
 let fetchMode = null;        // "direto" | "proxy"
+let congelado;               // conteúdo de tse/congelado.json no site estático (dados finais salvos), null se ao vivo
 
 // ---------- Utilidades numéricas ----------
 function num(v) {
@@ -479,7 +483,7 @@ async function getJSON(path) {
   for (const mode of tries) {
     const url = mode === "direto" ? `${TSE}/${path}` : `tse/oficial/${path}`;
     try {
-      const r = await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), {cache: "no-store"});
+      const r = congelado ? await fetch(url) : await fetch(url + (url.includes("?") ? "&" : "?") + "t=" + Date.now(), {cache: "no-store"});
       if (!r.ok) throw new Error(`HTTP ${r.status} em ${path}`);
       const j = await r.json();
       fetchMode = mode;
@@ -988,6 +992,10 @@ async function update() {
         : `Simulação com números inventados: o app sorteou um resultado secreto, com chance igual para os dois, e vai apurando aos poucos. Cada toque em "Avançar apuração" apura mais um pedaço; veja se o placar acerta o vencedor antes do fim. Apurado: ${fmtPct(data.br.frac, 0)}.`;
     } else {
       setStatus("Buscando dados no TSE…");
+      if (congelado === undefined) {
+        congelado = await fetch("tse/congelado.json").then(r => r.ok ? r.json() : null).catch(() => null);
+        if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); }
+      }
       if (!base1T) base1T = await load1T();
       const {ufs, br} = await load2T();
       await loadMunicipal();
@@ -999,7 +1007,8 @@ async function update() {
     const r = runModel(data.base, data.ufs, data.br); lastResult = r; render(r);
     if (!sim && !proOfTocado && proOficial(true)) renderProrrogacao();
     const hora = data.br && data.br.hora ? ` · TSE: ${data.br.hora}` : "";
-    setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor do app" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
+    if (congelado && !sim) setStatus(`Resultado final do TSE, salvo em ${new Date(congelado.salvo_em).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"})}${hora}${munStatus ? " · " + munStatus : ""}`);
+    else setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor do app" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
   } catch (e) {
     console.error(e);
     const local = ["localhost", "127.0.0.1", ""].includes(location.hostname) || location.protocol === "file:";
