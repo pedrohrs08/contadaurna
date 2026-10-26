@@ -36,9 +36,9 @@ body:not([data-aba="res"]) .so-res { display: none !important; }
 body:not([data-aba="pro"]) .so-pro { display: none !important; }
 body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner { display: none !important; }
 body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
-/* Site estático com os dados finais: não há o que atualizar fora da simulação */
-body.congelado:not(.modo-sim) #btnUpdate, body.congelado #autoWrap { display: none !important; }
-body.congelado:not(.modo-sim) { padding-bottom: 48px; }
+/* Site estático com os dados finais: não há o que atualizar */
+body.congelado #btnUpdate, body.congelado #autoWrap { display: none !important; }
+body.congelado { padding-bottom: 48px; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -51,10 +51,9 @@ header.top { display: grid; gap: 4px; }
 h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
-body.modo-sim .tabs button[aria-selected="true"] { background: var(--lula); color: #fff; }
 button {
   font: 600 .95rem var(--f-display); border-radius: 8px; border: 1px solid var(--line);
   background: var(--surface); color: var(--fg); padding: 9px 14px; cursor: pointer; min-height: 40px;
@@ -121,7 +120,6 @@ tr.sel td { background: var(--flavio-soft); }
 th, td { padding: 6px 5px; }
 td small.abs { display: block; font-size: .74rem; color: var(--muted); font-weight: 400; }
 .banner { border-radius: 8px; padding: 10px 12px; font-size: .88rem; background: var(--flavio-soft); color: var(--fg); }
-.banner.sim { background: var(--lula-soft); }
 
 /* Histograma */
 .grid2 { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
@@ -218,7 +216,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 620px; grid-template-columns: repeat(4, 1fr); }
+  .tabs { max-width: 520px; }
   .cenarios { grid-template-columns: 1fr 1fr; }
   .prgeral { grid-template-columns: repeat(4, 1fr); }
   body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
@@ -242,12 +240,10 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   <nav class="tabs" role="tablist" aria-label="O que ver">
     <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
     <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
-    <button type="button" role="tab" id="tabSim" aria-selected="false">Simulação</button>
     <button type="button" role="tab" id="tabPro" aria-selected="false">Prorrogação</button>
   </nav>
   <div class="controls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
-    <button id="btnReset" type="button" hidden>Reiniciar simulação</button>
     <label class="chk" id="autoWrap"><input id="auto" type="checkbox"> atualizar a cada 60 s</label>
     <label class="chk so-proj">nível de confiança <select id="conf"><option value="0.8">80%</option><option value="0.9" selected>90%</option><option value="0.95">95%</option><option value="0.99">99%</option></select></label>
   </div>
@@ -779,42 +775,6 @@ async function loadMunicipal() {
   }
 }
 
-// ---------- Simulação (sem TSE) ----------
-// Bases e eleitorados sintéticos e aproximados, só para demonstrar o app quando o TSE não responde.
-const SIM_BASE = {ac:[.33,.6],al:[.62,2.3],am:[.50,2.6],ap:[.47,.55],ba:[.70,11.3],ce:[.68,6.8],df:[.38,2.2],es:[.40,2.9],go:[.37,4.9],ma:[.69,5.0],mg:[.47,16.3],ms:[.37,2.0],mt:[.33,2.5],pa:[.52,6.1],pb:[.64,3.1],pe:[.66,7.0],pi:[.75,2.6],pr:[.35,8.5],rj:[.42,12.8],rn:[.63,2.6],ro:[.29,1.2],rr:[.25,.37],rs:[.41,8.6],sc:[.30,5.5],se:[.64,1.7],sp:[.42,34.7],to:[.48,1.1],zz:[.45,.7]};
-let simState = null;
-function simulateData() {
-  if (!simState) {
-    const out1 = {};
-    UFS.forEach(uf => { const [b, el] = SIM_BASE[uf]; const vv = el * 1e6 * 0.75; out1[uf] = {l: vv * b * .93, f: vv * (1 - b) * .93, vv, frac: 1}; });
-    // Sorteia o resultado "verdadeiro" em torno de 50% (desvio de 2 pontos),
-    // para que cada simulação tenha a mesma chance de terminar com qualquer um dos dois vencendo.
-    const alvo = randn() * 0.08;
-    const tot = UFS.reduce((a, uf) => a + out1[uf].vv, 0);
-    let swing = 0;
-    for (let it = 0; it < 40; it++) {
-      const m = UFS.reduce((a, uf) => a + out1[uf].vv * inv(logit(SIM_BASE[uf][0]) + swing), 0) / tot;
-      swing += alvo - logit(m);
-    }
-    const truth = {}; UFS.forEach(uf => truth[uf] = inv(logit(SIM_BASE[uf][0]) + swing + randn() * 0.05));
-    const truthL = UFS.reduce((a, uf) => a + out1[uf].vv * truth[uf], 0) / tot;
-    simState = {base: out1, truth, truthL, t: 0, speed: {}};
-    UFS.forEach(uf => simState.speed[uf] = 0.6 + Math.random() * 0.8);
-  }
-  simState.t = Math.min(1.7, simState.t + 0.15); // até o estado mais lento chegar a 100%
-  const ufs = {}; let tl = 0, tf = 0, tv = 0, te = 0, tc = 0;
-  UFS.forEach(uf => {
-    const b = simState.base[uf];
-    const frac = Math.min(1, simState.t * simState.speed[uf]);
-    const orderBias = (1 - frac) * 0.12 * (uf === "sp" || uf === "rj" || uf === "df" ? 1 : -0.5);
-    const share = inv(logit(simState.truth[uf]) + orderBias);
-    const vv = b.vv * 1.0 * frac;
-    ufs[uf] = {l: vv * share, f: vv * (1 - share), vv, frac, te: b.vv / .75};
-    tl += vv * share; tf += vv * (1 - share); tv += vv; te += b.vv / .75; tc += frac * b.vv / .75;
-  });
-  return {base: simState.base, ufs, br: {l: tl, f: tf, vv: tv, frac: tc / te, pst: 100 * tc / te}};
-}
-
 // ---------- Modelo ----------
 function pollAverage() {
   const ref = new Date("2026-10-25").getTime();
@@ -866,8 +826,7 @@ function runModel(base, ufs, br) {
     sims: Math.min(200000, Math.max(1000, num($("pSims").value) || 20000)),
   };
   const pollL = pollAverage();
-  const sim = lastData && lastData.sim;
-  const units = buildUnits(base, ufs, sim ? null : munBase, munCur);
+  const units = buildUnits(base, ufs, munBase, munCur);
   const ufList = [...new Set(units.map(x => x.uf))];
 
   // Comparecimento: razão votos válidos 2º/1º turno nas partes já apuradas
@@ -1040,7 +999,7 @@ function renderResultado(res) {
   $("rDif").textContent = V ? fmtInt(Math.abs(L - F)) : "–";
   $("rDifL").textContent = !V ? "diferença de votos" : L >= F ? "votos de vantagem para Lula" : "votos de vantagem para Flávio";
   $("rVv").textContent = fmtInt(V);
-  $("rHora").textContent = lastData && lastData.sim ? "simulação" : (res.br && res.br.hora ? res.br.hora.split(" ").pop() : "–");
+  $("rHora").textContent = res.br && res.br.hora ? res.br.hora.split(" ").pop() : "–";
   $("resBody").innerHTML = res.rows.slice().sort((a, b) => b.total - a.total).map(r => {
     const tot = r.counted2, l = r.obs;
     return `<tr data-uf="${r.uf}"${r.uf === ufSel ? ' class="sel"' : ""}><td class="uf">${UF_NOME[r.uf]}</td>
@@ -1137,70 +1096,47 @@ function recompute() { if (!lastData) return; const r = runModel(lastData.base, 
 
 async function update() {
   if (busy) return; busy = true; $("btnUpdate").disabled = true;
-  const sim = modoSim;
   try {
-    let data;
-    if (sim) {
-      data = simulateData(); data.sim = true;
-      $("banner").hidden = false; $("banner").className = "banner sim";
-      const fim = data.br.frac >= 0.999;
-      $("banner").textContent = fim
-        ? `Fim da simulação. O resultado sorteado foi Lula ${fmtPct(simState.truthL)} × Flávio ${fmtPct(1 - simState.truthL)}. Toque em "Reiniciar simulação" para sortear outra eleição.`
-        : `Simulação com números inventados: o app sorteou um resultado secreto, com chance igual para os dois, e vai apurando aos poucos. Cada toque em "Avançar apuração" apura mais um pedaço; veja se o placar acerta o vencedor antes do fim. Apurado: ${fmtPct(data.br.frac, 0)}.`;
-    } else {
-      setStatus("Buscando dados no TSE…");
-      if (congelado === undefined) {
-        congelado = await fetch("tse/congelado.json").then(r => r.ok ? r.json() : null).catch(() => null);
-        if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); }
-      }
-      if (!base1T) base1T = await load1T();
-      const {ufs, br} = await load2T();
-      await loadMunicipal();
-      data = {base: base1T, ufs, br};
-      $("banner").hidden = true;
-      if (!br || br.st === 0) { $("banner").hidden = false; $("banner").className = "banner"; $("banner").textContent = "O TSE ainda não publicou votos do 2º turno: a probabilidade abaixo vem só das pesquisas e do perfil das UFs."; }
+    setStatus("Buscando dados no TSE…");
+    if (congelado === undefined) {
+      congelado = await fetch("tse/congelado.json").then(r => r.ok ? r.json() : null).catch(() => null);
+      if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); }
     }
+    if (!base1T) base1T = await load1T();
+    const {ufs, br} = await load2T();
+    await loadMunicipal();
+    const data = {base: base1T, ufs, br};
+    $("banner").hidden = true;
+    if (!br || br.st === 0) { $("banner").hidden = false; $("banner").className = "banner"; $("banner").textContent = "O TSE ainda não publicou votos do 2º turno: a probabilidade abaixo vem só das pesquisas e do perfil das UFs."; }
     lastData = data;
     const r = runModel(data.base, data.ufs, data.br); lastResult = r; render(r);
-    if (!sim && !proOfTocado && proOficial(true)) renderProrrogacao();
+    if (!proOfTocado && proOficial(true)) renderProrrogacao();
     const hora = data.br && data.br.hora ? ` · TSE: ${data.br.hora}` : "";
-    if (congelado && !sim) setStatus(`Resultado final do TSE, salvo em ${new Date(congelado.salvo_em).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"})}${hora}${munStatus ? " · " + munStatus : ""}`);
-    else setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor do app" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
+    if (congelado) setStatus(`Resultado final do TSE, salvo em ${new Date(congelado.salvo_em).toLocaleString("pt-BR", {dateStyle: "short", timeStyle: "short"})}${hora}${munStatus ? " · " + munStatus : ""}`);
+    else setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")} · fonte: ${fetchMode === "proxy" ? "TSE via servidor do app" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`);
   } catch (e) {
     console.error(e);
     const local = ["localhost", "127.0.0.1", ""].includes(location.hostname) || location.protocol === "file:";
     setStatus(local
-      ? `Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000, ou abra a aba "Simulação" para ver o app funcionando.`
-      : `Não consegui ler o TSE agora (${e.message}). Tente de novo em instantes, ou abra a aba "Simulação" para ver o app funcionando.`, true);
+      ? `Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000.`
+      : `Não consegui ler o TSE agora (${e.message}). Tente de novo em instantes.`, true);
   } finally { busy = false; $("btnUpdate").disabled = false; }
 }
 $("btnUpdate").onclick = update;
-let modoSim = false, aba = "proj";
+let aba = "proj";
 function setAba(a) {
   aba = a;
-  $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj"); $("tabSim").setAttribute("aria-selected", a === "sim");
+  $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj");
   $("tabPro").setAttribute("aria-selected", a === "pro");
   document.body.dataset.aba = a;
   if (a === "pro") renderProrrogacao();
   if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
   if (a !== "res" && mapaModo === "parcial") setMapaModo("final");
-  if ((a === "sim") !== modoSim) setModo(a === "sim");
-  else if (lastResult) render(lastResult);
-}
-function setModo(sim) {
-  if (sim === modoSim) return;
-  modoSim = sim; simState = null; lastData = null;
-  $("btnUpdate").textContent = sim ? "Avançar apuração" : "Atualizar";
-  $("btnReset").hidden = !sim; $("autoWrap").hidden = sim;
-  if (sim) { $("auto").checked = false; clearInterval(timer); }
-  document.body.classList.toggle("modo-sim", sim);
-  update();
+  if (lastResult) render(lastResult);
 }
 $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
-$("tabSim").onclick = () => setAba("sim");
 $("tabPro").onclick = () => setAba("pro");
-$("btnReset").onclick = () => { simState = null; update(); };
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
 window.addEventListener("resize", () => lastResult && drawHist(lastResult.shares));
@@ -1327,9 +1263,9 @@ function proPadrao() {
   for (const [k, v] of Object.entries(PRO_PADRAO.geral)) $(k).value = v;
   proOficial(true); renderProrrogacao();
 }
-// Preenche o resultado oficial com os dados do TSE já carregados (só na aba ao vivo, nunca da simulação)
+// Preenche o resultado oficial com os dados do TSE já carregados
 function proOficial(silencioso) {
-  const br = lastData && !lastData.sim ? lastData.br : null;
+  const br = lastData ? lastData.br : null;
   if (br && br.l + br.f > 0) {
     $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(6);
     $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(6);
@@ -1339,7 +1275,7 @@ function proOficial(silencioso) {
   return false;
 }
 function proPerfil() {
-  if (!lastResult || (lastData && lastData.sim)) { $("prPerfilNota").textContent = "Ainda não há resultado do TSE carregado. Toque em Atualizar e tente de novo."; return; }
+  if (!lastResult) { $("prPerfilNota").textContent = "Ainda não há resultado do TSE carregado. Toque em Atualizar e tente de novo."; return; }
   const reg = somaRegioes(lastResult);
   PRO_PADRAO.reg.forEach(([nome], i) => {
     const g = reg.find(r => r.nome === nome);

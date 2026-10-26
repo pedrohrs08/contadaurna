@@ -12,8 +12,6 @@ Para amigos na mesma rede Wi-Fi acessarem: `python3 servir.py --rede` e abra nos
 
 Também dá para abrir o `index.html` direto no navegador: ele tenta buscar o TSE diretamente. Se o navegador bloquear, use o `servir.py`, que repassa as requisições ao TSE.
 
-A aba "Simulação" mostra o app funcionando com números inventados, sem precisar do TSE. Cada toque em "Avançar apuração" apura mais um pedaço.
-
 A aba "Prorrogação" compara o horário normal (até 17h) com o horário estendido (até 19h). Você informa, por região, quantas seções ficaram abertas depois das 17h e que fatia desses votos foi para Lula (Flávio fica com o resto), além do fluxo de eleitores por hora. O app estima quantos votos entraram na prorrogação, tira esses votos do resultado oficial e mostra se o vencedor mudaria, quanto Lula precisaria ter na prorrogação para virar e quantos votos seriam necessários. O topo da aba mostra o dado real: levantamentos de imprensa com os logs públicos das urnas contaram de 34.319 (Jovem Pan) a 35.521 (G1) votos depois das 17h, sem saber em quem. O ritmo inicial (1,9%) foi ajustado para a conta dar esse total; as seções abertas e as fatias por região continuam sendo suposições. A aba também testa a hipótese contrária ("e se todas as seções tivessem ficado abertas até as 19h?"): acrescenta ao resultado os votos que viriam das seções que fecharam às 17h e calcula o mínimo para o perdedor oficial ganhar.
 
 Se a porta 8000 estiver ocupada por outro programa, o `servir.py` usa a próxima livre (8001, 8002…) e mostra qual no terminal.
@@ -26,7 +24,7 @@ Como a apuração acabou, o app vai ao ar como site estático com os dados finai
 2. Envie para o GitHub: `git add tse && git commit -m "Dados finais do TSE" && git push`.
 3. Em https://render.com, entre com o GitHub, clique em **New > Blueprint**, escolha o repositório `probabilidade` e confirme em **Apply**. O endereço fica parecido com `https://placar2026.onrender.com`.
 
-Com `tse/congelado.json` presente, o app lê só as cópias salvas e esconde o botão Atualizar (a Simulação continua funcionando). Rodando localmente com `python3 servir.py`, ele continua lendo o TSE ao vivo.
+Com `tse/congelado.json` presente, o app lê só as cópias salvas e esconde o botão Atualizar. Rodando localmente com `python3 servir.py`, ele continua lendo o TSE ao vivo.
 
 Para rodar como servidor ao vivo em vez de estático, use `python3 servir.py --nuvem` (porta da variável `PORT`, cache de 30 s das chamadas ao TSE, só serve o `index.html`).
 
