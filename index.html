@@ -188,6 +188,10 @@ details summary { cursor: pointer; font-weight: 600; }
 .conta b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 thead.quebra th { white-space: normal; vertical-align: bottom; }
 td.alto { color: var(--bad); font-weight: 600; }
+.simples summary { font-size: 1.1rem; font-weight: 800; }
+.simples h3 { font-size: 1rem; margin: 16px 0 4px; }
+.simples p { margin: 4px 0; max-width: 70ch; font-size: .98rem; line-height: 1.55; }
+.simples p.ex { background: var(--ok-soft); border-radius: 8px; padding: 8px 12px; margin-top: 8px; }
 .logs-top { display: grid; gap: 8px; }
 .logs-top .big { display: block; font: 800 clamp(2.2rem, 7vw, 3.2rem)/1 var(--f-display); color: var(--accent); }
 .logs-top .meta { font-size: .9rem; color: var(--muted); }
@@ -359,6 +363,31 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
+
+  <section class="panel so-pro simples" aria-label="Explicação simples">
+    <details open>
+      <summary>Explicando de um jeito bem simples</summary>
+      <h3>O que aconteceu?</h3>
+      <p>A votação deveria acabar às 17h. Um ministro do STF mandou estender até as 19h, mas o TSE explicou que valia só para as seções que ainda tinham gente na fila. A maioria das seções já tinha fechado.</p>
+      <h3>Qual é a pergunta?</h3>
+      <p>Os votos dados depois das 17h podem ter mudado quem ganhou?</p>
+      <h3>Primeiro, a diferença entre os dois</h3>
+      <p>Lula teve 64,3 milhões de votos e Flávio, 59,8 milhões. A diferença é de <b>4,43 milhões de votos</b>.</p>
+      <p class="ex"><b>Exemplo:</b> o Maracanã lotado tem uns 78 mil lugares. A diferença entre os dois candidatos encheria <b>56 Maracanãs</b>.</p>
+      <h3>Quantos votos entraram depois das 17h?</h3>
+      <p>Cada urna anota a hora de cada voto, como um relógio que marca quando cada pessoa votou. Contando essas anotações, deu <b>cerca de 35 mil votos</b> no Brasil inteiro, depois das 17h.</p>
+      <p class="ex"><b>Exemplo:</b> 35 mil pessoas não enchem nem <b>meio Maracanã</b>. A diferença enche 56.</p>
+      <h3>Isso muda o resultado?</h3>
+      <p>Não. Imagine um pote de balas em que cada bala vale 1 milhão de votos: <b>64 balas vermelhas</b> (Lula) e <b>60 azuis</b> (Flávio). Os votos depois das 17h seriam um <b>farelinho</b> do tamanho de 1/28 de uma bala.</p>
+      <p class="ex"><b>Exemplo:</b> mesmo se esse farelinho inteiro fosse vermelho e você jogasse fora, o pote continuaria com 64 vermelhas e 60 azuis. Lula ainda ganharia por 4,39 milhões de votos.</p>
+      <h3>E se todas as seções tivessem ficado abertas até as 19h?</h3>
+      <p>Aí a conta é outra: quem chegou atrasado nas seções fechadas também poderia ter votado. Para Flávio virar, os cálculos desta página mostram que precisariam aparecer <b>mais de 18 milhões de pessoas</b> depois das 17h, e a maioria votando nele.</p>
+      <p class="ex"><b>Exemplo:</b> é como se 6 em cada 10 pessoas que não foram votar o dia todo resolvessem aparecer justo nas últimas duas horas. Nas seções que ficaram abertas, apareceram só uns 35 mil.</p>
+      <h3>Então está provado?</h3>
+      <p>A conta mostra o tamanho das coisas: os votos depois das 17h são <b>muito menores</b> que a diferença entre os candidatos, então não decidiram quem ganhou. Dá para discutir se a prorrogação foi justa, porque nem todas as seções ganharam o tempo extra. Mas não foi ela que deu a vitória a Lula.</p>
+      <p class="note">Os números vêm do resultado oficial do TSE e de levantamentos de imprensa com os registros das urnas (G1 e Jovem Pan), listados no quadro "Dado real" logo abaixo.</p>
+    </details>
+  </section>
 
   <section class="panel so-pro" aria-label="Votos depois das 17h nos logs das urnas">
     <p class="eyebrow">Dado real · logs das urnas</p>
