@@ -65,7 +65,7 @@ h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; t
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
 .tabs button { grid-column: span 2; }
-.tabs #tabPro, .tabs #tabCron { grid-column: span 3; order: 1; }
+.tabs #tabProj, .tabs #tabFake { grid-column: span 3; }
 button {
   font: 600 .95rem var(--f-display); border-radius: 8px; border: 1px solid var(--line);
   background: var(--surface); color: var(--fg); padding: 9px 14px; cursor: pointer; min-height: 40px;
@@ -262,7 +262,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
   .tabs { max-width: 800px; grid-template-columns: repeat(5, 1fr); }
-  .tabs button, .tabs #tabPro, .tabs #tabCron { grid-column: auto; order: 0; }
+  .tabs button, .tabs #tabProj, .tabs #tabFake { grid-column: auto; }
   .cenarios { grid-template-columns: 1fr 1fr; }
   .prgeral { grid-template-columns: repeat(4, 1fr); }
   body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
@@ -275,7 +275,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 @media (prefers-reduced-motion: reduce) { .bar .bl, .bar .bf { transition: none; } }
 </style>
 </head>
-<body data-aba="res">
+<body data-aba="cron">
 <div class="wrap">
   <header class="top">
     <div>
@@ -284,11 +284,11 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </header>
   <nav class="tabs" role="tablist" aria-label="O que ver">
-    <button type="button" role="tab" id="tabRes" aria-selected="true">Resultado</button>
+    <button type="button" role="tab" id="tabCron" aria-selected="true">Cronologia</button>
+    <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
+    <button type="button" role="tab" id="tabPro" aria-selected="false">Impactos da Extensão</button>
     <button type="button" role="tab" id="tabProj" aria-selected="false">Pesquisas × urnas</button>
-    <button type="button" role="tab" id="tabPro" aria-selected="false">Impacto dos imprevistos</button>
     <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
-    <button type="button" role="tab" id="tabCron" aria-selected="false">Cronologia</button>
   </nav>
   <div class="sobre" aria-label="Sobre esta aba">
     <p class="so-res"><b>Para que serve:</b> mostrar o placar oficial do TSE: votos válidos de cada candidato, seções totalizadas e o resultado por região, por UF e no mapa. <b>Como foi montada:</b> o app lê os arquivos públicos de resultados do TSE (resultados.tse.jus.br) do 2º turno, do Brasil e de cada UF, e só faz somas e percentuais. No site publicado são os arquivos finais, salvos depois do fim da apuração; rodando ao vivo, o botão Atualizar busca a versão mais nova.</p>
@@ -1764,7 +1764,7 @@ const CRONO = [
   {hora: "22h45", tipo: "opiniao", titulo: "Discurso de Lula", texto: "“Agora a gente não tem mais adversário. Eu tenho que governar para 215 milhões de brasileiros.” Ele também falou em regular as redes sociais.", fontes: ["times", "bl"], prej: ["Nenhuma", "Discurso depois da apuração, sem efeito sobre o resultado."]},
   {hora: "Cerca de 22h40 a 22h53", tipo: "opiniao", titulo: "Flávio não reconhece o resultado e anuncia pedido de anulação", texto: "“É impossível reconhecer o resultado das eleições no contexto como essas coisas aconteceram” e “Eu não vou aceitar que a regra do jogo tenha sido mudada em cima do jogo”. Ele chamou a decisão de Zanin de inaceitável, lembrou que Zanin foi advogado de Lula e disse que nunca vai saber quantos votos teria nas seções que não reabriram.", fontes: ["gzflavio", "times", "bl"], prej: ["Nenhuma", "Não reconhecer não muda o resultado. Só um pedido aceito pela Justiça Eleitoral mudaria."]},
   {hora: "Mesmo discurso", tipo: "fake", titulo: "“Fiscais do PL foram retirados da sala-cofre”", texto: "O TSE respondeu, no serviço Fato ou Boato, que a afirmação é falsa: diz ter registros de presença e filmagens mostrando que os fiscais do partido tiveram acesso livre à sala de totalização até o fim. Até agora não houve verificação independente dessas imagens.", fontes: ["gzcofre"], prej: ["Nenhuma", "A afirmação é falsa segundo o TSE e veio depois da totalização. Os boletins de cada urna são públicos e permitem conferir a soma; ninguém apontou diferença."]},
-  {hora: "Noite", tipo: "fake", titulo: "“A prorrogação deu a vitória a Lula” / “houve fraude”", texto: "Aliados de Flávio falaram em fraude. Os registros das urnas mostram que entraram cerca de 35 mil votos depois das 17h no Brasil inteiro, 0,8% da diferença de 4,43 milhões. Mesmo se todos fossem de Lula, ele ainda venceria por 4,39 milhões. Detalhes na aba Impacto dos imprevistos.", fontes: ["ccfraude", "g1", "jp"], prej: ["Nenhuma", "É uma afirmação feita depois da eleição. Pelos números, a prorrogação não tinha como mudar o vencedor."]},
+  {hora: "Noite", tipo: "fake", titulo: "“A prorrogação deu a vitória a Lula” / “houve fraude”", texto: "Aliados de Flávio falaram em fraude. Os registros das urnas mostram que entraram cerca de 35 mil votos depois das 17h no Brasil inteiro, 0,8% da diferença de 4,43 milhões. Mesmo se todos fossem de Lula, ele ainda venceria por 4,39 milhões. Detalhes na aba Impactos da Extensão.", fontes: ["ccfraude", "g1", "jp"], prej: ["Nenhuma", "É uma afirmação feita depois da eleição. Pelos números, a prorrogação não tinha como mudar o vencedor."]},
   {hora: "23h31", tipo: "fato", titulo: "Presidente do TSE confirma a reeleição de Lula", texto: "Nunes Marques fala em “expressiva vitória nas urnas” e diz: “Temos absoluta segurança do processo eleitoral”. Observadores nacionais e internacionais acompanharam a votação e a auditoria.", fontes: ["senado", "tse"], prej: ["Nenhuma", "Confirmação oficial do resultado."]},
   {hora: "Segunda, 26/10, manhã", tipo: "fato", titulo: "Pedido de anulação foi anunciado, mas ainda não protocolado", texto: "Flávio disse no discurso que vai pedir a anulação da eleição ao TSE. Até a manhã de segunda, segundo o Mix Vale (10h23), a campanha só tinha anunciado a intenção, sem protocolo formal do pedido e sem dizer qual ação vai apresentar.", fontes: ["mixanul", "infoanul"], prej: ["Nenhuma, por enquanto", "Só um pedido protocolado e aceito pela Justiça Eleitoral mudaria o resultado."]},
   {hora: "Segunda, 26/10", tipo: "fato", titulo: "Levantamentos contam os votos depois das 17h", texto: "Com os registros públicos das urnas, o G1 contou 35.521 votos depois das 17h e um levantamento independente divulgado pela Jovem Pan contou 34.319 (32.337 entre 17h e 18h e 1.982 entre 18h e 19h). Os registros não dizem em quem foram esses votos.", fontes: ["g1", "jp"], prej: ["Nenhuma", "É a medição dos votos depois das 17h; não muda o resultado."]},
@@ -1820,7 +1820,7 @@ document.querySelector(".cronfiltro").addEventListener("click", e => {
 renderCrono();
 
 renderPolls();
-setAba("res");
+setAba("cron");
 update();
 </script>
 </body>
