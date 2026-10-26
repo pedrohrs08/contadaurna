@@ -184,6 +184,8 @@ details summary { cursor: pointer; font-weight: 600; }
 .conta { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
 .conta ol { margin: 0; padding-left: 20px; font-size: .88rem; display: grid; gap: 6px; }
 .conta b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+thead.quebra th { white-space: normal; vertical-align: bottom; }
+td.alto { color: var(--bad); font-weight: 600; }
 .minbox { margin-top: 12px; border: 1px solid var(--warn); border-radius: 10px; padding: 12px 14px; font-size: .9rem; display: grid; gap: 8px; }
 .minbox h3 { margin: 0; font-size: 1rem; }
 .impossivel { background: var(--bad-soft); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
@@ -357,7 +359,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> O TSE não divulgou quantos votos entraram depois das 17h. Os números desta aba saem das suposições que você coloca mais abaixo e não são dados oficiais.</p>
     <div class="cenarios">
       <div class="cen">
-        <h3>Horário normal · sem os votos depois das 17h</h3>
+        <h3>Horário normal (estimativa) · oficial menos os votos supostos depois das 17h</h3>
         <div class="placar"><span class="l" id="prNL">–</span><span class="f" id="prNF">–</span></div>
         <div class="bar" aria-hidden="true"><div class="bl" id="prNbL" style="width:50%"></div><div class="bf" id="prNbF" style="width:50%"></div><div class="mid"></div></div>
         <span class="meta" id="prNM"></span>
@@ -382,6 +384,16 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <p class="eyebrow" style="margin:0 0 6px">A conta, passo a passo, com os números de agora</p>
       <ol id="prConta"></ol>
     </div>
+  </section>
+
+  <section class="panel so-pro" aria-label="Votos necessários para mudar o vencedor">
+    <p class="eyebrow">O número que decide · não depende das suposições</p>
+    <p class="note" style="margin:0" id="prNecIntro"></p>
+    <div class="tbl" style="margin-top:10px"><table>
+      <thead class="quebra"><tr><th id="prNecCol">Fatia de Lula</th><th>Votos necessários depois das 17h</th><th>% dos votos do dia</th><th>Abstenção até 17h</th></tr></thead>
+      <tbody id="prNecBody"></tbody>
+    </table></div>
+    <p class="note" style="margin-top:8px" id="prNecNota"></p>
   </section>
 
   <section class="panel so-pro" aria-label="Suposições por região">
@@ -1200,6 +1212,7 @@ const PRO_PADRAO = {
   reg: [["Norte", 8.0, 10, 50], ["Nordeste", 27.1, 10, 68], ["Centro-Oeste", 7.4, 10, 40], ["Sudeste", 42.6, 10, 47], ["Sul", 14.7, 5, 41]],
   geral: {prFator: 10, prHoras: 2, prPorSec: 261, prSecoes: 490000, prValid: 97, prOfL: 51.78, prOfV: 124.4}
 };
+const ABST_1T = 0.2108, ABST_2T = 0.1921;   // abstenção oficial: 1º turno (votação só até 17h) e 2º turno
 const numIn = id => { const v = parseFloat(String($(id).value).replace(",", ".")); return Number.isFinite(v) ? v : 0; };
 function proPadrao() {
   $("prCurva").innerHTML = PRO_PADRAO.curva.map((v, i) => `<label class="col"><span class="hb${i === 8 ? " ult" : ""}" id="prHb${i}"></span>
@@ -1259,7 +1272,7 @@ function renderProrrogacao() {
     const t = l + f;
     $(pre + "L").textContent = t ? fmtPct(l / t, 2) : "–"; $(pre + "F").textContent = t ? fmtPct(f / t, 2) : "–";
     $(pre + "bL").style.width = (t ? l / t * 100 : 50) + "%"; $(pre + "bF").style.width = (t ? f / t * 100 : 50) + "%";
-    $(pre + "M").textContent = t ? `${l >= f ? "Lula" : "Flávio"} vence por ${fmtInt(Math.abs(l - f))} votos · ${fmtInt(t)} válidos` : "";
+    $(pre + "M").textContent = t ? `${pre === "prN" ? "Simulado: " : ""}${l >= f ? "Lula" : "Flávio"} vence por ${fmtInt(Math.abs(l - f))} votos · ${fmtInt(t)} válidos` : "";
   };
   cen("prN", nL, nF); cen("prE", L, F);
   const vNormal = nL >= nF ? "Lula" : "Flávio", vEst = L >= F ? "Lula" : "Flávio";
@@ -1288,6 +1301,16 @@ function renderProrrogacao() {
     <li>Horário normal = oficial menos esses votos: ${muda
       ? `a vantagem de ${fmtInt(M)} de ${vEst} vira <b>${fmtInt(Math.abs(nL - nF))}</b> de vantagem para ${vNormal}.`
       : `a vantagem de ${vEst}, de ${fmtInt(M)} votos, ${(saldo > 0) === (vEst === "Lula") ? "seria menor" : "seria maior"}: <b>${fmtInt(Math.abs(nL - nF))}</b>.`}</li>`;
+  // Votos necessários depois das 17h para o vencedor mudar, para cada fatia do vencedor oficial:
+  // saldo = votos × (2 × fatia − 1) tem de passar da diferença final. Só usa o resultado oficial.
+  const comparecN = (L + F) / (valid || 1), aptosN = comparecN / (1 - ABST_2T);
+  $("prNecCol").textContent = `Fatia de ${vEst}`;
+  $("prNecIntro").innerHTML = `Para ${vEst === "Lula" ? "Flávio" : "Lula"} ganhar no horário normal, o saldo de ${vEst} nos votos dados depois das 17h teria de passar da diferença final de <b>${fmtInt(M)}</b> votos. Mesmo que todos fossem de ${vEst}, seriam precisos ${fmtInt(M)} votos; com uma fatia menor, bem mais. Esta conta usa só o resultado oficial.`;
+  $("prNecBody").innerHTML = [1, 0.9, 0.8, 0.7, 0.6, 0.55].map(f => {
+    const nec = M / (2 * f - 1), pessoas = nec / (valid || 1), abst = 1 - (comparecN - pessoas) / aptosN;
+    return `<tr><td>${fmtPct(f, 0)}</td><td>${fmtInt(nec)}</td><td>${fmtPct(nec / (L + F || 1), 1)}</td><td class="${abst > ABST_1T + 0.02 ? "alto" : ""}">${abst < 1 ? fmtPct(abst, 1) : "–"}</td></tr>`;
+  }).join("");
+  $("prNecNota").innerHTML = `Abstenção até 17h: quanto teria sido a abstenção se esses votos não existissem, contra <b>${fmtPct(ABST_1T, 2)}</b> no 1º turno, quando todo mundo votou só até as 17h (no 2º turno, com a prorrogação, foi ${fmtPct(ABST_2T, 2)}). Para comparar, ${vEst} teve ${fmtPct((vEst === "Lula" ? L : F) / (L + F || 1), 2)} no resultado final. Com as suposições desta página, os votos depois das 17h seriam ${fmtInt(E)}.`;
   const ver = $("prVer");
   ver.className = "veredito" + (muda ? " vira" : "");
   ver.innerHTML = muda
@@ -1374,7 +1397,6 @@ function proMinimo() {
   const comparec = (p0.L + p0.F) / (p0.valid || 1);
   const ultimaHora = comparec * p0.ultima;
   // Por que o cenário não aconteceu: confronta cada suposição com fatos conhecidos
-  const ABST_1T = 0.2108, ABST_2T = 0.1921;   // abstenção oficial: 1º turno (só até 17h) e 2º turno
   const aptos = comparec / (1 - ABST_2T);
   const extra = r.E / (p0.valid || 1), abst17 = 1 - (comparec - extra) / aptos;
   const motivos = [];
