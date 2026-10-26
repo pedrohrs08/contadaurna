@@ -34,7 +34,8 @@
 body[data-aba="res"] .so-proj, body[data-aba="pro"] .so-proj { display: none !important; }
 body:not([data-aba="res"]) .so-res { display: none !important; }
 body:not([data-aba="pro"]) .so-pro { display: none !important; }
-body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner { display: none !important; }
+body:not([data-aba="fake"]) .so-fake { display: none !important; }
+body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner, body[data-aba="fake"] .so-map, body[data-aba="fake"] #banner, body[data-aba="fake"] .so-proj { display: none !important; }
 body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
 /* Site estático com os dados finais: não há o que atualizar */
 body.congelado #btnUpdate, body.congelado #autoWrap { display: none !important; }
@@ -51,7 +52,7 @@ header.top { display: grid; gap: 4px; }
 h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-.tabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
 button {
@@ -190,6 +191,21 @@ td.alto { color: var(--bad); font-weight: 600; }
 .simples h3 { font-size: 1rem; margin: 16px 0 4px; }
 .simples p { margin: 4px 0; max-width: 70ch; font-size: .98rem; line-height: 1.55; }
 .simples p.ex { background: var(--ok-soft); border-radius: 8px; padding: 8px 12px; margin-top: 8px; }
+.fklista { display: grid; gap: 20px; }
+.fk { display: grid; gap: 12px; }
+.fk header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.fk .selo { font: 800 .8rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--bad-soft); color: var(--bad); }
+.fk .quando { font: .8rem var(--f-mono); color: var(--muted); }
+.fk h3 { margin: 0; font-size: 1.1rem; flex-basis: 100%; }
+.fk blockquote { margin: 0; padding: 12px 14px; border-left: 4px solid var(--bad); background: var(--bg); border-radius: 0 8px 8px 0; white-space: pre-line; font-size: .95rem; }
+.fk blockquote .rot { display: block; font: 600 .72rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; white-space: normal; }
+.fk .parecer { display: grid; gap: 8px; font-size: .95rem; }
+.fk .parecer > p { margin: 0; max-width: 75ch; }
+.fk .curto { font-size: 1.02rem; padding: 10px 12px; border-radius: 8px; background: var(--ok-soft); }
+.fk ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; max-width: 75ch; }
+.fk table { max-width: 560px; }
+.fk td:first-child { white-space: normal; font-family: var(--f-display); }
+.fk .fontes { font-size: .82rem; color: var(--muted); }
 .logs-top { display: grid; gap: 8px; }
 .logs-top .big { display: block; font: 800 clamp(2.2rem, 7vw, 3.2rem)/1 var(--f-display); color: var(--accent); }
 .logs-top .meta { font-size: .9rem; color: var(--muted); }
@@ -216,7 +232,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 520px; }
+  .tabs { max-width: 640px; grid-template-columns: repeat(4, 1fr); }
   .cenarios { grid-template-columns: 1fr 1fr; }
   .prgeral { grid-template-columns: repeat(4, 1fr); }
   body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
@@ -241,6 +257,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
     <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
     <button type="button" role="tab" id="tabPro" aria-selected="false">Prorrogação</button>
+    <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
   </nav>
   <div class="controls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
@@ -359,6 +376,13 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
+
+  <section class="panel so-fake" aria-label="Desmentindo fake news">
+    <p class="eyebrow">Desmentindo fake news</p>
+    <h2 style="margin:0 0 4px">Boatos sobre o 2º turno de 2026, checados com os números oficiais</h2>
+    <p class="note" style="margin:0" id="fkResumo"></p>
+  </section>
+  <div id="fkLista" class="so-fake fklista"></div>
 
   <section class="panel so-pro simples" aria-label="Explicação simples">
     <details open>
@@ -1127,7 +1151,7 @@ let aba = "proj";
 function setAba(a) {
   aba = a;
   $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj");
-  $("tabPro").setAttribute("aria-selected", a === "pro");
+  $("tabPro").setAttribute("aria-selected", a === "pro"); $("tabFake").setAttribute("aria-selected", a === "fake");
   document.body.dataset.aba = a;
   if (a === "pro") renderProrrogacao();
   if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
@@ -1137,6 +1161,7 @@ function setAba(a) {
 $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
 $("tabPro").onclick = () => setAba("pro");
+$("tabFake").onclick = () => setAba("fake");
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
 window.addEventListener("resize", () => lastResult && drawHist(lastResult.shares));
@@ -1545,6 +1570,63 @@ $("prOficial").onclick = () => { if (proOficial(false)) { proOfTocado = false; r
 let proOfTocado = false;
 ["prOfL", "prOfV"].forEach(id => $(id).addEventListener("input", () => { proOfTocado = true; }));
 proPadrao();
+
+// ---------- Aba Desmentindo fake news ----------
+// Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
+const FAKES = [
+  {
+    data: "26/10/2026",
+    titulo: "\"Lula pegou 100% dos votos dos outros candidatos + 3 milhões que nem votaram\"",
+    texto: `Lula fechou com 64 milhões de votos.
+
+De 53 para 64M, a diferença é de Il milhões.
+
+No 1º turno, os outros candidatos somavam 8,7 milhões.
+
+Ou seja: ele pegou 100% dos votos de todos os outros candidatos + 3 milhões de pessoas que nem tinham votado no 1° turno
+
+@brenokaucz`,
+    curto: "Não procede. O post erra os números e esquece duas fontes de voto: quem votou branco ou nulo no 1º turno e o crescimento do próprio Flávio. Lula precisou de cerca de 3 em cada 4 votos novos, não de 100%.",
+    parecer: `
+      <p><b>Os números certos (TSE):</b></p>
+      <ul>
+        <li>Lula foi de 53.879.538 para 64.256.232 votos: <b>+10,38 milhões</b>, não 11.</li>
+        <li>Os outros candidatos somaram <b>9.316.747</b> votos no 1º turno. Os 8,7 milhões do post são só os três maiores.</li>
+        <li>Flávio também cresceu, de 56.104.503 para 59.826.041: <b>+3,72 milhões</b>. O post ignora isso.</li>
+      </ul>
+      <p><b>De onde vieram os votos novos:</b></p>
+      <div class="tbl"><table>
+        <thead><tr><th>Fonte</th><th>Votos</th></tr></thead>
+        <tbody>
+          <tr><td>Eleitores dos outros candidatos no 1º turno</td><td>9.316.747</td></tr>
+          <tr><td>Gente que não votou no 1º turno (a abstenção caiu de 33.469.244 para 30.509.005)</td><td>2.960.239</td></tr>
+          <tr><td>Gente que votou branco ou nulo no 1º turno e escolheu um lado no 2º (de 5.975.047 para 4.153.801)</td><td>1.821.246</td></tr>
+          <tr><td><b>Total de votos novos</b></td><td><b>14.098.232</b></td></tr>
+          <tr><td>Foram para Lula</td><td class="lead-l">10.376.694 (74%)</td></tr>
+          <tr><td>Foram para Flávio</td><td class="lead-f">3.721.538 (26%)</td></tr>
+        </tbody>
+      </table></div>
+      <p>A conta fecha exatamente com os dados oficiais: os 14,1 milhões de votos novos são a soma do que Lula e Flávio cresceram.</p>
+      <p><b>Já aconteceu antes, com o outro lado.</b> Em 2022, Bolsonaro foi de 51.072.345 votos no 1º turno para 58.206.354 no 2º: <b>+7,1 milhões</b>, com cerca de 10 milhões de votos de outros candidatos disponíveis. No 2º turno, quem votou num candidato eliminado escolhe um dos dois, e é normal um lado levar a maior parte.</p>
+      <p><b>Outro erro:</b> o post trata os eleitores como se fossem sempre as mesmas pessoas. Na prática, milhões que votaram no 1º turno faltam no 2º e vice-versa; a conta só enxerga o saldo.</p>`,
+    fontes: [
+      ["Resultados oficiais do TSE (1º e 2º turnos de 2026)", "https://resultados.tse.jus.br/"],
+      ["Estado de Minas: 1º turno de 2022", "https://www.em.com.br/app/noticia/politica/2022/10/27/interna_politica,1412968/amp.html"],
+      ["Wikipedia: eleição de 2022 (2º turno)", "https://en.wikipedia.org/wiki/2022_Brazilian_general_election"],
+    ],
+  },
+];
+function renderFakes() {
+  $("fkResumo").textContent = `${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}. Em cada um, o texto aparece na íntegra, como circulou, e logo abaixo o parecer com os números oficiais.`;
+  const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk">
+    <header><span class="selo">Não procede</span><span class="quando">${f.data}</span><h3>${esc(f.titulo)}</h3></header>
+    <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
+    <div class="parecer"><p class="eyebrow" style="margin:0">Parecer</p><p class="curto">${f.curto}</p>${f.parecer}</div>
+    <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
+  </article>`).join("");
+}
+renderFakes();
 
 renderPolls();
 update();
