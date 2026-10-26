@@ -621,7 +621,7 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
       <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="0.1" value="1.9"></label>
       <label>Horas de prorrogação<input id="prHoras" type="number" min="0" max="2" step="0.25" value="2"></label>
       <label>Eleitores que votam por seção (média)<input id="prPorSec" type="number" min="0" step="1" value="261"></label>
-      <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="490000"></label>
+      <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="497900"></label>
       <label>Votos válidos sobre o comparecimento (%)<input id="prValid" type="number" min="0" max="100" step="0.1" value="97"></label>
       <label>Resultado oficial: Lula (% dos válidos)<input id="prOfL" type="number" min="0" max="100" step="0.01" value="51.78"></label>
       <label>Resultado oficial: votos válidos (milhões)<input id="prOfV" type="number" min="0" step="0.1" value="124.4"></label>
@@ -1306,17 +1306,22 @@ function drawMap(res) {
     ex.setAttribute("d", `M10 ${H + 6}h70v28h-70z`); ex.dataset.uf = "zz"; ex.setAttribute("tabindex", "0"); ex.setAttribute("aria-label", "Exterior");
     svg.appendChild(ex);
     for (const uf of [...Object.keys(MAPA.p), "zz"]) {
-      const el = svg.querySelector(`path[data-uf="${uf}"]`);
-      const b = el.getBBox();
       const t = document.createElementNS(NS, "text");
-      const off = {df: [8, -2], rn: [10, -4], pb: [16, 0], pe: [22, 2], al: [12, 4], se: [10, 6], es: [12, 4], rj: [10, 8], sc: [8, 0]}[uf] || [0, 0];
-      t.setAttribute("x", b.x + b.width / 2 + off[0]); t.setAttribute("y", b.y + b.height / 2 + 3 + off[1]);
-      t.setAttribute("text-anchor", "middle"); t.textContent = uf === "zz" ? "Exterior" : uf.toUpperCase();
+      t.dataset.uf = uf; t.setAttribute("text-anchor", "middle"); t.textContent = uf === "zz" ? "Exterior" : uf.toUpperCase();
       svg.appendChild(t);
     }
     const show = e => { const uf = e.target.dataset && e.target.dataset.uf; if (uf) selectUF(uf); };
     svg.addEventListener("mouseover", show); svg.addEventListener("click", show); svg.addEventListener("focusin", show);
     svg.dataset.ok = "1";
+  }
+  // getBBox só mede com o mapa visível; com a aba Resultado escondida, tenta de novo na próxima vez
+  if (!svg.dataset.rot && svg.getBBox().width) {
+    svg.querySelectorAll("text[data-uf]").forEach(t => {
+      const uf = t.dataset.uf, b = svg.querySelector(`path[data-uf="${uf}"]`).getBBox();
+      const off = {df: [8, -2], rn: [10, -4], pb: [16, 0], pe: [22, 2], al: [12, 4], se: [10, 6], es: [12, 4], rj: [10, 8], sc: [8, 0]}[uf] || [0, 0];
+      t.setAttribute("x", b.x + b.width / 2 + off[0]); t.setAttribute("y", b.y + b.height / 2 + 3 + off[1]);
+    });
+    svg.dataset.rot = "1";
   }
   const byUf = {}; res.rows.forEach(r => byUf[r.uf] = r);
   svg.querySelectorAll("path").forEach(p => {
@@ -1383,7 +1388,7 @@ const PRO_PADRAO = {
   reg: [["Norte", 8.0, 10, 50], ["Nordeste", 27.1, 10, 68], ["Centro-Oeste", 7.4, 10, 40], ["Sudeste", 42.6, 10, 47], ["Sul", 14.7, 5, 41]],
   geral: {prFator: 1.9, prHoras: 2, prPorSec: 257, prSecoes: 497900, prValid: 97, prOfL: 51.79, prOfV: 124.08}
 };
-const ABST_1T = 0.2108, ABST_2T = 0.1921;
+const ABST_1T = 0.2108, ABST_2T = 0.1922;
 // Votos registrados depois das 17h segundo os logs das urnas (levantamentos de imprensa, 26/10/2026; não diz o candidato)
 const LOGS = {g1: 35521, jp: 34319};   // abstenção oficial: 1º turno (votação só até 17h) e 2º turno
 const numIn = id => { const v = parseFloat(String($(id).value).replace(",", ".")); return Number.isFinite(v) ? v : 0; };
@@ -1816,6 +1821,7 @@ const FONTES_CRON = {
   genefax: ["Fala Genefax", "https://falagenefax.com/2026/10/26/justica-determina-que-pf-investigue-reducao-de-onibus-em-salvador-no-segundo-turno-das-eleicoes/"],
   metparis: ["Metrópoles", "https://www.metropoles.com/colunas/milena-teixeira/alvo-de-pedido-de-prisao-secretario-de-salvador-esta-em-paris"],
   radiosen: ["Rádio Senado", "https://www12.senado.leg.br/radio/1/noticia/2026/10/26/seif-anuncia-pedido-de-impeachment-contra-ministro-do-stf-cristiano-zanin"],
+  tseres: ["Resultados oficiais do TSE (1º e 2º turnos)", "https://resultados.tse.jus.br/"],
   ofator: ["O Fator", "https://ofator.com.br/informacao/deputado-mineiro-protocola-pedido-de-impeachment-de-zanin-por-prorrogar-votacao/"],
   gzaije: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/republica/flavio-desiste-anular-eleicao-pedira-cassacao-chapa-lula/"],
   metaije: ["Metrópoles", "https://www.metropoles.com/brasil/flavio-diz-que-pedira-cassacao-da-chapa-de-lula-a-lei-tem-que-valer"],
@@ -1850,7 +1856,7 @@ const CRONO = [
   {hora: "Segunda, 26/10, manhã", tipo: "fato", titulo: "TRE da Bahia revoga a prisão do secretário e manda a PF investigar os ônibus", texto: "O presidente do TRE-BA revogou a ordem de prisão do secretário de Mobilidade de Salvador, Pablo Souza, que estava na França (em Paris, segundo o Metrópoles) e não chegou a ser preso. Segundo a decisão, com o fim da votação a prisão perdeu a finalidade. O caso foi enviado à Polícia Federal e à Procuradoria Regional Eleitoral para apurar possíveis crimes eleitorais, como impedir ou atrapalhar o voto e descumprir ordem judicial. A prefeitura e as empresas de ônibus têm 48 horas para entregar escalas, ordens de serviço e registros da frota no dia da votação. O TRE-BA disse que a revogação “não representa absolvição dos envolvidos”. A prefeitura mantém a versão de que o atraso veio da retirada de adesivos de campanha colados nos ônibus.", fontes: ["agpoder", "genefax", "metparis"], prej: ["Nenhuma", "A investigação busca responsáveis; não muda votos já dados."]},
   {hora: "Segunda, 26/10", tipo: "fato", titulo: "Mais pedidos de impeachment de Zanin", texto: "O senador Jorge Seif (PL-SC) anunciou em vídeo que vai pedir o impeachment de Zanin e chamou a prorrogação de “uma decisão monocrática, uma decisão para tumultuar as eleições”; segundo a Rádio Senado, Marcel van Hattem informou que já apresentou o seu pedido. O deputado Junio Amaral (PL-MG) protocolou denúncia na Presidência do Senado pedindo a perda do cargo, alegando que Zanin invadiu atribuições da Justiça Eleitoral e deveria ter se declarado impedido por ter sido advogado de Lula. Na nota da decisão, Zanin disse que as duas candidaturas relataram dificuldades de transporte dos eleitores.", fontes: ["radiosen", "ofator"], prej: ["Nenhuma", "Pedidos contra o ministro não mudam votos."]},
   {hora: "Segunda, 26/10, fim da tarde", tipo: "fato", titulo: "Flávio desiste da anulação e anuncia ação para cassar a chapa de Lula", texto: "Em comunicado e nas redes sociais, Flávio disse que não vai mais pedir a anulação da eleição e que vai entrar com uma ação de investigação judicial eleitoral (AIJE) pedindo a cassação da chapa de Lula por abuso de poder político e econômico, por causa das medidas do governo no período eleitoral, que chamou de “maior compra de votos da história”. “Então eu vou pedir, sim, a cassação da chapa do Lula. A lei tem que valer para todo mundo”, disse. No comunicado: “A eleição terminou, mas a luta por um Brasil diferente continua”. Ele voltou a criticar a prorrogação de Zanin. Segundo a Gazeta do Povo e a coluna Painel, da Folha (citada pelo Brasil 247), o recuo veio depois que aliados, advogados e governadores, entre eles Tarcísio de Freitas, disseram que faltava base legal para a anulação. Até a publicação das reportagens, a ação não tinha sido protocolada. Abrir a ação não quer dizer que houve abuso; quem decide é a Justiça Eleitoral.", fontes: ["gzaije", "metaije", "b247aije"], prej: ["Nenhuma, por enquanto", "A ação ainda não foi apresentada. Só mudaria o resultado se a Justiça Eleitoral julgasse o pedido procedente e cassasse a chapa."]},
-  {hora: "Segunda, 26/10", tipo: "fake", titulo: "“Lula pegou 100% dos votos dos outros candidatos + 3 milhões”", texto: "Post que circula nas redes. Não procede: o post erra os números e esquece os votos brancos e nulos e o crescimento de Flávio. Checagem completa na aba Fake news.", fontes: [], prej: ["Nenhuma", "Post feito depois da eleição, sem efeito sobre o resultado."]},
+  {hora: "Segunda, 26/10", tipo: "fake", titulo: "“Lula pegou 100% dos votos dos outros candidatos + 3 milhões”", texto: "Post que circula nas redes. Não procede: o post erra os números e esquece os votos brancos e nulos e o crescimento de Flávio. Checagem completa na aba Fake news.", fontes: ["tseres"], prej: ["Nenhuma", "Post feito depois da eleição, sem efeito sobre o resultado."]},
 ];
 // ---------- Pesquisas da véspera × urnas (site publicado) ----------
 const PESQ_VESPERA = [ // votos válidos; m = margem de erro em pontos (null se a compilação não informa)
@@ -1886,6 +1892,7 @@ renderPxu();
 // ---------- Data de atualização, correções e cópias arquivadas ----------
 const ATUALIZADO = "2026-10-26T18:30-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
+  {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
 $("atualizado").dateTime = ATUALIZADO;
 $("atualizado").textContent = new Date(ATUALIZADO).toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short"}) + " (horário de Brasília)";
@@ -1897,16 +1904,20 @@ $("linkCorrecao").href = "https://github.com/pedrohrs08/probabilidade/issues/new
   body: "Aba e item com o erro:\n\nO que está errado:\n\nO dado certo:\n\nFonte (link):\n",
 });
 const SEM_ARQUIVO = /^https?:\/\/(localhost|web\.archive\.org|github\.com|resultados\.tse\.jus\.br)[\/:]/;
+// cópias registradas por scripts/arquivar.py (URL → snapshot, null se o archive.org não tem); sem o arquivo, cai no link genérico
+const ARQUIVOS = fetch("arquivo-fontes.json").then(r => r.ok ? r.json() : null).catch(() => null);
 function marcarArquivos(raiz = document) {
-  raiz.querySelectorAll('a[href^="http"]').forEach(a => {
+  ARQUIVOS.then(arq => raiz.querySelectorAll('a[href^="http"]').forEach(a => {
     if (a.classList.contains("arq") || a.dataset.arq || SEM_ARQUIVO.test(a.href)) return;
+    const copia = arq ? arq[a.getAttribute("href")] : "https://web.archive.org/web/2026/" + a.href;
+    if (!copia) return;   // sem cópia guardada: melhor não mostrar link que cai em erro
     a.dataset.arq = "1";
     const c = document.createElement("a");
-    c.className = "arq"; c.href = "https://web.archive.org/web/2026/" + a.href;
+    c.className = "arq"; c.href = copia.replace(/^http:/, "https:");
     c.target = "_blank"; c.rel = "noopener"; c.textContent = "arquivo";
     c.title = "Cópia desta página guardada no archive.org";
     a.after(" ", c);
-  });
+  }));
 }
 
 let cronFiltro = "todos";

@@ -42,7 +42,7 @@ O site é **um único arquivo `index.html`**, com HTML, CSS e JavaScript sem bib
 | Modo | Quando acontece | Comportamento |
 |---|---|---|
 | **Estático (dados congelados)** | Existe o arquivo `tse/congelado.json` (é o caso do site publicado). | Lê só as cópias dos arquivos do TSE salvas em `tse/oficial/...`. Não consulta o TSE e esconde o botão Atualizar. |
-| **Ao vivo** | Rodando com `python3 servir.py` sem os dados congelados. | Busca o TSE a cada clique em Atualizar ou a cada 60 s. Foi usado durante a apuração. |
+| **Ao vivo** | Rodando com `python3 servir.py --ao-vivo` (ou sem o `tse/congelado.json`). | Busca o TSE a cada clique em Atualizar ou a cada 60 s. Foi usado durante a apuração. |
 
 O navegador não consegue ler o site do TSE diretamente em todos os casos (bloqueio de CORS). Por isso o `servir.py` funciona como proxy: repassa `/tse/...` para `https://resultados.tse.jus.br/...`.
 
@@ -91,7 +91,8 @@ Só usa a biblioteca padrão do Python 3; não há dependências para instalar.
 ## Rodar no computador
 
 ```
-python3 servir.py          # abre http://localhost:8000
+python3 servir.py          # abre http://localhost:8000 com os dados finais salvos
+python3 servir.py --ao-vivo  # busca tudo no TSE, como durante a apuração
 python3 servir.py --rede   # libera para outros aparelhos da mesma rede Wi-Fi
 ```
 
