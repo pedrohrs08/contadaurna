@@ -1,4 +1,4 @@
-# Placar de Probabilidade 2026
+# Eleições 2026
 
 App que estima a probabilidade de vitória de Lula e Flávio Bolsonaro no 2º turno presidencial de 25/10/2026.
 
