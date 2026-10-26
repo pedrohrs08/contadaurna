@@ -20,17 +20,17 @@ Se a porta 8000 estiver ocupada por outro programa, o `servir.py` usa a próxima
 
 ## Colocar no ar (Render)
 
-O repositório já tem o `render.yaml`. Para publicar:
+Como a apuração acabou, o app vai ao ar como site estático com os dados finais salvos no repositório. Sai por CDN, aguenta muitos acessos e não "dorme".
 
-1. Crie uma conta em https://render.com (dá para entrar com o GitHub).
-2. Clique em **New > Blueprint**, autorize o Render a ver o repositório `probabilidade` e escolha-o.
-3. Confirme em **Apply**. Em 1 a 2 minutos o app fica no ar num endereço como `https://placar-2026.onrender.com`.
+1. No Mac, dentro da pasta: `python3 congelar.py`. Ele baixa do TSE os arquivos que o app usa para `tse/` e cria `tse/congelado.json`.
+2. Envie para o GitHub: `git add tse && git commit -m "Dados finais do TSE" && git push`.
+3. Em https://render.com, entre com o GitHub, clique em **New > Blueprint**, escolha o repositório `probabilidade` e confirme em **Apply**. O endereço fica parecido com `https://placar2026.onrender.com`.
 
-No plano grátis, o serviço "dorme" depois de 15 minutos sem acesso, e o primeiro acesso depois disso demora cerca de 1 minuto. Cada novo push na branch `main` publica a versão nova sozinho.
+Com `tse/congelado.json` presente, o app lê só as cópias salvas e esconde o botão Atualizar (a Simulação continua funcionando). Rodando localmente com `python3 servir.py`, ele continua lendo o TSE ao vivo.
 
-No modo nuvem (`python3 servir.py --nuvem`), o servidor usa a porta da variável `PORT`, guarda cada arquivo do TSE por 30 segundos (para não sobrecarregar o TSE com muitos acessos) e só serve o `index.html`.
+Para rodar como servidor ao vivo em vez de estático, use `python3 servir.py --nuvem` (porta da variável `PORT`, cache de 30 s das chamadas ao TSE, só serve o `index.html`).
 
-
+## Fontes de dados
 
 - 2º turno (parcial): `https://resultados.tse.jus.br/oficial/ele2026/6258/dados/{uf}/{uf}-c0001-e006258-u.json`
 - 1º turno (perfil de cada UF): mesma estrutura com a eleição `6257`
