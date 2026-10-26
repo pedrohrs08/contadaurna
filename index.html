@@ -186,6 +186,9 @@ details summary { cursor: pointer; font-weight: 600; }
 .conta b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 .minbox { margin-top: 12px; border: 1px solid var(--warn); border-radius: 10px; padding: 12px 14px; font-size: .9rem; display: grid; gap: 8px; }
 .minbox h3 { margin: 0; font-size: 1rem; }
+.impossivel { background: var(--bad-soft); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
+.impossivel .tit { color: var(--bad); font-size: 1.15rem; font-weight: 800; }
+.impossivel li b { color: var(--fg); }
 .minbox ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .minbox p { margin: 0; }
 .minbox .note { margin: 0; }
@@ -1370,15 +1373,29 @@ function proMinimo() {
   const r = proConta(proLer());
   const comparec = (p0.L + p0.F) / (p0.valid || 1);
   const ultimaHora = comparec * p0.ultima;
+  // Por que o cenário não aconteceu: confronta cada suposição com fatos conhecidos
+  const ABST_1T = 0.2108, ABST_2T = 0.1921;   // abstenção oficial: 1º turno (só até 17h) e 2º turno
+  const aptos = comparec / (1 - ABST_2T);
+  const extra = r.E / (p0.valid || 1), abst17 = 1 - (comparec - extra) / aptos;
+  const motivos = [];
+  if (abMed(p) > 50) motivos.push(`<b>${fmtPct(abMed(p) / 100, 0)} das seções abertas depois das 17h.</b> O TSE limitou a prorrogação às seções que ainda tinham fila às 17h, não a todas.`);
+  if (abst17 > ABST_1T + 0.02) motivos.push(`<b>${fmtInt(extra)} pessoas votando depois das 17h.</b> Sem elas, a abstenção até as 17h teria sido de ${fmtPct(abst17, 1)}, contra ${fmtPct(ABST_1T, 2)} no 1º turno, quando todo mundo votou só até as 17h.`);
+  if (p.fator >= 50) motivos.push(`<b>${n1g(p.fator)}% do movimento das 16h às 17h, durante ${n1g(p.horas)} h.</b> A regra só foi confirmada pelo TSE às 18h12, e quem estava na fila às 17h já votaria de qualquer jeito.`);
+  const fatiaExtra = (lulaVence ? r.EL : r.EF) / (r.E || 1), fatiaOficial = (lulaVence ? p0.L : p0.F) / (p0.L + p0.F || 1);
+  if (fatiaExtra - fatiaOficial >= 0.05) motivos.push(`<b>${venc} com ${fmtPct(fatiaExtra, 1)} dos votos depois das 17h, contra ${fmtPct(fatiaOficial, 2)} no resultado final.</b> Os eleitores da prorrogação teriam de votar de um jeito bem diferente dos que votaram durante o dia, nas mesmas regiões.`);
+  const aviso = motivos.length ? `<div class="impossivel" role="alert"><b class="tit">${motivos.length >= 2 ? "⚠ Cenário impossível na prática" : "⚠ Cenário muito improvável"}</b>
+      <p>Para ${perd} ganhar, tudo isto teria de acontecer ao mesmo tempo, e cada item vai contra o que se sabe da votação:</p>
+      <ul>${motivos.map(x => `<li>${x}</li>`).join("")}</ul></div>` : "";
   const box = $("prMinBox"); box.hidden = false;
   box.innerHTML = !r.vira
     ? `<h3>Nem com tudo no máximo ${perd} ganharia.</h3><p>Mesmo com todas as seções abertas, o mesmo movimento da última hora durante 2 horas e 100% desses votos para ${venc}, os votos depois das 17h (${fmtInt(r.E)}) não cobrem a diferença final.</p>`
-    : `<h3>O mínimo para ${perd} ganhar no horário normal</h3>
+    : `${aviso}<h3>O mínimo para ${perd} ganhar no horário normal</h3>
       <p>Mantendo os outros parâmetros, seria preciso, ao mesmo tempo:</p>
       <ul>${passos.map(x => `<li>${x}</li>`).join("")}</ul>
       <p>Isso dá <b>${fmtInt(r.E)}</b> votos válidos depois das 17h, ${fmtPct(r.E / (p0.L + p0.F), 1)} de todos os votos válidos do dia. Para comparar: na última hora normal (16h às 17h) votaram cerca de ${fmtInt(ultimaHora)} pessoas no país inteiro; a prorrogação teria de receber, a cada hora, ${n1g(r.E / p0.valid / p.horas / (ultimaHora || 1) * 100)}% desse movimento.</p>
       <p class="note">Os campos acima já foram preenchidos com esses valores. O app sobe uma suposição de cada vez, nesta ordem: seções abertas, ritmo, horas e, por último, a fatia de ${venc}; outra ordem leva a outra combinação, igualmente extrema. Isso não prova sozinho o que aconteceu: mostra o tamanho das suposições necessárias. A prova direta são os registros (logs) das urnas, que guardam a hora de cada voto.</p>
       <div class="prbtns" style="margin:0"><button type="button" id="prDesfaz">Voltar às suposições de antes</button></div>`;
+  box.scrollIntoView({block: "start", behavior: "smooth"});
   const desfaz = $("prDesfaz");
   if (desfaz) desfaz.onclick = () => {
     if (!proAntes) return;
