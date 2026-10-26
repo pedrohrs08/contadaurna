@@ -42,8 +42,8 @@ body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
 /* Site estático com os dados finais: não há o que atualizar */
 body.congelado #btnUpdate, body.congelado #autoWrap { display: none !important; }
 body.congelado { padding-bottom: 48px; }
-body.congelado[data-aba="proj"] .so-proj, body.congelado[data-aba="proj"] .so-map, body.congelado[data-aba="proj"] #banner { display: none !important; }
-body:not(.congelado) .so-pxu, body:not([data-aba="proj"]) .so-pxu { display: none !important; }
+body[data-aba="proj"] .so-proj, body[data-aba="proj"] .so-map, body[data-aba="proj"] #banner { display: none !important; }
+body:not([data-aba="proj"]) .so-pxu { display: none !important; }
 .pxu td.dentro { color: var(--muted); }
 .pxu td.fora { font-weight: 600; }
 body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls,
@@ -275,7 +275,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 @media (prefers-reduced-motion: reduce) { .bar .bl, .bar .bf { transition: none; } }
 </style>
 </head>
-<body data-aba="proj">
+<body data-aba="res">
 <div class="wrap">
   <header class="top">
     <div>
@@ -284,8 +284,8 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </header>
   <nav class="tabs" role="tablist" aria-label="O que ver">
-    <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
-    <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
+    <button type="button" role="tab" id="tabRes" aria-selected="true">Resultado</button>
+    <button type="button" role="tab" id="tabProj" aria-selected="false">Pesquisas × urnas</button>
     <button type="button" role="tab" id="tabPro" aria-selected="false">Impacto dos imprevistos</button>
     <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
     <button type="button" role="tab" id="tabCron" aria-selected="false">Cronologia</button>
@@ -319,7 +319,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <div class="kpi"><b id="rVv">–</b><span>votos válidos apurados</span></div>
       <div class="kpi"><b id="rHora">–</b><span>última atualização do TSE</span></div>
     </div>
-    <p class="note" style="margin-top:12px">Números oficiais, sem nenhuma estimativa. Para saber quem tende a ganhar, veja a aba Projeção.</p>
+    <p class="note" style="margin-top:12px">Números oficiais, sem nenhuma estimativa.</p>
   </section>
 
   <section class="panel so-proj" aria-label="Probabilidade de vitória">
@@ -1200,7 +1200,7 @@ async function update() {
     setStatus("Buscando dados no TSE…");
     if (congelado === undefined) {
       congelado = await fetch("tse/congelado.json").then(r => r.ok ? r.json() : null).catch(() => null);
-      if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); $("tabProj").textContent = "Pesquisas × urnas"; if (!abaEscolhida) setAba("res"); }
+      if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); }
     }
     if (!base1T) base1T = await load1T();
     const {ufs, br} = await load2T();
@@ -1234,8 +1234,6 @@ function setAba(a) {
   if (a !== "res" && mapaModo === "parcial") setMapaModo("final");
   if (lastResult) render(lastResult);
 }
-let abaEscolhida = false;
-document.querySelector(".tabs").addEventListener("click", () => { abaEscolhida = true; }, true);
 $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
 $("tabPro").onclick = () => setAba("pro");
@@ -1316,9 +1314,14 @@ function selectUF(uf, quiet) {
   $("mapa").querySelectorAll("path").forEach(p => p.classList.toggle("sel", p.dataset.uf === uf));
   document.querySelectorAll("#ufBody tr, #resBody tr").forEach(tr => tr.classList.toggle("sel", tr.dataset.uf === uf));
   const lead = r.final >= 0.5 ? "Lula" : "Flávio";
+  const fim = r.frac >= 0.999 && Number.isFinite(r.obs); // apuração encerrada: mostra só o resultado
   $("ufCard").innerHTML = `<h3>${UF_EXTENSO[uf]}</h3>
     <div class="ufbar" aria-hidden="true"><i style="width:${(r.final * 100).toFixed(1)}%"></i><i style="width:${((1 - r.final) * 100).toFixed(1)}%"></i></div>
-    <dl>
+    ${fim ? `<dl>
+      <dt>Resultado Lula × Flávio</dt><dd>${fmtPct(r.obs)} × ${fmtPct(1 - r.obs)}</dd>
+      <dt>Votos válidos apurados</dt><dd>${fmtInt(r.counted2)}</dd>
+      <dt>Lula no 1º turno</dt><dd>${fmtPct(r.baseShare)}</dd>
+    </dl>` : `<dl>
       <dt>Projeção final Lula × Flávio</dt><dd>${fmtPct(r.final)} × ${fmtPct(1 - r.final)}</dd>
       <dt>Chance de ${lead} vencer na UF</dt><dd>${fmtPct(lead === "Lula" ? r.pWin : 1 - r.pWin)}</dd>
       <dt>Apurado</dt><dd>${fmtPct(r.frac, 1)}</dd>
@@ -1327,10 +1330,10 @@ function selectUF(uf, quiet) {
       <dt>Válidos que faltam</dt><dd>${fmtInt(r.remaining)}</dd>
       <dt>Lula no 1º turno (base)</dt><dd>${fmtPct(r.baseShare)}</dd>
       <dt>Esperado pré-apuração</dt><dd>${fmtPct(r.prior)}</dd>
-    </dl>${r.units && r.units.length > 1 ? `
+    </dl>`}${r.units && r.units.length > 1 ? `
     <div class="tbl"><table>
-      <thead><tr><th>Cidade</th><th>Apurado</th><th>Parcial Lula</th><th>Projeção Lula</th></tr></thead>
-      <tbody>${r.units.slice().sort((a, b) => b.total - a.total).map(x => `<tr><td class="uf">${x.nome}</td><td>${fmtPct(x.frac, 0)}</td><td>${Number.isFinite(x.obs) ? fmtPct(x.obs) : "–"}</td><td class="${x.final >= .5 ? "lead-l" : "lead-f"}">${fmtPct(x.final)}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Cidade</th>${fim ? "<th>Lula</th><th>Flávio</th>" : "<th>Apurado</th><th>Parcial Lula</th><th>Projeção Lula</th>"}</tr></thead>
+      <tbody>${r.units.slice().sort((a, b) => b.total - a.total).map(x => fim ? `<tr><td class="uf">${x.nome}</td><td class="${x.obs >= .5 ? "lead-l" : ""}">${fmtPct(x.obs)}</td><td class="${x.obs < .5 ? "lead-f" : ""}">${fmtPct(1 - x.obs)}</td></tr>` : `<tr><td class="uf">${x.nome}</td><td>${fmtPct(x.frac, 0)}</td><td>${Number.isFinite(x.obs) ? fmtPct(x.obs) : "–"}</td><td class="${x.final >= .5 ? "lead-l" : "lead-f"}">${fmtPct(x.final)}</td></tr>`).join("")}</tbody>
     </table></div>` : ""}`;
 }
 $("resBody").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr && tr.dataset.uf) selectUF(tr.dataset.uf); });
@@ -1817,6 +1820,7 @@ document.querySelector(".cronfiltro").addEventListener("click", e => {
 renderCrono();
 
 renderPolls();
+setAba("res");
 update();
 </script>
 </body>

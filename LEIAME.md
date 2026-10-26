@@ -24,7 +24,7 @@ Como a apuração acabou, o app vai ao ar como site estático com os dados finai
 2. Envie para o GitHub: `git add tse && git commit -m "Dados finais do TSE" && git push`.
 3. Em https://render.com, entre com o GitHub, clique em **New > Blueprint**, escolha o repositório `probabilidade` e confirme em **Apply**. O endereço fica parecido com `https://placar2026.onrender.com`.
 
-Com `tse/congelado.json` presente, o app lê só as cópias salvas e esconde o botão Atualizar, abre na aba Resultado e troca a aba Projeção por "Pesquisas × urnas" (pesquisas da véspera comparadas com o resultado oficial; dados em `PESQ_VESPERA` no index.html). Rodando localmente com `python3 servir.py`, ele continua lendo o TSE ao vivo.
+Com `tse/congelado.json` presente, o app lê só as cópias salvas e esconde o botão Atualizar, e não consulta o TSE. Rodando localmente com `python3 servir.py`, ele continua lendo o TSE ao vivo.
 
 Para rodar como servidor ao vivo em vez de estático, use `python3 servir.py --nuvem` (porta da variável `PORT`, cache de 30 s das chamadas ao TSE, só serve o `index.html`).
 
