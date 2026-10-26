@@ -21,7 +21,7 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p site
-          cp -r index.html tse site/
+          cp -r index.html tse CNAME site/
           touch site/.nojekyll
       - name: Enviar para a branch gh-pages
         run: |
