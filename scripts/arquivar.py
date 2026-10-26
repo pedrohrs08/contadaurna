@@ -20,34 +20,41 @@ def links():
     return sorted({u.rstrip(".,;") for u in achados if not PULAR.match(u) and "." in urllib.parse.urlparse(u).netloc})
 
 
-def tem_copia(url):
+def copia(url):
+    """Endereço da cópia de 2026 mais próxima de 26/10, ou None."""
     q = urllib.parse.urlencode({"url": url, "timestamp": "20261026"})
     with urllib.request.urlopen(f"https://archive.org/wayback/available?{q}", timeout=60) as r:
         snap = json.load(r).get("archived_snapshots", {}).get("closest") or {}
-    return snap.get("available") and str(snap.get("timestamp", "")).startswith("2026")
+    if snap.get("available") and str(snap.get("timestamp", "")).startswith("2026"):
+        return snap["url"]
+    return None
 
 
 def salvar(url):
     req = urllib.request.Request("https://web.archive.org/save/" + url, headers={"User-Agent": "eleicoes2026-arquivo"})
     with urllib.request.urlopen(req, timeout=180) as r:
-        return r.status
+        return r.geturl() if "/web/" in r.geturl() else None
 
 
 def main():
     lista = links()
     print(f"{len(lista)} links de fonte")
-    falhas = 0
+    registro = {}
     for url in lista:
         try:
-            if tem_copia(url):
-                print(f"já arquivado: {url}")
-                continue
-            print(f"arquivando ({salvar(url)}): {url}")
+            achado = copia(url)
+            if not achado:
+                achado = salvar(url)
+                time.sleep(20)
+            registro[url] = achado
+            print(f"{'ok' if achado else 'sem cópia'}: {url} -> {achado}")
         except Exception as e:
-            falhas += 1
+            registro[url] = None
             print(f"falhou: {url} ({e})")
-        time.sleep(20)
-    print(f"Pronto. {falhas} falha(s).")
+            time.sleep(20)
+    with open("arquivo-fontes.json", "w", encoding="utf-8") as f:
+        json.dump(registro, f, ensure_ascii=False, indent=1, sort_keys=True)
+    print(f"Pronto. {sum(1 for v in registro.values() if v)} de {len(registro)} com cópia.")
 
 
 if __name__ == "__main__":

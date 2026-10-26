@@ -4,8 +4,11 @@ name: Arquivar fontes
 on:
   push:
     branches: [main]
-    paths: [index.html]
+    paths: [index.html, scripts/arquivar.py]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: arquivar
@@ -19,3 +22,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Arquivar links
         run: python3 scripts/arquivar.py
+      - name: Guardar o registro das cópias
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arquivo-fontes.json
+          git diff --cached --quiet || git commit -m "Registro das cópias arquivadas das fontes"
+          git pull --rebase -q origin main && git push -q origin HEAD:main
