@@ -336,6 +336,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 
   <section class="panel so-pro" aria-label="Horário normal e horário estendido">
     <p class="eyebrow">Horário normal (até 17h) × horário estendido (até 19h)</p>
+    <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> O TSE não divulgou quantos votos entraram depois das 17h. Os números desta aba saem das suposições que você coloca mais abaixo e não são dados oficiais.</p>
     <div class="cenarios">
       <div class="cen">
         <h3>Horário normal · sem os votos depois das 17h</h3>
@@ -412,6 +413,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       </div>
     </details>
   </section>
+  <footer class="note" style="text-align:center;margin:0 auto">Projeto pessoal, sem ligação com o TSE. Dados oficiais de resultados.tse.jus.br e pesquisas registradas no TSE. Estimativas e simulações não substituem o resultado oficial.</footer>
 </div>
 
 <script>
@@ -997,10 +999,13 @@ async function update() {
     const r = runModel(data.base, data.ufs, data.br); lastResult = r; render(r);
     if (!sim && !proOfTocado && proOficial(true)) renderProrrogacao();
     const hora = data.br && data.br.hora ? ` · TSE: ${data.br.hora}` : "";
-    setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor local" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
+    setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor do app" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
   } catch (e) {
     console.error(e);
-    setStatus(`Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000, ou abra a aba "Simulação" para ver o app funcionando.`, true);
+    const local = ["localhost", "127.0.0.1", ""].includes(location.hostname) || location.protocol === "file:";
+    setStatus(local
+      ? `Não consegui ler o TSE (${e.message}). Rode "python3 servir.py" e abra http://localhost:8000, ou abra a aba "Simulação" para ver o app funcionando.`
+      : `Não consegui ler o TSE agora (${e.message}). Tente de novo em instantes, ou abra a aba "Simulação" para ver o app funcionando.`, true);
   } finally { busy = false; $("btnUpdate").disabled = false; }
 }
 $("btnUpdate").onclick = update;

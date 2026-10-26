@@ -18,7 +18,19 @@ A aba "Prorrogação" compara o horário normal (até 17h) com o horário estend
 
 Se a porta 8000 estiver ocupada por outro programa, o `servir.py` usa a próxima livre (8001, 8002…) e mostra qual no terminal.
 
-## Fontes de dados
+## Colocar no ar (Render)
+
+O repositório já tem o `render.yaml`. Para publicar:
+
+1. Crie uma conta em https://render.com (dá para entrar com o GitHub).
+2. Clique em **New > Blueprint**, autorize o Render a ver o repositório `probabilidade` e escolha-o.
+3. Confirme em **Apply**. Em 1 a 2 minutos o app fica no ar num endereço como `https://placar-2026.onrender.com`.
+
+No plano grátis, o serviço "dorme" depois de 15 minutos sem acesso, e o primeiro acesso depois disso demora cerca de 1 minuto. Cada novo push na branch `main` publica a versão nova sozinho.
+
+No modo nuvem (`python3 servir.py --nuvem`), o servidor usa a porta da variável `PORT`, guarda cada arquivo do TSE por 30 segundos (para não sobrecarregar o TSE com muitos acessos) e só serve o `index.html`.
+
+
 
 - 2º turno (parcial): `https://resultados.tse.jus.br/oficial/ele2026/6258/dados/{uf}/{uf}-c0001-e006258-u.json`
 - 1º turno (perfil de cada UF): mesma estrutura com a eleição `6257`

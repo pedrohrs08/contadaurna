@@ -1,0 +1,9 @@
+# Configuração do Render (render.com): New > Blueprint > escolha este repositório
+services:
+  - type: web
+    name: placar-2026
+    runtime: python
+    plan: free
+    buildCommand: "true"
+    startCommand: python3 servir.py --nuvem
+    healthCheckPath: /
