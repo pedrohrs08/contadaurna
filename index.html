@@ -34,8 +34,10 @@
 body[data-aba="res"] .so-proj, body[data-aba="pro"] .so-proj { display: none !important; }
 body:not([data-aba="res"]) .so-res { display: none !important; }
 body:not([data-aba="pro"]) .so-pro { display: none !important; }
-body:not([data-aba="fake"]) .so-fake { display: none !important; }
-body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner, body[data-aba="fake"] .so-map, body[data-aba="fake"] #banner, body[data-aba="fake"] .so-proj { display: none !important; }
+body:not([data-aba="fake"]) .so-fake, body:not([data-aba="cron"]) .so-cron { display: none !important; }
+body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner,
+body[data-aba="fake"] .so-map, body[data-aba="fake"] #banner, body[data-aba="fake"] .so-proj,
+body[data-aba="cron"] .so-map, body[data-aba="cron"] #banner, body[data-aba="cron"] .so-proj { display: none !important; }
 body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
 /* Site estático com os dados finais: não há o que atualizar */
 body.congelado #btnUpdate, body.congelado #autoWrap { display: none !important; }
@@ -52,7 +54,7 @@ header.top { display: grid; gap: 4px; }
 h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
 button {
@@ -191,6 +193,24 @@ td.alto { color: var(--bad); font-weight: 600; }
 .simples h3 { font-size: 1rem; margin: 16px 0 4px; }
 .simples p { margin: 4px 0; max-width: 70ch; font-size: .98rem; line-height: 1.55; }
 .simples p.ex { background: var(--ok-soft); border-radius: 8px; padding: 8px 12px; margin-top: 8px; }
+.cronfiltro { margin-bottom: 14px; }
+.crono .prej { margin: 6px 0 0; padding: 7px 9px; border-left: 3px solid var(--line); background: var(--surface); border-radius: 0 6px 6px 0; font-size: .86rem; }
+.crono .prej span { color: var(--muted); }
+.crono { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); display: grid; gap: 14px; }
+.crono li { position: relative; display: grid; gap: 4px; }
+.crono li::before { content: ""; position: absolute; left: -25px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 3px solid var(--muted); }
+.crono li.fato::before { border-color: var(--accent); }
+.crono li.opiniao::before { border-color: var(--warn); }
+.crono li.fake::before { border-color: var(--bad); }
+.crono .topo { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.crono .hora { font: 700 .9rem var(--f-mono); }
+.crono .tipo { font: 800 .7rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; }
+.crono .fato .tipo { background: var(--ok-soft); color: var(--accent); }
+.crono .opiniao .tipo { background: var(--warn-soft); color: var(--warn); }
+.crono .fake .tipo { background: var(--bad-soft); color: var(--bad); }
+.crono h3 { margin: 0; font-size: 1rem; }
+.crono p { margin: 0; font-size: .92rem; max-width: 75ch; }
+.crono .fontes { font-size: .8rem; color: var(--muted); }
 .fklista { display: grid; gap: 20px; }
 .fk { display: grid; gap: 12px; }
 .fk header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
@@ -232,7 +252,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 640px; grid-template-columns: repeat(4, 1fr); }
+  .tabs { max-width: 800px; grid-template-columns: repeat(5, 1fr); }
   .cenarios { grid-template-columns: 1fr 1fr; }
   .prgeral { grid-template-columns: repeat(4, 1fr); }
   body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
@@ -258,6 +278,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
     <button type="button" role="tab" id="tabPro" aria-selected="false">Prorrogação</button>
     <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
+    <button type="button" role="tab" id="tabCron" aria-selected="false">Cronologia</button>
   </nav>
   <div class="controls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
@@ -376,6 +397,20 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
+
+  <section class="panel so-cron" aria-label="Cronologia do dia da eleição">
+    <p class="eyebrow">Cronologia · domingo, 25 de outubro de 2026 (horário de Brasília)</p>
+    <h2 style="margin:0 0 6px">O dia do 2º turno, hora a hora</h2>
+    <p class="note" style="margin:0 0 10px">Cada item diz se é <b>fato</b> (aconteceu e está registrado), <b>opinião</b> (é o que alguém disse ou defende, inclusive as versões em disputa) ou <b>fake news</b> (afirmação desmentida pelos dados). Os horários vêm das próprias reportagens; quando os veículos dão horários diferentes, o item avisa. Cada item também diz <b>qual candidatura foi prejudicada</b> e por quê. Quando o prejuízo é só alegado por uma campanha, e não comprovado, o texto diz isso.</p>
+    <div class="seg cronfiltro" role="group" aria-label="Filtrar a linha do tempo">
+      <button type="button" data-tipo="todos" aria-pressed="true">Tudo</button>
+      <button type="button" data-tipo="fato" aria-pressed="false">Fatos</button>
+      <button type="button" data-tipo="opiniao" aria-pressed="false">Opiniões</button>
+      <button type="button" data-tipo="fake" aria-pressed="false">Fake news</button>
+    </div>
+    <ol class="crono" id="cronLista"></ol>
+    <p class="note" style="margin-top:12px">Veículos consultados, de linhas editoriais diferentes: Gazeta do Povo, Revista Oeste e Jovem Pan (costumam ser vistos como à direita); Exame, Bloomberg Línea, Metrópoles e Mix Vale (mercado e generalistas); CartaCapital e Brasil 247 (costumam ser vistos como à esquerda); e as agências públicas Agência Brasil e Agência Senado, além do próprio TSE.</p>
+  </section>
 
   <section class="panel so-fake" aria-label="Desmentindo fake news">
     <p class="eyebrow">Desmentindo fake news</p>
@@ -1151,7 +1186,7 @@ let aba = "proj";
 function setAba(a) {
   aba = a;
   $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj");
-  $("tabPro").setAttribute("aria-selected", a === "pro"); $("tabFake").setAttribute("aria-selected", a === "fake");
+  $("tabPro").setAttribute("aria-selected", a === "pro"); $("tabFake").setAttribute("aria-selected", a === "fake"); $("tabCron").setAttribute("aria-selected", a === "cron");
   document.body.dataset.aba = a;
   if (a === "pro") renderProrrogacao();
   if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
@@ -1162,6 +1197,7 @@ $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
 $("tabPro").onclick = () => setAba("pro");
 $("tabFake").onclick = () => setAba("fake");
+$("tabCron").onclick = () => setAba("cron");
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
 window.addEventListener("resize", () => lastResult && drawHist(lastResult.shares));
@@ -1258,7 +1294,7 @@ $("resBody").addEventListener("click", e => { const tr = e.target.closest("tr");
 $("ufBody").addEventListener("click", e => { const tr = e.target.closest("tr"); if (tr && tr.dataset.uf) selectUF(tr.dataset.uf); });
 function setMapaModo(m) {
   mapaModo = m;
-  document.querySelectorAll(".seg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.modo === m));
+  document.querySelectorAll('[aria-label="O que o mapa mostra"] button').forEach(b => b.setAttribute("aria-pressed", b.dataset.modo === m));
   if (lastResult) drawMap(lastResult);
 }
 document.querySelector(".seg").addEventListener("click", e => {
@@ -1627,6 +1663,71 @@ function renderFakes() {
   </article>`).join("");
 }
 renderFakes();
+
+// ---------- Aba Cronologia ----------
+// tipo: "fato" (aconteceu e está registrado), "opiniao" (declarações e versões em disputa), "fake" (desmentido pelos dados)
+const FONTES_CRON = {
+  bl: ["Bloomberg Línea (ao vivo)", "https://www.bloomberglinea.com.br/brasil/ao-vivo-brasil-vota-no-2-turno-para-escolher-entre-lula-e-flavio-bolsonaro-como-presidente/"],
+  exame: ["Exame", "https://exame.com/brasil/onibus-com-adesivos-de-lula-sao-impedidos-de-sair-de-garagens-em-salvador/"],
+  b247: ["Brasil 247", "https://www.brasil247.com/nordeste/procon-encontra-252-onibus-parados-em-garagens-de-salvador-no-segundo-turno/"],
+  cc: ["CartaCapital", "https://www.cartacapital.com.br/politica/tre-manda-prender-secretario-de-mobilidade-de-salvador-por-queda-em-fluxo-de-onibus-no-2o-turno/"],
+  ccped: ["CartaCapital", "https://www.cartacapital.com.br/politica/lula-e-flavio-bolsonaro-pedem-ao-tse-prorrogacao-da-votacao-ate-as-19h/"],
+  oesteped: ["Revista Oeste", "https://revistaoeste.com/politica/flavio-pede-ao-tse-mais-2-horas-de-votacao-em-17-cidades-atingidas-pelas-chuvas/"],
+  oeste: ["Revista Oeste", "https://revistaoeste.com/politica/tse-abriu-contagem-de-votos-mesmo-depois-de-decisao-de-zanin/"],
+  gzzanin: ["Gazeta do Povo", "https://gazetadopovo.com.br/eleicoes/2026/pressao-de-lula-faz-zanin-atropelar-tse-estender-votacao-e-atrasar-apuracao"],
+  gzcofre: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/tse-responde-flavio-e-diz-que-fiscais-nao-foram-retirados-da-sala-cofre/"],
+  gzflavio: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/eleicoes/2026/flavio-bolsonaro-pronunciamento-anulacao-eleicao/"],
+  mix: ["Mix Vale", "https://www.mixvale.com.br/2026/10/25/votacao-do-2o-turno-e-prorrogada-pelo-stf-ate-19h-mas-escolas-fecham-por-falta-de-aviso/"],
+  abr: ["Agência Brasil", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/tse-secoes-eleitorais-ainda-abertas-devem-manter-votacao-ate-19h"],
+  senado: ["Agência Senado", "https://www12.senado.leg.br/noticias/materias/2026/10/25/presidente-do-tse-confirma-reeleicao-de-lula-e-faz-balanco-do-pleito"],
+  tse: ["TSE", "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026"],
+  times: ["Times Brasil", "https://timesbrasil.com.br/brasil/decisao-2026-em-discurso-lula-promete-governar-para-todos-flavio-rejeita-resultado-e-diz-que-vai-pedir-anulacao-da-eleicao/"],
+  ccfraude: ["CartaCapital (manchete)", "https://www.cartacapital.com.br/politica/pt-defende-decisao-de-zanin-sobre-extensao-da-votacao-aliados-de-flavio-falam-em-fraude/"],
+  g1: ["Correio, com dados do G1", "https://www.correio24horas.com.br/eleicoes/quantos-votos-foram-registrados-apos-as-17h-na-eleicao-presidencial-levantamento-mostra-total-1026"],
+  jp: ["Jovem Pan", "https://jovempan.com.br/politica/34-319-votos-foram-registrados-entre-17h-e-19h-lula-venceu-por-443-milhoes/"],
+};
+const CRONO = [
+  {hora: "08h", tipo: "fato", titulo: "Começa a votação do 2º turno", texto: "As seções abrem em todo o país. O horário oficial de encerramento é 17h.", fontes: ["bl"], prej: ["Nenhuma", "Abertura normal das seções, no horário previsto na lei."]},
+  {hora: "Manhã", tipo: "fato", titulo: "Ônibus parados nas garagens em Salvador", texto: "A Secretaria de Mobilidade de Salvador confirmou que pelo menos 75 ônibus não saíram das garagens. O Procon da Bahia achou 55 ônibus em condição de rodar parados numa garagem e multou a empresa; mais tarde, o secretário estadual de Justiça falou em 252 ônibus parados em três garagens. A Defensoria Pública recebeu muitas queixas de falta de ônibus, também em Feira de Santana e Santo Antônio de Jesus.", fontes: ["exame", "b247"], prej: ["Lula (13)", "Salvador e região são áreas onde Lula teve ampla vantagem, e quem mais depende de ônibus é o eleitor de baixa renda. Falta de transporte dificulta justamente esse eleitor chegar à seção. Não há número oficial de quantas pessoas deixaram de votar por isso."]},
+  {hora: "Manhã", tipo: "opiniao", titulo: "Duas versões para os ônibus parados", texto: "O prefeito Bruno Reis (União Brasil) disse que sindicalistas ligados ao PT colaram adesivos com o 13 nos ônibus e que os veículos só saíram depois que os adesivos foram retirados; chamou isso de crime eleitoral. O PT e seus aliados acusaram a prefeitura de reduzir a frota para dificultar o voto. O governador Jerônimo Rodrigues (PT) escreveu: “Não vou aceitar o que estão fazendo com a população baiana”. Nenhuma das versões foi confirmada pela Justiça até agora.", fontes: ["exame", "cc"], prej: ["As duas, segundo cada versão", "Na versão da prefeitura, quem foi prejudicada foi a própria cidade e a candidatura de Flávio, por um crime eleitoral de sindicalistas ligados ao PT. Na versão do PT, quem foi prejudicada foi a candidatura de Lula, por redução proposital da frota. A Justiça ainda não confirmou nenhuma das duas."]},
+  {hora: "13h22", tipo: "fato", titulo: "PT pede ao TSE mais tempo de votação na Bahia", texto: "O pedido vale para Salvador, Feira de Santana e Lauro de Freitas. Depois, o PT amplia o pedido para outras cidades e estados.", fontes: ["gzcofre"], prej: ["Nenhuma", "É um pedido, não um fato consumado. Se atendido, o possível beneficiado seria Lula, porque as cidades citadas são de voto majoritário nele."]},
+  {hora: "13h58", tipo: "fato", titulo: "Presidente do STF diz que as urnas devem ser respeitadas", texto: "Declaração registrada na cobertura ao vivo.", fontes: ["bl"], prej: ["Nenhuma", "Declaração geral, sem efeito sobre a votação."]},
+  {hora: "14h36", tipo: "fato", titulo: "TRE da Bahia manda prender o secretário de Mobilidade de Salvador", texto: "O presidente do TRE-BA determina a prisão do secretário Pablo Souza e a volta imediata de 100% da frota, com multa de R$ 1 milhão por hora em caso de descumprimento.", fontes: ["bl", "cc"], prej: ["Prefeitura de Salvador e, politicamente, Flávio (22)", "A ordem desfez parte do problema do transporte, que atingia eleitores de Lula, e expôs um aliado de Flávio a uma ordem de prisão e multa."]},
+  {hora: "15h27", tipo: "fato", titulo: "Campanha de Flávio pede ao TSE mais 2 horas por causa das chuvas", texto: "O pedido cita chuvas, alagamentos, estradas fechadas e falta de luz em cidades de São Paulo, Paraná e Santa Catarina (17 cidades segundo a Revista Oeste e a CartaCapital; 19 segundo a Gazeta do Povo). Às 16h47, a campanha pede o mesmo para Minas Gerais e Rio Grande do Sul. Flávio não citou esse pedido no discurso da noite.", fontes: ["oesteped", "ccped", "gzcofre", "bl"], prej: ["Nenhuma", "Também é um pedido. A campanha de Flávio alegava prejuízo próprio: chuva, alagamento e falta de luz em cidades de SP, PR, SC e, depois, MG e RS, onde ele ia melhor. Não há levantamento de quantos eleitores faltaram por isso."]},
+  {hora: "15h40", tipo: "fato", titulo: "Lula diz que a campanha vai pedir extensão do horário", texto: "Às 16h15, o PT vai ao TRE de São Paulo por falta de ônibus na capital; às 16h38, pede ao TSE extensão em dez estados.", fontes: ["bl"], prej: ["Nenhuma", "Pedido. Lula alegava prejuízo próprio por falta de ônibus em dez estados."]},
+  {hora: "15h46 a 16h32", tipo: "fato", titulo: "PT leva o pedido ao STF", texto: "A coligação de Lula entra com uma reclamação no STF (nº 101.673) alegando demora do TSE. Os veículos dão horários diferentes para o pedido: 15h46 e 16h22 (Gazeta do Povo) e 16h32 (Mix Vale).", fontes: ["gzzanin", "gzcofre", "mix"], prej: ["Nenhuma", "Pedido. Mas o caminho escolhido (STF em vez do TSE) é a base da crítica de Flávio de que a decisão veio do juiz errado."]},
+  {hora: "17h", tipo: "fato", titulo: "Termina o horário oficial; muitas seções fecham", texto: "Sem aviso de prorrogação, muitas seções encerram a votação e imprimem o boletim de urna. Há relatos de escolas fechadas em São Paulo enquanto outras continuam abertas.", fontes: ["mix", "bl"], prej: ["As duas, de forma desigual", "Quem ainda estava na fila em seção que encerrou às 17h perdeu o voto, dos dois lados. O prejuízo é desigual porque dependeu da seção: algumas fecharam, outras continuaram. Pelos registros das urnas, o total que entrou depois das 17h foi de cerca de 35 mil votos no país."]},
+  {hora: "17h01", tipo: "fato", titulo: "Zanin prorroga a votação até as 19h em todo o país", texto: "Decisão individual do ministro Cristiano Zanin, do STF, a pedido da coligação de Lula. Na nota, ele diz que os dois candidatos relataram problemas para os eleitores chegarem às seções. Depois, esclarece que só as seções ainda abertas continuam até 19h.", fontes: ["bl", "gzzanin", "gzflavio"], prej: ["Flávio (22), na alegação dele", "É o ponto central da contestação: a regra mudou com a votação em andamento, por decisão individual de um ministro que foi advogado de Lula e a pedido da campanha de Lula, e valeu só para quem estava em seção ainda aberta. O possível ganho era de quem pediu. Nos números, o efeito foi de cerca de 35 mil votos, 0,8% da diferença de 4,43 milhões."]},
+  {hora: "17h06", tipo: "fato", titulo: "TSE começa a divulgar parciais e depois suspende", texto: "Às 17h06 sai a primeira parcial, com 0,25% das seções. Às 17h20 a divulgação é suspensa por causa da decisão de Zanin.", fontes: ["oeste", "mix"], prej: ["Nenhuma", "Suspender a divulgação não tira nem acrescenta voto. Quem perdeu foi o público, que ficou quase duas horas sem informação, o que alimentou boatos."]},
+  {hora: "Fim da tarde", tipo: "opiniao", titulo: "Juristas criticam a decisão; PT a defende", texto: "Ex-juízes eleitorais ouvidos pela Gazeta do Povo chamaram a decisão de irresponsável e disseram que ela mudou a regra durante a votação, criou tratamento desigual entre eleitores e pode ser contestada na Justiça. O PT defendeu a decisão. Mais tarde, o próprio presidente do TSE, Nunes Marques, disse: “Prorrogar uma eleição é possível, mas precisa ser pensada e estruturada”.", fontes: ["gzzanin", "ccfraude", "senado"], prej: ["Lula (13), em legitimidade", "A crítica não muda votos, mas atinge Lula, porque a decisão questionada foi tomada a pedido da campanha dele. Por outro lado, se a decisão cair na Justiça, o prejuízo passa a ser dos eleitores que votaram entre 17h e 19h."]},
+  {hora: "18h12", tipo: "fato", titulo: "TSE: só as seções ainda abertas seguem até 19h", texto: "O TSE orienta que apenas as seções que ainda estavam funcionando recebam eleitores até 19h. Seções já encerradas não reabrem.", fontes: ["bl", "abr"], prej: ["As duas, e principalmente quem pediu a prorrogação", "A orientação reduziu muito o efeito da decisão de Zanin: seções já encerradas não reabriram. Eleitores que voltaram depois de ouvir a notícia da prorrogação não conseguiram votar."]},
+  {hora: "19h03", tipo: "fato", titulo: "TSE retoma a divulgação dos resultados", texto: "Com 0,29% das seções apuradas, Lula tem 56,7% dos votos válidos. As primeiras urnas apuradas não representam o país inteiro.", fontes: ["bl"], prej: ["Nenhuma", "Retomada da apuração, sem efeito sobre votos."]},
+  {hora: "21h10", tipo: "fato", titulo: "Lula é reeleito", texto: "Com 98,27% das seções apuradas, a vantagem de Lula não pode mais ser revertida. O resultado final: Lula 51,79% (64.256.232 votos) e Flávio 48,21% (59.826.041 votos). Logo depois, o dólar no mercado futuro sobe cerca de 10% e ETFs de ações brasileiras caem no exterior.", fontes: ["bl", "tse"], prej: ["Flávio (22)", "Derrota nas urnas, por 4.430.191 votos. É o resultado da votação, não um incidente do dia."]},
+  {hora: "22h45", tipo: "opiniao", titulo: "Discurso de Lula", texto: "“Agora a gente não tem mais adversário. Eu tenho que governar para 215 milhões de brasileiros.” Ele também falou em regular as redes sociais.", fontes: ["times", "bl"], prej: ["Nenhuma", "Discurso de vitória. A menção a regular redes sociais é agenda de governo, não do pleito."]},
+  {hora: "Cerca de 22h40 a 22h53", tipo: "opiniao", titulo: "Flávio não reconhece o resultado e anuncia pedido de anulação", texto: "“É impossível reconhecer o resultado das eleições no contexto como essas coisas aconteceram” e “Eu não vou aceitar que a regra do jogo tenha sido mudada em cima do jogo”. Ele chamou a decisão de Zanin de inaceitável, lembrou que Zanin foi advogado de Lula e disse que nunca vai saber quantos votos teria nas seções que não reabriram.", fontes: ["gzflavio", "times", "bl"], prej: ["Flávio (22), na alegação dele", "Ele sustenta que foi prejudicado pela mudança de regra e que não há como saber quantos votos teria nas seções que não reabriram. Essa parte é verdadeira: não existe esse número. O que existe é o total de votos que entrou depois das 17h, pequeno demais para mudar o resultado."]},
+  {hora: "Mesmo discurso", tipo: "fake", titulo: "“Fiscais do PL foram retirados da sala-cofre”", texto: "O TSE respondeu, no serviço Fato ou Boato, que a afirmação é falsa: diz ter imagens mostrando que os fiscais do partido tiveram acesso livre à sala de totalização até o fim. Até agora não houve verificação independente dessas imagens.", fontes: ["gzcofre"], prej: ["Lula (13) e o TSE", "A afirmação põe em dúvida a lisura da totalização sem prova, o que atinge o vencedor e a Justiça Eleitoral. O TSE classificou como falsa."]},
+  {hora: "Noite", tipo: "fake", titulo: "“A prorrogação deu a vitória a Lula” / “houve fraude”", texto: "Aliados de Flávio falaram em fraude. Os registros das urnas mostram que entraram cerca de 35 mil votos depois das 17h no Brasil inteiro, 0,8% da diferença de 4,43 milhões. Mesmo se todos fossem de Lula, ele ainda venceria por 4,39 milhões. Detalhes na aba Prorrogação.", fontes: ["ccfraude", "g1", "jp"], prej: ["Lula (13)", "A acusação de fraude atinge o resultado dele, e os registros públicos das urnas mostram que ela não tem base aritmética."]},
+  {hora: "23h31", tipo: "fato", titulo: "Presidente do TSE confirma a reeleição de Lula", texto: "Nunes Marques fala em “expressiva vitória nas urnas” e diz: “Temos absoluta segurança do processo eleitoral”. Observadores nacionais e internacionais acompanharam a votação e a auditoria.", fontes: ["senado", "tse"], prej: ["Nenhuma", "Confirmação oficial do resultado."]},
+  {hora: "Segunda, 26/10", tipo: "fato", titulo: "Levantamentos contam os votos depois das 17h", texto: "Com os registros públicos das urnas, o G1 contou 35.521 votos depois das 17h e um levantamento independente divulgado pela Jovem Pan contou 34.319 (32.337 entre 17h e 18h e 1.982 entre 18h e 19h). Os registros não dizem em quem foram esses votos.", fontes: ["g1", "jp"], prej: ["Nenhuma", "Pelo contrário: é a medição que enfraquece a tese de que a prorrogação mudou o resultado."]},
+  {hora: "Segunda, 26/10", tipo: "fake", titulo: "“Lula pegou 100% dos votos dos outros candidatos + 3 milhões”", texto: "Post que circula nas redes. Não procede: o post erra os números e esquece os votos brancos e nulos e o crescimento de Flávio. Checagem completa na aba Fake news.", fontes: [], prej: ["Lula (13)", "O post sugere que a votação dele é impossível, e por isso fraudada. Os números oficiais do 1º e do 2º turno mostram que é possível e explicam de onde vieram os votos."]},
+];
+let cronFiltro = "todos";
+function renderCrono() {
+  const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
+  $("cronLista").innerHTML = CRONO.filter(c => cronFiltro === "todos" || c.tipo === cronFiltro).map(c => `<li class="${c.tipo}">
+    <div class="topo"><span class="hora">${c.hora}</span><span class="tipo">${TIPO[c.tipo]}</span></div>
+    <h3>${c.titulo}</h3><p>${c.texto}</p>
+    ${c.prej ? `<p class="prej"><b>Candidatura prejudicada:</b> ${c.prej[0]}. <span>${c.prej[1]}</span></p>` : ""}
+    ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
+  </li>`).join("");
+}
+document.querySelector(".cronfiltro").addEventListener("click", e => {
+  const t = e.target.dataset && e.target.dataset.tipo; if (!t) return;
+  cronFiltro = t;
+  document.querySelectorAll(".cronfiltro button").forEach(b => b.setAttribute("aria-pressed", b.dataset.tipo === t));
+  renderCrono();
+});
+renderCrono();
 
 renderPolls();
 update();
