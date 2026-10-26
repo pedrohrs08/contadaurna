@@ -1,0 +1,21 @@
+# Guarda no archive.org as páginas citadas como fonte, a cada mudança no index.html.
+name: Arquivar fontes
+
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+  workflow_dispatch:
+
+concurrency:
+  group: arquivar
+  cancel-in-progress: false
+
+jobs:
+  arquivar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Arquivar links
+        run: python3 scripts/arquivar.py

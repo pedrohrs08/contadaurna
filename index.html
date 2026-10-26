@@ -49,6 +49,9 @@ body:not([data-aba="proj"]) .so-pxu { display: none !important; }
 body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls,
 body[data-aba="fake"] #status, body[data-aba="cron"] #status { display: none !important; }
 .nota-site { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; font-size: .88rem; line-height: 1.45; }
+.atualizado { margin: 8px 0 0; font-size: .82rem; color: var(--muted); }
+a.arq { font-size: .78em; color: var(--muted); margin-left: 3px; }
+.correcoes ol { margin: 6px 0 0; padding-left: 20px; }
 .sobre p { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; line-height: 1.45; }
 html, body { margin: 0; }
 body {
@@ -283,6 +286,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <h1>Eleições 2026</h1>
       <p class="sub">Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a comparação com as pesquisas da véspera, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
       <p class="nota-site"><b>Nota:</b> este site não tem fins lucrativos nem vínculo ou viés político. Ele foi construído com uma metodologia definida explicitamente nas instruções (o prompt) dadas à inteligência artificial: registrar só fatos comprovados, avaliar os acontecimentos de forma imparcial e, quando aparecer uma opinião, uma hipótese ou uma estimativa, identificá-la como tal. Todas as informações vêm de dados públicos, disponíveis na internet, com link para a fonte.</p>
+      <p class="atualizado">Conteúdo atualizado em <time id="atualizado"></time>. Os fatos posteriores a essa data ainda não estão no site.</p>
     </div>
   </header>
   <nav class="tabs" role="tablist" aria-label="O que ver">
@@ -670,6 +674,13 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <p><b>O que pode explicar (hipóteses, não comprovadas).</b> O comparecimento subiu do 1º para o 2º turno (abstenção caiu de 21,1% para 19,2%), e quem vota só no 2º turno é difícil de captar em pesquisa. Os votos que Lula e Flávio disputaram no 2º turno (de quem votou em outros candidatos, em branco ou nulo no 1º turno, ou não tinha votado) foram cerca de 74% para Lula (ver aba Fake news). Também há eleitores que decidem na última hora ou não declaram o voto ao pesquisador.</p>
       <p><b>O que conferir de verdade.</b> O resultado de cada urna é público: o boletim de urna é impresso e afixado na seção ao fim da votação e pode ser comparado com o que o TSE soma. Uma fraude precisaria aparecer nessa comparação, e não na diferença com as pesquisas.</p>
     </div>
+  </section>
+  <section class="panel correcoes" aria-label="Correções">
+    <p class="eyebrow">Achou um erro?</p>
+    <p class="note" style="margin:0">Se alguma informação estiver errada ou desatualizada, <a id="linkCorrecao" href="https://github.com/pedrohrs08/probabilidade/issues/new" target="_blank" rel="noopener">envie uma correção</a> com a fonte que mostra o dado certo. O pedido fica público e cada correção feita é registrada abaixo, com a data. (É preciso uma conta gratuita no GitHub.)</p>
+    <p class="note" style="margin:10px 0 0"><b>Registro de correções</b></p>
+    <div id="listaCorrecoes" class="note"></div>
+    <p class="note" style="margin:10px 0 0">Ao lado de cada fonte há um link <b>arquivo</b>, que abre a cópia da página guardada no archive.org. Ele continua funcionando se a notícia original sair do ar, mudar ou ficar atrás de paywall.</p>
   </section>
   <footer class="note" style="text-align:center;margin:0 auto">Projeto pessoal, sem fins lucrativos, sem ligação com o TSE ou com partidos. Dados públicos: oficiais de resultados.tse.jus.br e pesquisas registradas no TSE. Estimativas e simulações não substituem o resultado oficial.</footer>
 </div>
@@ -1803,6 +1814,32 @@ function renderPxu() {
 }
 renderPxu();
 
+// ---------- Data de atualização, correções e cópias arquivadas ----------
+const ATUALIZADO = "2026-10-26T13:00-03:00"; // atualizar a cada mudança de conteúdo
+const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
+];
+$("atualizado").dateTime = ATUALIZADO;
+$("atualizado").textContent = new Date(ATUALIZADO).toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short"}) + " (horário de Brasília)";
+$("listaCorrecoes").innerHTML = CORRECOES.length
+  ? `<ol>${CORRECOES.map(c => `<li><b>${c.data}:</b> ${c.texto}</li>`).join("")}</ol>`
+  : "<p style=\"margin:4px 0 0\">Nenhuma correção até agora.</p>";
+$("linkCorrecao").href = "https://github.com/pedrohrs08/probabilidade/issues/new?" + new URLSearchParams({
+  title: "Correção: ",
+  body: "Aba e item com o erro:\n\nO que está errado:\n\nO dado certo:\n\nFonte (link):\n",
+});
+const SEM_ARQUIVO = /^https?:\/\/(localhost|web\.archive\.org|github\.com|resultados\.tse\.jus\.br)[\/:]/;
+function marcarArquivos(raiz = document) {
+  raiz.querySelectorAll('a[href^="http"]').forEach(a => {
+    if (a.classList.contains("arq") || a.dataset.arq || SEM_ARQUIVO.test(a.href)) return;
+    a.dataset.arq = "1";
+    const c = document.createElement("a");
+    c.className = "arq"; c.href = "https://web.archive.org/web/2026/" + a.href;
+    c.target = "_blank"; c.rel = "noopener"; c.textContent = "arquivo";
+    c.title = "Cópia desta página guardada no archive.org";
+    a.after(" ", c);
+  });
+}
+
 let cronFiltro = "todos";
 function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
@@ -1812,6 +1849,7 @@ function renderCrono() {
     ${c.prej ? `<p class="prej"><b>Prejudicada no resultado:</b> ${c.prej[0]}. <span>${c.prej[1]}</span></p>` : ""}
     ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
   </li>`).join("");
+  marcarArquivos($("cronLista"));
 }
 document.querySelector(".cronfiltro").addEventListener("click", e => {
   const t = e.target.dataset && e.target.dataset.tipo; if (!t) return;
@@ -1822,6 +1860,7 @@ document.querySelector(".cronfiltro").addEventListener("click", e => {
 renderCrono();
 
 renderPolls();
+marcarArquivos();
 setAba("cron");
 update();
 </script>
