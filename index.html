@@ -283,6 +283,11 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 }
 @media (prefers-reduced-motion: reduce) { .bar .bl, .bar .bf { transition: none; } }
 </style>
+<script>
+// GoatCounter: estatística de visitas sem cookies. Os links diretos #fake-... contam como páginas separadas.
+window.goatcounter = {path: () => location.pathname + (location.hash.startsWith("#fake") ? location.hash : "")};
+</script>
+<script data-goatcounter="https://contadaurna.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
 <body data-aba="cron">
 <div class="wrap">
@@ -1771,7 +1776,10 @@ function abrirHash() {
   const el = m[1] && document.getElementById("fake-" + m[1]);
   if (el) requestAnimationFrame(() => el.scrollIntoView({block: "start"}));
 }
-window.addEventListener("hashchange", abrirHash);
+window.addEventListener("hashchange", () => {
+  abrirHash();
+  if (window.goatcounter && window.goatcounter.count) window.goatcounter.count();
+});
 
 // ---------- Aba Cronologia ----------
 // tipo: "fato" (aconteceu e está registrado), "opiniao" (declarações e versões em disputa), "fake" (desmentido pelos dados)
