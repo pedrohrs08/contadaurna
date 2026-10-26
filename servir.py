@@ -4,7 +4,9 @@
 Serve o index.html desta pasta e repassa /tse/... para https://resultados.tse.jus.br/...
 (evita bloqueios de CORS). Só usa a biblioteca padrão do Python 3.
 
-Uso:  python3 servir.py          e abra http://localhost:8000
+Uso:  python3 servir.py          e abra http://localhost:8000 (com tse/congelado.json, mostra os dados
+                                 finais salvos, como o site publicado)
+      python3 servir.py --ao-vivo ignora os dados salvos e busca tudo no TSE
       python3 servir.py --rede   libera o acesso para outros aparelhos da rede local
       python3 servir.py --salvar guarda em tse/oficial/... cada arquivo que o app baixar do TSE,
                                  para publicar o app como site estático (ex.: GitHub Pages)
@@ -24,10 +26,11 @@ import webbrowser
 PORTA = int(os.environ.get("PORTA", "8000"))
 TSE = "https://resultados.tse.jus.br/"
 SALVAR = "--salvar" in sys.argv
+AO_VIVO = SALVAR or "--ao-vivo" in sys.argv or not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), "tse", "congelado.json"))
 NUVEM = "--nuvem" in sys.argv
 CACHE_SEG = 30  # com muita gente acessando, cada arquivo do TSE é buscado no máximo uma vez a cada 30 s
 _cache, _trava = {}, threading.Lock()
-PUBLICOS = {"/", "/index.html"}  # o resto da pasta (código, .git) não é servido
+PUBLICOS = {"/", "/index.html", "/arquivo-fontes.json"}  # o resto da pasta (código, .git) não é servido
 
 
 def busca_tse(caminho):
@@ -48,8 +51,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/tse/"):
             caminho = self.path[len("/tse/"):].split("?")[0]
-            if not caminho.startswith("oficial/") or ".." in caminho:
+            if ".." in caminho or not (caminho.startswith("oficial/") or caminho == "congelado.json"):
                 self.send_error(400, "caminho inválido")
+                return
+            local = os.path.join("tse", *caminho.split("/"))
+            if not AO_VIVO and os.path.isfile(local):  # dados finais salvos: funciona sem internet
+                return super().do_GET()
+            if caminho == "congelado.json":  # ao vivo: o app não acha o arquivo e busca o TSE
+                self.send_error(404, "não encontrado")
                 return
             try:
                 corpo = busca_tse(caminho)

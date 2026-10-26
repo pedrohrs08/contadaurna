@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # o commit do robô de arquivamento (arquivo-fontes.json) não dispara o push acima
+  workflow_run:
+    workflows: [Arquivar fontes]
+    types: [completed]
 
 permissions:
   contents: write
@@ -21,7 +25,7 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p site
-          cp -r index.html tse CNAME site/
+          cp -r index.html tse CNAME arquivo-fontes.json site/
           touch site/.nojekyll
       - name: Enviar para a branch gh-pages
         run: |
