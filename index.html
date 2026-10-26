@@ -158,6 +158,8 @@ details summary { cursor: pointer; font-weight: 600; }
 .cen .placar { display: flex; justify-content: space-between; font: 800 1.7rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
 .cen .placar .l { color: var(--lula); } .cen .placar .f { color: var(--flavio); }
 .cen .bar { margin-top: 2px; height: 10px; }
+.cen .placar.votos { flex-wrap: wrap; gap: 4px 12px; font: 600 .95rem var(--f-display); }
+.cen .placar.votos b { font: 800 1.25rem var(--f-mono); font-variant-numeric: tabular-nums; }
 .cen .meta { font: .82rem var(--f-mono); color: var(--muted); }
 .veredito { border-radius: 10px; padding: 12px 14px; font-size: .95rem; margin-top: 12px; background: var(--ok-soft); }
 .veredito b { display: block; font-size: 1.05rem; }
@@ -425,6 +427,44 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <tbody id="prNecBody"></tbody>
     </table></div>
     <p class="note" style="margin-top:8px" id="prNecNota"></p>
+  </section>
+
+  <section class="panel so-pro" aria-label="Hipótese: todas as seções abertas até 19h">
+    <p class="eyebrow">Hipótese · e se todas as seções tivessem ficado abertas até as 19h?</p>
+    <p class="note" style="margin:0">Aqui a conta é ao contrário: em vez de tirar votos, o app <b>acrescenta</b> ao resultado oficial os votos que poderiam ter vindo das seções que fecharam às 17h, se elas também tivessem sido prorrogadas.</p>
+    <div class="prgeral">
+      <label>Seções que fecharam às 17h (%)<input id="hpFech" type="number" min="0" max="100" step="0.1" value="90"></label>
+      <label>Movimento nelas depois das 17h (% da última hora)<input id="hpRitmo" type="number" min="0" max="300" step="0.1" value="1.9"></label>
+      <label id="hpFatiaL">Fatia de Flávio nesses votos (%)<input id="hpFatia" type="number" min="0" max="100" step="0.1" value="48.21"></label>
+      <label style="align-content:end"><button type="button" id="hpMin">Qual o mínimo para Flávio ganhar?</button></label>
+    </div>
+    <div class="cenarios" style="margin-top:12px">
+      <div class="cen">
+        <h3>Com todas as seções abertas (hipótese)</h3>
+        <div class="placar"><span class="l" id="hpL">–</span><span class="f" id="hpF">–</span></div>
+        <div class="bar" aria-hidden="true"><div class="bl" id="hpbL" style="width:50%"></div><div class="bf" id="hpbF" style="width:50%"></div><div class="mid"></div></div>
+        <span class="meta" id="hpM"></span>
+      </div>
+      <div class="cen">
+        <h3>Votos a mais nas seções que fecharam</h3>
+        <div class="placar votos"><span class="l">Lula <b id="hpVL">–</b></span><span class="f">Flávio <b id="hpVF">–</b></span></div>
+        <span class="meta" id="hpVM"></span>
+      </div>
+    </div>
+    <div class="veredito" id="hpVer" aria-live="polite"></div>
+    <div class="minbox" id="hpMinBox" hidden aria-live="polite"></div>
+    <div class="tbl" style="margin-top:12px"><table>
+      <thead class="quebra"><tr><th id="hpCol">Fatia de Flávio</th><th>Votos a mais necessários</th><th>Movimento necessário (% da última hora)</th><th>Vezes o movimento real</th></tr></thead>
+      <tbody id="hpBody"></tbody>
+    </table></div>
+    <dl class="explica">
+      <dt>Seções que fecharam às 17h</dt>
+      <dd>Quantas seções do país não foram prorrogadas. Os votos a mais crescem na mesma proporção. O valor inicial (90%) é coerente com as suposições da tabela por região, onde cerca de 9% ficaram abertas.</dd>
+      <dt>Movimento nelas depois das 17h</dt>
+      <dd>Quantos eleitores teriam aparecido em cada seção fechada, em % do movimento das 16h às 17h, durante as horas de prorrogação definidas mais abaixo. O valor inicial (1,9%) é o mesmo que reproduz os ~35 mil votos que os logs contaram nas seções que ficaram abertas, ou seja, supõe que as fechadas teriam o mesmo movimento. 100% seria o mesmo movimento da última hora normal, durante todo o tempo extra.</dd>
+      <dt>Fatia de Flávio nesses votos</dt>
+      <dd>Quanto desses votos a mais iria para Flávio. O valor inicial é a fatia que ele teve no país (48,21%). Abaixo de 50%, os votos a mais aumentam a vantagem de Lula.</dd>
+    </dl>
   </section>
 
   <section class="panel so-pro" aria-label="Suposições por região">
@@ -1353,6 +1393,7 @@ function renderProrrogacao() {
     : `<b>O vencedor não muda: ${vEst} vence nos dois horários.</b>${precisa > 1
       ? `Mesmo que 100% dos votos depois das 17h fossem de ${vEst}, a diferença final de ${fmtInt(M)} votos é maior que os ${fmtInt(E)} votos estimados para a prorrogação.`
       : `Para mudar, ${vEst} precisaria de mais de ${fmtPct(precisa, 1)} dos votos depois das 17h.`}`;
+  renderHipotese();
 }
 // ---------- Mínimo para o perdedor oficial ganhar ----------
 // Aumenta uma suposição de cada vez, da mais para a menos discutível, até o vencedor mudar:
@@ -1462,6 +1503,68 @@ function proMinimo() {
   };
 }
 const n1g = x => Number(x).toLocaleString("pt-BR", {maximumFractionDigits: 1});
+// ---------- Hipótese: seções fechadas às 17h também prorrogadas ----------
+// Acrescenta ao oficial os votos que viriam das seções que fecharam: seções × % fechadas × eleitores por seção ×
+// fatia da última hora × movimento × horas × % de válidos, repartidos pela fatia escolhida.
+function hpConta(q, fech, ritmo, fatiaPerd) {
+  const extra = q.secoes * fech / 100 * q.porSec * q.ultima * ritmo / 100 * q.horas * q.valid;
+  const lulaVence = q.L >= q.F, gPerd = extra * fatiaPerd / 100;
+  const nL = q.L + (lulaVence ? extra - gPerd : gPerd), nF = q.F + (lulaVence ? gPerd : extra - gPerd);
+  return {extra, nL, nF, vira: (nL >= nF) !== lulaVence};
+}
+function renderHipotese() {
+  const q = proLer(), lulaVence = q.L >= q.F, venc = lulaVence ? "Lula" : "Flávio", perd = lulaVence ? "Flávio" : "Lula";
+  const fech = Math.min(100, Math.max(0, numIn("hpFech"))), ritmo = Math.max(0, numIn("hpRitmo")), fatia = Math.min(100, Math.max(0, numIn("hpFatia")));
+  $("hpFatiaL").firstChild.textContent = `Fatia de ${perd} nesses votos (%)`;
+  $("hpMin").textContent = `Qual o mínimo para ${perd} ganhar?`;
+  $("hpCol").textContent = `Fatia de ${perd}`;
+  const r = hpConta(q, fech, ritmo, fatia), t = r.nL + r.nF;
+  $("hpL").textContent = fmtPct(r.nL / t, 2); $("hpF").textContent = fmtPct(r.nF / t, 2);
+  $("hpbL").style.width = (r.nL / t * 100) + "%"; $("hpbF").style.width = (r.nF / t * 100) + "%";
+  $("hpM").textContent = `Simulado: ${r.nL >= r.nF ? "Lula" : "Flávio"} vence por ${fmtInt(Math.abs(r.nL - r.nF))} votos`;
+  const xL = r.nL - q.L, xF = r.nF - q.F;
+  $("hpVL").textContent = "+" + fmtInt(xL); $("hpVF").textContent = "+" + fmtInt(xF);
+  $("hpVM").textContent = `${fmtInt(r.extra)} votos válidos a mais, ${n1g(r.extra / LOGS.g1)} vezes o que as seções abertas receberam de fato`;
+  const M = Math.abs(q.L - q.F);
+  const ver = $("hpVer"); ver.className = "veredito" + (r.vira ? " vira" : "");
+  ver.innerHTML = r.vira
+    ? `<b>Com essas suposições, ${perd} ganharia.</b>O saldo de ${perd} nos votos a mais (${fmtInt(Math.abs(xF - xL))}) passa da diferença final de ${fmtInt(M)}.`
+    : `<b>O vencedor não muda: ${venc} vence mesmo com todas as seções abertas.</b>${fatia > 50
+      ? `O saldo de ${perd} nos votos a mais seria de ${fmtInt(Math.abs(xF - xL))}, ${fmtPct(Math.abs(xF - xL) / (M || 1), 1)} da diferença final de ${fmtInt(M)}.`
+      : `Com ${fmtPct(fatia / 100, 1)} para ${perd}, os votos a mais ainda aumentam a vantagem de ${venc}.`}`;
+  // Tabela: para cada fatia do perdedor, quantos votos a mais e quanto movimento seriam precisos
+  const porRitmo = hpConta(q, fech, 1, 50).extra;   // votos a mais para cada 1% de movimento
+  $("hpBody").innerHTML = [100, 80, 70, 60, 55].map(f => {
+    const nec = M / (2 * f / 100 - 1), rit = porRitmo > 0 ? nec / porRitmo : Infinity;
+    return `<tr><td>${f}%</td><td>${fmtInt(nec)}</td><td class="${rit > 100 ? "alto" : ""}">${Number.isFinite(rit) ? n1g(rit) + "%" : "–"}</td><td>${fmtInt(nec / LOGS.g1)}×</td></tr>`;
+  }).join("");
+}
+// Mínimo: com a fatia escolhida (ou 60% se ela não passar de 50%), sobe o movimento até virar; se passar de 100%, sobe a fatia
+function hpMinimo() {
+  const q = proLer(), lulaVence = q.L >= q.F, perd = lulaVence ? "Flávio" : "Lula", venc = lulaVence ? "Lula" : "Flávio";
+  const fech = Math.min(100, Math.max(0, numIn("hpFech"))) || 90;
+  const M = Math.abs(q.L - q.F), porRitmo = hpConta(q, fech, 1, 50).extra;
+  let fatia = Math.max(numIn("hpFatia"), 60), ritmo = M / (2 * fatia / 100 - 1) / porRitmo;
+  if (ritmo > 100) { ritmo = 100; fatia = Math.min(100, (M / (porRitmo * 100) + 1) / 2 * 100); }
+  ritmo = Math.ceil(ritmo * 10) / 10; fatia = Math.ceil(fatia * 10) / 10;
+  $("hpFech").value = fech; $("hpRitmo").value = ritmo; $("hpFatia").value = fatia;
+  renderHipotese();
+  const r = hpConta(q, fech, ritmo, fatia);
+  const absten = q.L + q.F ? (q.L + q.F) / (q.valid || 1) / (1 - ABST_2T) * ABST_2T : 0;   // quem não votou no 2º turno
+  const pessoas = r.extra / (q.valid || 1);
+  const box = $("hpMinBox"); box.hidden = false;
+  box.innerHTML = `<div class="impossivel" role="alert"><b class="tit">⚠ ${r.vira ? "Cenário impossível na prática" : "Nem assim " + perd + " ganharia"}</b>
+    <p>Para ${perd} ganhar com todas as seções abertas, seria preciso, ao mesmo tempo:</p>
+    <ul>
+      <li><b>${fmtInt(pessoas)} pessoas a mais votando depois das 17h</b> nas seções que fecharam: ${n1g(r.extra / LOGS.g1)} vezes os ~${fmtInt(LOGS.g1)} votos que as seções abertas receberam de fato, e ${fmtPct(pessoas / (absten || 1), 1)} de todos os ${fmtInt(absten)} eleitores que não votaram.</li>
+      <li><b>Movimento de ${n1g(ritmo)}% da última hora normal</b> em cada seção fechada, durante ${n1g(q.horas)} h. Nas seções que ficaram abertas, o movimento que reproduz os votos contados nos logs é de cerca de ${n1g(numIn("prFator"))}%.</li>
+      <li><b>${n1g(fatia)}% desses votos para ${perd}</b>, contra ${fmtPct((lulaVence ? q.F : q.L) / (q.L + q.F), 2)} que ele teve no país.</li>
+    </ul></div>
+    <p class="note">Os campos acima já foram preenchidos com esses valores. A conta usa as seções fechadas que você definiu (${n1g(fech)}%); com menos seções fechadas, o movimento necessário seria ainda maior.</p>`;
+  box.scrollIntoView({block: "start", behavior: "smooth"});
+}
+$("hpMin").onclick = hpMinimo;
+
 $("prMin").onclick = proMinimo;
 // Ajusta o ritmo para a conta dar o total dos logs (votos registrados, inclusive brancos e nulos)
 $("lgAjusta").onclick = () => {
@@ -1469,7 +1572,7 @@ $("lgAjusta").onclick = () => {
   if (atual > 0) $("prFator").value = Math.round(numIn("prFator") * alvo / atual * 1000) / 1000;
   $("prMinBox").hidden = true; renderProrrogacao();
 };
-document.querySelectorAll(".so-pro").forEach(el => el.addEventListener("input", () => { $("prMinBox").hidden = true; renderProrrogacao(); }));
+document.querySelectorAll(".so-pro").forEach(el => el.addEventListener("input", () => { $("prMinBox").hidden = true; $("hpMinBox").hidden = true; renderProrrogacao(); }));
 $("prPerfil").onclick = proPerfil;
 $("prPadrao").onclick = () => { $("prPerfilNota").textContent = "Suposições iniciais restauradas."; proPadrao(); };
 $("prOficial").onclick = () => { if (proOficial(false)) { proOfTocado = false; renderProrrogacao(); } };
