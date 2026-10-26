@@ -177,6 +177,13 @@ details summary { cursor: pointer; font-weight: 600; }
 #prRegBody small.abs { white-space: normal; }
 .so-pro input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 .so-pro input[type=number]::-webkit-inner-spin-button, .so-pro input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.explica { margin: 12px 0 0; font-size: .86rem; max-width: 80ch; }
+.explica dt { font-weight: 700; margin-top: 10px; }
+.explica dd { margin: 2px 0 0; color: var(--muted); }
+.explica dd b { color: var(--fg); font-family: var(--f-mono); }
+.conta { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); }
+.conta ol { margin: 0; padding-left: 20px; font-size: .88rem; display: grid; gap: 6px; }
+.conta b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 .prbtns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .prbtns button { font-size: .85rem; min-height: 36px; padding: 6px 12px; }
 /* Celular: botão principal fixo embaixo, fácil de alcançar com o polegar */
@@ -361,6 +368,10 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <div class="kpi"><b id="prPrec">–</b><span>% para Lula na prorrogação que mudaria o vencedor</span></div>
       <div class="kpi"><b id="prVPrec">–</b><span id="prVPrecL">votos na prorrogação necessários para mudar o vencedor</span></div>
     </div>
+    <div class="conta">
+      <p class="eyebrow" style="margin:0 0 6px">A conta, passo a passo, com os números de agora</p>
+      <ol id="prConta"></ol>
+    </div>
   </section>
 
   <section class="panel so-pro" aria-label="Suposições por região">
@@ -373,8 +384,17 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <button type="button" id="prPerfil">Usar o perfil de cada região (resultado do TSE)</button>
       <button type="button" id="prPadrao">Voltar às suposições iniciais</button>
     </div>
-    <p class="note" style="margin-top:8px">Seções: fatia das seções do país em cada região. Abertas: % dessas seções que receberam eleitores depois das 17h. Votos: votos válidos estimados depois das 17h e o saldo líquido.</p>
-    <p class="note" id="prPerfilNota" style="margin-top:4px">"Lula %" é a fatia de Lula entre os votos válidos dados na prorrogação; Flávio fica com o resto. O botão de perfil copia a fatia de Lula que cada região teve no resultado oficial.</p>
+    <p class="note" id="prPerfilNota" style="margin-top:8px">O botão de perfil copia a fatia de Lula que cada região teve no resultado oficial.</p>
+    <dl class="explica">
+      <dt>Seções %</dt>
+      <dd>Que fatia das seções do país fica nessa região (começa com a fatia do eleitorado: Sudeste 42,6%, Nordeste 27,1%…). Não muda o total de votos da prorrogação, só reparte entre as regiões: subir uma região tira peso das outras. A soma deveria dar 100%; agora dá <b id="prSomaSec">–</b>.</dd>
+      <dt>Abertas %</dt>
+      <dd>Das seções da região, quantas ainda receberam eleitores depois das 17h. É o parâmetro que mais pesa: os votos da região crescem na mesma proporção (de 10% para 20%, os votos dobram). Os 10% iniciais (5% no Sul) são chute, porque o TSE não divulgou esse número.</dd>
+      <dt>Lula %</dt>
+      <dd>Fatia de Lula entre os votos dados depois das 17h; Flávio fica com o resto. Não muda quantos votos houve, só para quem foram. Com 50% a prorrogação empata e não mexe na diferença. Cada ponto acima de 50% dá a Lula um saldo de 2% dos votos da região (60% de Lula em 10 mil votos = 6 mil a 4 mil, saldo de 2 mil).</dd>
+      <dt>Votos</dt>
+      <dd>Resultado da conta, não se edita: votos válidos estimados na região depois das 17h e, embaixo, quem ganhou esse pedaço e por quanto.</dd>
+    </dl>
   </section>
 
   <section class="panel so-pro" aria-label="Fluxo de eleitores e resultado oficial">
@@ -392,7 +412,22 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <label style="align-content:end"><button type="button" id="prOficial">Usar o resultado do TSE</button></label>
     </div>
     <div class="note" style="margin-top:12px">
-      <p><b>Como a conta é feita.</b> Em cada região, votos depois das 17h = seções × % que ficaram abertas × eleitores por seção × fatia da última hora × ritmo da prorrogação × horas × % de válidos. O horário estendido é o resultado oficial, que já inclui esses votos. O horário normal é o oficial menos esses votos. Quem já estava na fila às 17h vota de qualquer jeito pela regra normal, então aqui só entra quem chegou depois.</p>
+      <dl class="explica">
+        <dt>Fluxo por hora</dt>
+        <dd>Como o comparecimento se espalha ao longo do dia. Só a última hora (16h às 17h) entra na conta: ela diz quantos eleitores chegavam por hora no fim da votação. Subir essa barra (ou baixar as outras) aumenta os votos da prorrogação na mesma proporção.</dd>
+        <dt>Ritmo na prorrogação</dt>
+        <dd>Quanto do movimento da última hora continuou depois das 17h. 100% é o mesmo movimento das 16h às 17h; 10% é um décimo dele. Proporcional: dobrar o ritmo dobra os votos.</dd>
+        <dt>Horas de prorrogação</dt>
+        <dd>2 é das 17h às 19h. Proporcional. Como a orientação do TSE só saiu às 18h12, na prática muitas seções podem ter ficado abertas menos tempo.</dd>
+        <dt>Eleitores que votam por seção</dt>
+        <dd>Comparecimento médio de uma seção no dia todo (cerca de 128 milhões de votantes divididos por 490 mil seções). Proporcional.</dd>
+        <dt>Total de seções no país</dt>
+        <dd>Base da conta das seções abertas. Proporcional.</dd>
+        <dt>Votos válidos sobre o comparecimento</dt>
+        <dd>Tira os brancos e nulos, que não contam para nenhum dos dois. Proporcional.</dd>
+        <dt>Resultado oficial</dt>
+        <dd>É o horário estendido, ponto de partida da conta. O horário normal é ele menos os votos da prorrogação. A diferença final entre os dois é a régua: a prorrogação só muda o vencedor se o saldo dela for maior que essa diferença. Quem já estava na fila às 17h vota pela regra normal, então não entra na prorrogação.</dd>
+      </dl>
       <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. O TSE não divulgou quantos votos entraram depois das 17h, por isso os números iniciais desta aba são suposições, não dados oficiais. Ajuste-os para testar cenários.</p>
     </div>
   </section>
@@ -1171,8 +1206,8 @@ function proPadrao() {
 function proOficial(silencioso) {
   const br = lastData && !lastData.sim ? lastData.br : null;
   if (br && br.l + br.f > 0) {
-    $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(2);
-    $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(2);
+    $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(4);
+    $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(4);
     return true;
   }
   if (!silencioso) { $("prOficial").textContent = "Sem dados do TSE ainda: toque em Atualizar"; setTimeout(() => { $("prOficial").textContent = "Usar o resultado do TSE"; }, 3000); }
@@ -1195,8 +1230,10 @@ function renderProrrogacao() {
   const ultima = curva[8] / somaC;                     // fatia do comparecimento na última hora
   const porHora = numIn("prPorSec") * ultima * numIn("prFator") / 100;   // eleitores por seção aberta, por hora de prorrogação
   const horas = Math.min(2, Math.max(0, numIn("prHoras"))), valid = numIn("prValid") / 100, secoes = numIn("prSecoes");
-  let E = 0, EL = 0;
+  let E = 0, EL = 0, abertas = 0, somaSec = 0;
   PRO_PADRAO.reg.forEach((_, i) => {
+    abertas += secoes * numIn("prS" + i) / 100 * Math.min(100, numIn("prA" + i)) / 100;
+    somaSec += numIn("prS" + i);
     const pl = Math.min(100, Math.max(0, numIn("prL" + i))) / 100;
     const v = secoes * numIn("prS" + i) / 100 * Math.min(100, numIn("prA" + i)) / 100 * porHora * horas * valid;
     E += v; EL += v * pl;
@@ -1204,6 +1241,8 @@ function renderProrrogacao() {
     $("prV" + i).innerHTML = `${fmtInt(v)}<small class="abs">${v * (2 * pl - 1) >= 0 ? "Lula" : "Flávio"} +${fmtInt(Math.abs(v * (2 * pl - 1)))}</small>`;
   });
   const EF = E - EL;
+  $("prSomaSec").textContent = somaSec.toLocaleString("pt-BR", {maximumFractionDigits: 1}) + "%";
+  const n1 = x => x.toLocaleString("pt-BR", {maximumFractionDigits: 1});
   const V = numIn("prOfV") * 1e6, L = V * Math.min(100, numIn("prOfL")) / 100, F = V - L;
   const nL = Math.max(0, L - EL), nF = Math.max(0, F - EF), nV = nL + nF;
   const cen = (pre, l, f) => {
@@ -1229,6 +1268,15 @@ function renderProrrogacao() {
   $("prVPrecL").textContent = Number.isFinite(vPrec)
     ? `votos depois das 17h que mudariam o vencedor, com as fatias acima (${(vPrec / (E || 1)).toLocaleString("pt-BR", {maximumFractionDigits: 1})} vezes o estimado)`
     : `com as fatias acima, a prorrogação favorece ${vEst === "Lula" ? "Flávio" : "Lula"}: tirá-la não mudaria o vencedor`;
+  const sinal = saldo >= 0 ? "Lula" : "Flávio";
+  $("prConta").innerHTML = `
+    <li><b>${fmtInt(abertas)}</b> seções abertas depois das 17h: ${fmtInt(secoes)} seções repartidas pelas regiões (Seções %) × a fatia de cada uma que ficou aberta (Abertas %), em média ${fmtPct(abertas / (secoes || 1), 1)}.</li>
+    <li><b>${n1(porHora)}</b> eleitor(es) por hora em cada seção aberta: ${fmtInt(numIn("prPorSec"))} eleitores por seção × ${fmtPct(ultima, 1)} do dia na última hora × ${n1(numIn("prFator"))}% de ritmo.</li>
+    <li><b>${fmtInt(E)}</b> votos válidos depois das 17h: ${fmtInt(abertas)} seções × ${n1(porHora)} por hora × ${n1(horas)} h × ${n1(numIn("prValid"))}% válidos.</li>
+    <li>Pelas fatias de Lula de cada região: Lula <b>${fmtInt(EL)}</b> × Flávio <b>${fmtInt(EF)}</b>, saldo de ${fmtInt(Math.abs(saldo))} para ${sinal}.</li>
+    <li>Horário normal = oficial menos esses votos: ${muda
+      ? `a vantagem de ${fmtInt(M)} de ${vEst} vira <b>${fmtInt(Math.abs(nL - nF))}</b> de vantagem para ${vNormal}.`
+      : `a vantagem de ${vEst}, de ${fmtInt(M)} votos, ${(saldo > 0) === (vEst === "Lula") ? "seria menor" : "seria maior"}: <b>${fmtInt(Math.abs(nL - nF))}</b>.`}</li>`;
   const ver = $("prVer");
   ver.className = "veredito" + (muda ? " vira" : "");
   ver.innerHTML = muda
