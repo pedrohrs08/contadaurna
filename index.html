@@ -48,6 +48,7 @@ body:not([data-aba="proj"]) .so-pxu { display: none !important; }
 .pxu td.fora { font-weight: 600; }
 body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls,
 body[data-aba="fake"] #status, body[data-aba="cron"] #status { display: none !important; }
+.nota-site { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; font-size: .88rem; line-height: 1.45; }
 .sobre p { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; line-height: 1.45; }
 html, body { margin: 0; }
 body {
@@ -281,6 +282,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <div>
       <h1>Eleições 2026</h1>
       <p class="sub">Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a comparação com as pesquisas da véspera, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
+      <p class="nota-site"><b>Nota:</b> este site não tem fins lucrativos nem vínculo ou viés político. Ele foi construído com uma metodologia definida explicitamente nas instruções (o prompt) dadas à inteligência artificial: registrar só fatos comprovados, avaliar os acontecimentos de forma imparcial e, quando aparecer uma opinião, uma hipótese ou uma estimativa, identificá-la como tal. Todas as informações vêm de dados públicos, disponíveis na internet, com link para a fonte.</p>
     </div>
   </header>
   <nav class="tabs" role="tablist" aria-label="O que ver">
@@ -669,7 +671,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <p><b>O que conferir de verdade.</b> O resultado de cada urna é público: o boletim de urna é impresso e afixado na seção ao fim da votação e pode ser comparado com o que o TSE soma. Uma fraude precisaria aparecer nessa comparação, e não na diferença com as pesquisas.</p>
     </div>
   </section>
-  <footer class="note" style="text-align:center;margin:0 auto">Projeto pessoal, sem ligação com o TSE. Dados oficiais de resultados.tse.jus.br e pesquisas registradas no TSE. Estimativas e simulações não substituem o resultado oficial.</footer>
+  <footer class="note" style="text-align:center;margin:0 auto">Projeto pessoal, sem fins lucrativos, sem ligação com o TSE ou com partidos. Dados públicos: oficiais de resultados.tse.jus.br e pesquisas registradas no TSE. Estimativas e simulações não substituem o resultado oficial.</footer>
 </div>
 
 <script>
