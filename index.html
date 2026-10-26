@@ -42,6 +42,10 @@ body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
 /* Site estático com os dados finais: não há o que atualizar */
 body.congelado #btnUpdate, body.congelado #autoWrap { display: none !important; }
 body.congelado { padding-bottom: 48px; }
+body.congelado[data-aba="proj"] .so-proj, body.congelado[data-aba="proj"] .so-map, body.congelado[data-aba="proj"] #banner { display: none !important; }
+body:not(.congelado) .so-pxu, body:not([data-aba="proj"]) .so-pxu { display: none !important; }
+.pxu td.dentro { color: var(--muted); }
+.pxu td.fora { font-weight: 600; }
 body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls,
 body[data-aba="fake"] #status, body[data-aba="cron"] #status { display: none !important; }
 .sobre p { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; line-height: 1.45; }
@@ -276,7 +280,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   <header class="top">
     <div>
       <h1>Eleições 2026</h1>
-      <p class="sub">Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a projeção feita durante a apuração, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
+      <p class="sub">Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a comparação com as pesquisas da véspera, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
     </div>
   </header>
   <nav class="tabs" role="tablist" aria-label="O que ver">
@@ -289,6 +293,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   <div class="sobre" aria-label="Sobre esta aba">
     <p class="so-res"><b>Para que serve:</b> mostrar o placar oficial do TSE: votos válidos de cada candidato, seções totalizadas e o resultado por região, por UF e no mapa. <b>Como foi montada:</b> o app lê os arquivos públicos de resultados do TSE (resultados.tse.jus.br) do 2º turno, do Brasil e de cada UF, e só faz somas e percentuais. No site publicado são os arquivos finais, salvos depois do fim da apuração; rodando ao vivo, o botão Atualizar busca a versão mais nova.</p>
     <p class="so-proj"><b>Para que serve:</b> estimar, durante a apuração, a chance de cada candidato vencer e o resultado final provável, antes de todas as urnas serem contadas. <b>Como foi montada:</b> parte do perfil de voto de capitais, grandes cidades e interior de cada UF no 1º turno (dados do TSE), ajusta pela média das pesquisas da véspera e corrige com o que já foi apurado em cada lugar; a incerteza vem de milhares de simulações. Os detalhes estão em “Parâmetros do modelo e como funciona”, no fim da página. Com a apuração encerrada, a projeção coincide com o resultado oficial.</p>
+    <p class="so-pxu"><b>Para que serve:</b> comparar o que as pesquisas da véspera diziam com o que as urnas mostraram, e explicar por que uma diferença entre os dois não é sinal de fraude. <b>Como foi montada:</b> os números de cada instituto vêm da compilação da RED publicada em 24/10, em votos válidos; o resultado é o oficial do TSE; os exemplos de 2022 vêm de reportagens da época, com link. Durante a apuração, esta aba mostrava a projeção de quem ia ganhar; com a eleição encerrada, ela deu lugar a esta comparação.</p>
     <p class="so-pro"><b>Para que serve:</b> medir quanto a prorrogação da votação até 19h, decidida pelo ministro Zanin, poderia ter mudado o resultado. <b>Como foi montada:</b> parte do resultado oficial do TSE e da contagem de votos registrados depois das 17h nos registros (logs) das urnas, feita pelo G1 e por um levantamento divulgado pela Jovem Pan. Os cenários de horário normal e estendido usam suposições por região que você pode editar; elas são estimativas e estão marcadas assim. Inclui a explicação simples, a hipótese de todas as seções abertas até 19h e o mínimo que Flávio precisaria para virar.</p>
     <p class="so-fake"><b>Para que serve:</b> reunir boatos sobre o 2º turno e mostrar por que não procedem. <b>Como foi montada:</b> cada card traz o texto do boato na íntegra, como circulou, e depois o parecer, com as contas feitas a partir dos números oficiais do TSE do 1º e do 2º turno e links para as fontes. Boatos novos entram no topo.</p>
     <p class="so-cron"><b>Para que serve:</b> contar o dia da eleição hora a hora, separando fato, opinião e fake news, e dizer qual candidatura cada acontecimento prejudicou em votos. <b>Como foi montada:</b> cruzando reportagens de veículos com linhas editoriais diferentes (vistos como à direita, ao centro e à esquerda) com fontes oficiais; quando os veículos discordam de horário ou número, o item mostra as versões.</p>
@@ -640,6 +645,29 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
         <p>É um modelo estatístico e não substitui o resultado oficial do TSE.</p>
       </div>
     </details>
+  </section>
+  <section class="panel so-pxu pxu" aria-label="Pesquisas da véspera e resultado das urnas">
+    <p class="eyebrow">Pesquisas da véspera × resultado das urnas · votos válidos de Lula</p>
+    <div class="kpis">
+      <div class="kpi"><b id="pxMedia">–</b><span>média das pesquisas da véspera</span></div>
+      <div class="kpi"><b id="pxUrna">–</b><span>resultado oficial do TSE</span></div>
+      <div class="kpi"><b id="pxDif">–</b><span>diferença a favor de Lula</span></div>
+      <div class="kpi"><b id="pxAcima">–</b><span>pesquisas que davam Flávio à frente</span></div>
+    </div>
+    <div class="tbl" style="margin-top:14px"><table>
+      <thead><tr><th>Instituto</th><th>Lula</th><th class="hide-sm">Flávio</th><th>Margem</th><th>Erro</th></tr></thead>
+      <tbody id="pxBody"></tbody>
+    </table></div>
+    <p class="note" style="margin-top:8px">“Erro” é o resultado oficial de Lula menos o número da pesquisa para Lula. Margem é a margem de erro informada pelo instituto (“–” quando a compilação não informa). Veritá e Gerp ainda estavam em conferência documental, segundo a RED. Fonte das pesquisas: <a href="https://red.org.br/noticias/datafolha-e-quaest-mostram-disputa-presidencial-indefinida-na-vespera-da-eleicao/" target="_blank" rel="noopener">RED, 24/10/2026</a>; também conferido em <a href="https://www.polemicaparaiba.com.br/politica/atlasintel-flavio-tem-508-dos-votos-validos-lula-492/" target="_blank" rel="noopener">Polêmica Paraíba</a> (AtlasIntel) e <a href="https://anoticiadovale.com/2026/10/25/datafolha-e-quaest-mostram-flavio-com-51-e-lula-49-dos-votos-validos/" target="_blank" rel="noopener">A Notícia do Vale</a> (Datafolha e Quaest).</p>
+  </section>
+  <section class="panel so-pxu" aria-label="O que a diferença significa">
+    <p class="eyebrow">O que essa diferença significa</p>
+    <div class="note">
+      <p id="pxResumo"></p>
+      <p><b>Pesquisa errar é prova de fraude? Não.</b> Pesquisa é um retrato feito com uma amostra, alguns dias antes, e já errou nos dois sentidos. Na véspera do 1º turno de 2022, o Datafolha dava a Bolsonaro 36% dos votos válidos; nas urnas ele teve 43,2%, sete pontos a mais (<a href="https://www.metropoles.com/brasil/eleicoes-2022/datafolha-lula-tem-50-dos-votos-validos-bolsonaro-acumula-36" target="_blank" rel="noopener">Metrópoles</a>). Na véspera do 2º turno de 2022, o Datafolha dava Lula 52% e Bolsonaro 48%; o resultado foi 50,9% a 49,1%, melhor para Bolsonaro (<a href="https://www.poder360.com.br/eleicoes/datafolha-lula-tem-52-dos-votos-validos-bolsonaro-48/" target="_blank" rel="noopener">Poder360</a>). Em 2026 o erro foi para o outro lado.</p>
+      <p><b>O que pode explicar (hipóteses, não comprovadas).</b> O comparecimento subiu do 1º para o 2º turno (abstenção caiu de 21,1% para 19,2%), e quem vota só no 2º turno é difícil de captar em pesquisa. Os votos que Lula e Flávio disputaram no 2º turno (de quem votou em outros candidatos, em branco ou nulo no 1º turno, ou não tinha votado) foram cerca de 74% para Lula (ver aba Fake news). Também há eleitores que decidem na última hora ou não declaram o voto ao pesquisador.</p>
+      <p><b>O que conferir de verdade.</b> O resultado de cada urna é público: o boletim de urna é impresso e afixado na seção ao fim da votação e pode ser comparado com o que o TSE soma. Uma fraude precisaria aparecer nessa comparação, e não na diferença com as pesquisas.</p>
+    </div>
   </section>
   <footer class="note" style="text-align:center;margin:0 auto">Projeto pessoal, sem ligação com o TSE. Dados oficiais de resultados.tse.jus.br e pesquisas registradas no TSE. Estimativas e simulações não substituem o resultado oficial.</footer>
 </div>
@@ -1172,7 +1200,7 @@ async function update() {
     setStatus("Buscando dados no TSE…");
     if (congelado === undefined) {
       congelado = await fetch("tse/congelado.json").then(r => r.ok ? r.json() : null).catch(() => null);
-      if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); }
+      if (congelado) { fetchMode = "proxy"; document.body.classList.add("congelado"); $("auto").checked = false; clearInterval(timer); $("tabProj").textContent = "Pesquisas × urnas"; if (!abaEscolhida) setAba("res"); }
     }
     if (!base1T) base1T = await load1T();
     const {ufs, br} = await load2T();
@@ -1206,6 +1234,8 @@ function setAba(a) {
   if (a !== "res" && mapaModo === "parcial") setMapaModo("final");
   if (lastResult) render(lastResult);
 }
+let abaEscolhida = false;
+document.querySelector(".tabs").addEventListener("click", () => { abaEscolhida = true; }, true);
 $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
 $("tabPro").onclick = () => setAba("pro");
@@ -1737,6 +1767,37 @@ const CRONO = [
   {hora: "Segunda, 26/10", tipo: "fato", titulo: "Levantamentos contam os votos depois das 17h", texto: "Com os registros públicos das urnas, o G1 contou 35.521 votos depois das 17h e um levantamento independente divulgado pela Jovem Pan contou 34.319 (32.337 entre 17h e 18h e 1.982 entre 18h e 19h). Os registros não dizem em quem foram esses votos.", fontes: ["g1", "jp"], prej: ["Nenhuma", "É a medição dos votos depois das 17h; não muda o resultado."]},
   {hora: "Segunda, 26/10", tipo: "fake", titulo: "“Lula pegou 100% dos votos dos outros candidatos + 3 milhões”", texto: "Post que circula nas redes. Não procede: o post erra os números e esquece os votos brancos e nulos e o crescimento de Flávio. Checagem completa na aba Fake news.", fontes: [], prej: ["Nenhuma", "Post feito depois da eleição, sem efeito sobre o resultado."]},
 ];
+// ---------- Pesquisas da véspera × urnas (site publicado) ----------
+const PESQ_VESPERA = [ // votos válidos; m = margem de erro em pontos (null se a compilação não informa)
+  {inst: "Datafolha", l: 49.0, f: 51.0, m: 2},
+  {inst: "Quaest", l: 49.0, f: 51.0, m: 2},
+  {inst: "AtlasIntel", l: 49.2, f: 50.8, m: 1},
+  {inst: "BTG/Nexus", l: 49.5, f: 50.5, m: null},
+  {inst: "CNT/MDA", l: 49.3, f: 50.7, m: null},
+  {inst: "Veritá", l: 48.7, f: 51.3, m: null},
+  {inst: "Gerp", l: 48.0, f: 52.0, m: null},
+  {inst: "Colectta", l: 50.3, f: 49.7, m: null},
+  {inst: "França", l: 48.6, f: 51.4, m: null},
+];
+const URNA_2T = {l: 64256232, f: 59826041};
+function renderPxu() {
+  const urna = 100 * URNA_2T.l / (URNA_2T.l + URNA_2T.f);
+  const media = PESQ_VESPERA.reduce((a, p) => a + p.l, 0) / PESQ_VESPERA.length;
+  const v = x => x.toFixed(1).replace(".", ",");
+  $("pxMedia").textContent = v(media) + "%";
+  $("pxUrna").textContent = v(urna) + "%";
+  $("pxDif").textContent = "+" + v(urna - media) + " pts";
+  const flavioFrente = PESQ_VESPERA.filter(p => p.f > p.l).length;
+  $("pxAcima").textContent = flavioFrente + " de " + PESQ_VESPERA.length;
+  $("pxBody").innerHTML = [...PESQ_VESPERA].sort((a, b) => b.l - a.l).map(p => {
+    const erro = urna - p.l;
+    const cls = p.m == null ? "" : (Math.abs(erro) <= p.m ? "dentro" : "fora");
+    return `<tr><td>${p.inst}</td><td>${v(p.l)}%</td><td class="hide-sm">${v(p.f)}%</td><td>${p.m == null ? "–" : "±" + p.m}</td><td class="${cls}">+${v(erro)}</td></tr>`;
+  }).join("");
+  $("pxResumo").innerHTML = `As pesquisas mostravam empate técnico, com Flávio levemente à frente em ${flavioFrente} de ${PESQ_VESPERA.length}. Lula terminou com ${v(urna)}% dos votos válidos, ${v(urna - media)} pontos acima da média das pesquisas. Datafolha, Quaest e AtlasIntel, as que informaram margem de erro, erraram Lula um pouco além dela.`;
+}
+renderPxu();
+
 let cronFiltro = "todos";
 function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
