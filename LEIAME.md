@@ -14,6 +14,8 @@ Também dá para abrir o `index.html` direto no navegador: ele tenta buscar o TS
 
 A aba "Simulação" mostra o app funcionando com números inventados, sem precisar do TSE. Cada toque em "Avançar apuração" apura mais um pedaço.
 
+A aba "Prorrogação" compara o horário normal (até 17h) com o horário estendido (até 19h). Você informa, por região, quantas seções ficaram abertas depois das 17h e que fatia desses votos foi para Lula (Flávio fica com o resto), além do fluxo de eleitores por hora. O app estima quantos votos entraram na prorrogação, tira esses votos do resultado oficial e mostra se o vencedor mudaria, quanto Lula precisaria ter na prorrogação para virar e quantos votos seriam necessários. Os valores iniciais são suposições, porque o TSE não divulgou os votos depois das 17h.
+
 Se a porta 8000 estiver ocupada por outro programa, o `servir.py` usa a próxima livre (8001, 8002…) e mostra qual no terminal.
 
 ## Fontes de dados

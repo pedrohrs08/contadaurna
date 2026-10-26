@@ -31,9 +31,11 @@
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body.aba-res .so-proj { display: none !important; }
-body:not(.aba-res) .so-res { display: none !important; }
-body.aba-res .seg { grid-template-columns: 1fr 1fr; }
+body[data-aba="res"] .so-proj, body[data-aba="pro"] .so-proj { display: none !important; }
+body:not([data-aba="res"]) .so-res { display: none !important; }
+body:not([data-aba="pro"]) .so-pro { display: none !important; }
+body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner { display: none !important; }
+body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -46,7 +48,7 @@ header.top { display: grid; gap: 4px; }
 h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
 .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 0; }
 .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--surface); gap: 3px; }
 .tabs button { border: 0; border-radius: 8px; min-height: 40px; background: transparent; color: var(--muted); }
 .tabs button[aria-selected="true"] { background: var(--fg); color: var(--bg); }
 body.modo-sim .tabs button[aria-selected="true"] { background: var(--lula); color: #fff; }
@@ -146,6 +148,34 @@ details summary { cursor: pointer; font-weight: 600; }
 .note { font-size: .84rem; color: var(--muted); max-width: 75ch; }
 .note p { margin: 6px 0; }
 .hide-sm { display: none; }
+/* Prorrogação */
+.cenarios { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.cen { border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 6px; }
+.cen h3 { margin: 0; font: 600 .82rem var(--f-narrow); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.cen .placar { display: flex; justify-content: space-between; font: 800 1.7rem/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.cen .placar .l { color: var(--lula); } .cen .placar .f { color: var(--flavio); }
+.cen .bar { margin-top: 2px; height: 10px; }
+.cen .meta { font: .82rem var(--f-mono); color: var(--muted); }
+.veredito { border-radius: 10px; padding: 12px 14px; font-size: .95rem; margin-top: 12px; background: var(--ok-soft); }
+.veredito b { display: block; font-size: 1.05rem; }
+.veredito.vira { background: var(--warn-soft); }
+.prgeral { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.prgeral label, .curva label { display: grid; gap: 4px; font-size: .8rem; color: var(--muted); align-content: end; }
+.curva { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; margin-top: 10px; align-items: end; }
+.curva .col { display: grid; gap: 3px; }
+.curva .hb { background: var(--accent); border-radius: 3px 3px 0 0; min-height: 2px; }
+.curva .hb.ult { background: var(--warn); }
+.curva input { min-width: 0; padding: 4px 0; text-align: center; font-size: .8rem; }
+.curva span { font: .7rem var(--f-mono); color: var(--muted); text-align: center; }
+#prRegBody input { width: 46px; min-width: 0; text-align: right; padding: 5px 4px; }
+#prRegBody td { vertical-align: top; padding-inline: 2px; }
+#prRegBody td:first-child { white-space: normal; padding-top: 10px; }
+#prRegHead th { padding-inline: 3px; white-space: normal; }
+#prRegBody small.abs { white-space: normal; }
+.so-pro input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+.so-pro input[type=number]::-webkit-inner-spin-button, .so-pro input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.prbtns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.prbtns button { font-size: .85rem; min-height: 36px; padding: 6px 12px; }
 /* Celular: botão principal fixo embaixo, fácil de alcançar com o polegar */
 #btnUpdate { position: fixed; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px));
   bottom: calc(12px + env(safe-area-inset-bottom, 0px)); z-index: 20; min-height: 52px; font-size: 1.05rem; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
@@ -158,8 +188,10 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 480px; }
-  body.aba-res .seg { grid-template-columns: repeat(2, auto); }
+  .tabs { max-width: 620px; grid-template-columns: repeat(4, 1fr); }
+  .cenarios { grid-template-columns: 1fr 1fr; }
+  .prgeral { grid-template-columns: repeat(4, 1fr); }
+  body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
   .hide-sm { display: table-cell; }
   .mini { display: inline-block; }
   th, td { padding: 6px 8px; }
@@ -169,7 +201,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 @media (prefers-reduced-motion: reduce) { .bar .bl, .bar .bf { transition: none; } }
 </style>
 </head>
-<body>
+<body data-aba="proj">
 <div class="wrap">
   <header class="top">
     <div>
@@ -181,6 +213,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <button type="button" role="tab" id="tabRes" aria-selected="false">Resultado</button>
     <button type="button" role="tab" id="tabProj" aria-selected="true">Projeção</button>
     <button type="button" role="tab" id="tabSim" aria-selected="false">Simulação</button>
+    <button type="button" role="tab" id="tabPro" aria-selected="false">Prorrogação</button>
   </nav>
   <div class="controls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
@@ -228,7 +261,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     </div>
   </section>
 
-  <section class="panel" aria-label="Mapa do Brasil">
+  <section class="panel so-map" aria-label="Mapa do Brasil">
     <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-bottom:10px">
       <p class="eyebrow" style="margin:0">Mapa por UF · toque num estado</p>
       <div class="seg" role="group" aria-label="O que o mapa mostra">
@@ -297,6 +330,66 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <div class="controls" style="margin-top:10px">
       <button id="addPoll" type="button">Adicionar pesquisa</button>
       <button id="resetPoll" type="button">Restaurar padrão</button>
+    </div>
+  </section>
+
+
+  <section class="panel so-pro" aria-label="Horário normal e horário estendido">
+    <p class="eyebrow">Horário normal (até 17h) × horário estendido (até 19h)</p>
+    <div class="cenarios">
+      <div class="cen">
+        <h3>Horário normal · sem os votos depois das 17h</h3>
+        <div class="placar"><span class="l" id="prNL">–</span><span class="f" id="prNF">–</span></div>
+        <div class="bar" aria-hidden="true"><div class="bl" id="prNbL" style="width:50%"></div><div class="bf" id="prNbF" style="width:50%"></div><div class="mid"></div></div>
+        <span class="meta" id="prNM"></span>
+      </div>
+      <div class="cen">
+        <h3>Horário estendido · resultado oficial</h3>
+        <div class="placar"><span class="l" id="prEL">–</span><span class="f" id="prEF">–</span></div>
+        <div class="bar" aria-hidden="true"><div class="bl" id="prEbL" style="width:50%"></div><div class="bf" id="prEbF" style="width:50%"></div><div class="mid"></div></div>
+        <span class="meta" id="prEM"></span>
+      </div>
+    </div>
+    <div class="veredito" id="prVer" aria-live="polite"></div>
+    <div class="kpis">
+      <div class="kpi"><b id="prVotos">–</b><span>votos válidos depois das 17h (estim.)</span></div>
+      <div class="kpi"><b id="prSaldo">–</b><span id="prSaldoL">saldo da prorrogação</span></div>
+      <div class="kpi"><b id="prPrec">–</b><span>% para Lula na prorrogação que mudaria o vencedor</span></div>
+      <div class="kpi"><b id="prVPrec">–</b><span id="prVPrecL">votos na prorrogação necessários para mudar o vencedor</span></div>
+    </div>
+  </section>
+
+  <section class="panel so-pro" aria-label="Suposições por região">
+    <p class="eyebrow">Suposições por região · edite à vontade</p>
+    <div class="tbl"><table>
+      <thead id="prRegHead"><tr><th>Região</th><th>Seções %</th><th>Abertas %</th><th>Lula %</th><th>Votos</th></tr></thead>
+      <tbody id="prRegBody"></tbody>
+    </table></div>
+    <div class="prbtns">
+      <button type="button" id="prPerfil">Usar o perfil de cada região (resultado do TSE)</button>
+      <button type="button" id="prPadrao">Voltar às suposições iniciais</button>
+    </div>
+    <p class="note" style="margin-top:8px">Seções: fatia das seções do país em cada região. Abertas: % dessas seções que receberam eleitores depois das 17h. Votos: votos válidos estimados depois das 17h e o saldo líquido.</p>
+    <p class="note" id="prPerfilNota" style="margin-top:4px">"Lula %" é a fatia de Lula entre os votos válidos dados na prorrogação; Flávio fica com o resto. O botão de perfil copia a fatia de Lula que cada região teve no resultado oficial.</p>
+  </section>
+
+  <section class="panel so-pro" aria-label="Fluxo de eleitores e resultado oficial">
+    <p class="eyebrow">Fluxo de eleitores nas seções</p>
+    <p class="note" style="margin:0">Fatia do comparecimento do dia em cada hora (%). A última hora (16h às 17h, em laranja) é a referência para o ritmo da prorrogação.</p>
+    <div class="curva" id="prCurva"></div>
+    <div class="prgeral">
+      <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="1" value="10"></label>
+      <label>Horas de prorrogação<input id="prHoras" type="number" min="0" max="2" step="0.25" value="2"></label>
+      <label>Eleitores que votam por seção (média)<input id="prPorSec" type="number" min="0" step="1" value="261"></label>
+      <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="490000"></label>
+      <label>Votos válidos sobre o comparecimento (%)<input id="prValid" type="number" min="0" max="100" step="0.1" value="97"></label>
+      <label>Resultado oficial: Lula (% dos válidos)<input id="prOfL" type="number" min="0" max="100" step="0.01" value="51.78"></label>
+      <label>Resultado oficial: votos válidos (milhões)<input id="prOfV" type="number" min="0" step="0.1" value="124.4"></label>
+      <label style="align-content:end"><button type="button" id="prOficial">Usar o resultado do TSE</button></label>
+    </div>
+    <div class="note" style="margin-top:12px">
+      <p><b>Como a conta é feita.</b> Em cada região, votos depois das 17h = seções × % que ficaram abertas × eleitores por seção × fatia da última hora × ritmo da prorrogação × horas × % de válidos. O horário estendido é o resultado oficial, que já inclui esses votos. O horário normal é o oficial menos esses votos. Quem já estava na fila às 17h vota de qualquer jeito pela regra normal, então aqui só entra quem chegou depois.</p>
+      <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. O TSE não divulgou quantos votos entraram depois das 17h, por isso os números iniciais desta aba são suposições, não dados oficiais. Ajuste-os para testar cenários.</p>
     </div>
   </section>
 
@@ -762,6 +855,15 @@ const REGIOES = [["Norte", ["ac", "am", "ap", "pa", "ro", "rr", "to"]], ["Nordes
   ["Centro-Oeste", ["df", "go", "ms", "mt"]], ["Sudeste", ["es", "mg", "rj", "sp"]], ["Sul", ["pr", "rs", "sc"]], ["Exterior", ["zz"]]];
 // Célula com a porcentagem e, embaixo, o número absoluto de votos
 const celVotos = (v, tot, cls, lider) => `<td class="${lider && tot ? cls : ""}">${tot ? fmtPct(v / tot) : "–"}<small class="abs">${fmtInt(v)}</small></td>`;
+// Regiões: soma das UFs
+function somaRegioes(res) {
+  return REGIOES.map(([nome, ufs]) => {
+    const rs = res.rows.filter(r => ufs.includes(r.uf));
+    const l = rs.reduce((a, r) => a + r.u.l, 0), f = rs.reduce((a, r) => a + r.u.f, 0);
+    const te = rs.reduce((a, r) => a + (r.u.te || r.total), 0), ap = rs.reduce((a, r) => a + r.frac * (r.u.te || r.total), 0);
+    return {nome, l, f, frac: te ? ap / te : 0};
+  });
+}
 // Aba Resultado: só os números oficiais apurados, sem estimativa
 function renderResultado(res) {
   const L = res.br && res.br.l + res.br.f > 0 ? res.br.l : res.countedL;
@@ -782,14 +884,7 @@ function renderResultado(res) {
       <td><span class="mini"><i style="width:${(r.frac * 100).toFixed(1)}%"></i></span> ${fmtPct(r.frac, 0)}</td>
       ${celVotos(r.u.l, tot, "lead-l", l >= .5)}${celVotos(r.u.f, tot, "lead-f", l < .5)}</tr>`;
   }).join("");
-  // Regiões: soma das UFs
-  const reg = REGIOES.map(([nome, ufs]) => {
-    const rs = res.rows.filter(r => ufs.includes(r.uf));
-    const l = rs.reduce((a, r) => a + r.u.l, 0), f = rs.reduce((a, r) => a + r.u.f, 0);
-    const te = rs.reduce((a, r) => a + (r.u.te || r.total), 0), ap = rs.reduce((a, r) => a + r.frac * (r.u.te || r.total), 0);
-    return {nome, l, f, frac: te ? ap / te : 0};
-  });
-  $("regBody").innerHTML = reg.map(g => `<tr><td class="uf">${g.nome}</td>
+  $("regBody").innerHTML = somaRegioes(res).map(g => `<tr><td class="uf">${g.nome}</td>
       <td><span class="mini"><i style="width:${(g.frac * 100).toFixed(1)}%"></i></span> ${fmtPct(g.frac, 0)}</td>
       ${celVotos(g.l, g.l + g.f, "lead-l", g.l >= g.f)}${celVotos(g.f, g.l + g.f, "lead-f", g.f > g.l)}</tr>`).join("");
 }
@@ -900,6 +995,7 @@ async function update() {
     }
     lastData = data;
     const r = runModel(data.base, data.ufs, data.br); lastResult = r; render(r);
+    if (!sim && !proOfTocado && proOficial(true)) renderProrrogacao();
     const hora = data.br && data.br.hora ? ` · TSE: ${data.br.hora}` : "";
     setStatus(`Atualizado às ${new Date().toLocaleTimeString("pt-BR")}${sim ? " (simulação)" : ` · fonte: ${fetchMode === "proxy" ? "TSE via servidor local" : "TSE direto"}${hora}${munStatus ? " · " + munStatus : ""}`}`);
   } catch (e) {
@@ -912,7 +1008,9 @@ let modoSim = false, aba = "proj";
 function setAba(a) {
   aba = a;
   $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj"); $("tabSim").setAttribute("aria-selected", a === "sim");
-  document.body.classList.toggle("aba-res", a === "res");
+  $("tabPro").setAttribute("aria-selected", a === "pro");
+  document.body.dataset.aba = a;
+  if (a === "pro") renderProrrogacao();
   if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
   if (a !== "res" && mapaModo === "parcial") setMapaModo("final");
   if ((a === "sim") !== modoSim) setModo(a === "sim");
@@ -930,6 +1028,7 @@ function setModo(sim) {
 $("tabRes").onclick = () => setAba("res");
 $("tabProj").onclick = () => setAba("proj");
 $("tabSim").onclick = () => setAba("sim");
+$("tabPro").onclick = () => setAba("pro");
 $("btnReset").onclick = () => { simState = null; update(); };
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
@@ -1033,6 +1132,105 @@ function setMapaModo(m) {
 document.querySelector(".seg").addEventListener("click", e => {
   const m = e.target.dataset && e.target.dataset.modo; if (m) setMapaModo(m);
 });
+
+// ---------- Aba Prorrogação: horário normal × estendido ----------
+// Suposições iniciais. Seções: fatia do eleitorado de cada região; abertas: chute (a maioria das seções fechou às 17h);
+// Lula: aproximação do perfil de cada região, que o botão de perfil troca pelo resultado do TSE.
+const PRO_PADRAO = {
+  curva: [11, 14, 15, 13, 10, 9, 10, 10, 8],
+  reg: [["Norte", 8.0, 10, 50], ["Nordeste", 27.1, 10, 68], ["Centro-Oeste", 7.4, 10, 40], ["Sudeste", 42.6, 10, 47], ["Sul", 14.7, 5, 41]],
+  geral: {prFator: 10, prHoras: 2, prPorSec: 261, prSecoes: 490000, prValid: 97, prOfL: 51.78, prOfV: 124.4}
+};
+const numIn = id => { const v = parseFloat(String($(id).value).replace(",", ".")); return Number.isFinite(v) ? v : 0; };
+function proPadrao() {
+  $("prCurva").innerHTML = PRO_PADRAO.curva.map((v, i) => `<label class="col"><span class="hb${i === 8 ? " ult" : ""}" id="prHb${i}"></span>
+    <input type="number" min="0" step="1" value="${v}" id="prH${i}" aria-label="${8 + i}h às ${9 + i}h"><span>${8 + i}h</span></label>`).join("");
+  $("prRegBody").innerHTML = PRO_PADRAO.reg.map(([nome, sec, ab, lu], i) => `<tr><td class="uf">${nome}</td>
+    <td><input type="number" min="0" max="100" step="0.1" value="${sec}" id="prS${i}" aria-label="${nome}: % das seções do país"></td>
+    <td><input type="number" min="0" max="100" step="1" value="${ab}" id="prA${i}" aria-label="${nome}: % das seções abertas depois das 17h"></td>
+    <td><input type="number" min="0" max="100" step="1" value="${lu}" id="prL${i}" aria-label="${nome}: % de Lula nos votos depois das 17h"><small class="abs" id="prF${i}"></small></td>
+    <td id="prV${i}">–</td></tr>`).join("");
+  for (const [k, v] of Object.entries(PRO_PADRAO.geral)) $(k).value = v;
+  proOficial(true); renderProrrogacao();
+}
+// Preenche o resultado oficial com os dados do TSE já carregados (só na aba ao vivo, nunca da simulação)
+function proOficial(silencioso) {
+  const br = lastData && !lastData.sim ? lastData.br : null;
+  if (br && br.l + br.f > 0) {
+    $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(2);
+    $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(2);
+    return true;
+  }
+  if (!silencioso) { $("prOficial").textContent = "Sem dados do TSE ainda: toque em Atualizar"; setTimeout(() => { $("prOficial").textContent = "Usar o resultado do TSE"; }, 3000); }
+  return false;
+}
+function proPerfil() {
+  if (!lastResult || (lastData && lastData.sim)) { $("prPerfilNota").textContent = "Ainda não há resultado do TSE carregado. Toque em Atualizar e tente de novo."; return; }
+  const reg = somaRegioes(lastResult);
+  PRO_PADRAO.reg.forEach(([nome], i) => {
+    const g = reg.find(r => r.nome === nome);
+    if (g && g.l + g.f > 0) $("prL" + i).value = (g.l / (g.l + g.f) * 100).toFixed(1);
+  });
+  $("prPerfilNota").textContent = "Fatia de Lula de cada região copiada do resultado do TSE. Edite se achar que quem votou depois das 17h tinha outro perfil.";
+  renderProrrogacao();
+}
+function renderProrrogacao() {
+  const curva = PRO_PADRAO.curva.map((_, i) => Math.max(0, numIn("prH" + i)));
+  const somaC = curva.reduce((a, b) => a + b, 0) || 1, maxC = Math.max(...curva, 1);
+  curva.forEach((v, i) => { $("prHb" + i).style.height = (v / maxC * 64) + "px"; });
+  const ultima = curva[8] / somaC;                     // fatia do comparecimento na última hora
+  const porHora = numIn("prPorSec") * ultima * numIn("prFator") / 100;   // eleitores por seção aberta, por hora de prorrogação
+  const horas = Math.min(2, Math.max(0, numIn("prHoras"))), valid = numIn("prValid") / 100, secoes = numIn("prSecoes");
+  let E = 0, EL = 0;
+  PRO_PADRAO.reg.forEach((_, i) => {
+    const pl = Math.min(100, Math.max(0, numIn("prL" + i))) / 100;
+    const v = secoes * numIn("prS" + i) / 100 * Math.min(100, numIn("prA" + i)) / 100 * porHora * horas * valid;
+    E += v; EL += v * pl;
+    $("prF" + i).textContent = `Flávio ${fmtPct(1 - pl, 0)}`;
+    $("prV" + i).innerHTML = `${fmtInt(v)}<small class="abs">${v * (2 * pl - 1) >= 0 ? "Lula" : "Flávio"} +${fmtInt(Math.abs(v * (2 * pl - 1)))}</small>`;
+  });
+  const EF = E - EL;
+  const V = numIn("prOfV") * 1e6, L = V * Math.min(100, numIn("prOfL")) / 100, F = V - L;
+  const nL = Math.max(0, L - EL), nF = Math.max(0, F - EF), nV = nL + nF;
+  const cen = (pre, l, f) => {
+    const t = l + f;
+    $(pre + "L").textContent = t ? fmtPct(l / t, 2) : "–"; $(pre + "F").textContent = t ? fmtPct(f / t, 2) : "–";
+    $(pre + "bL").style.width = (t ? l / t * 100 : 50) + "%"; $(pre + "bF").style.width = (t ? f / t * 100 : 50) + "%";
+    $(pre + "M").textContent = t ? `${l >= f ? "Lula" : "Flávio"} vence por ${fmtInt(Math.abs(l - f))} votos · ${fmtInt(t)} válidos` : "";
+  };
+  cen("prN", nL, nF); cen("prE", L, F);
+  const vNormal = nL >= nF ? "Lula" : "Flávio", vEst = L >= F ? "Lula" : "Flávio";
+  const muda = vNormal !== vEst;
+  // Margem do vencedor oficial e o que a prorrogação precisaria ter para criar essa vitória
+  const M = Math.abs(L - F), pVenc = vEst === "Lula" ? EL / (E || 1) : EF / (E || 1);
+  const precisa = E > 0 ? (E + M) / (2 * E) : Infinity;    // fatia do vencedor oficial nos votos depois das 17h que mudaria o vencedor
+  const saldo = EL - EF;
+  $("prVotos").textContent = fmtInt(E);
+  $("prSaldo").textContent = fmtInt(Math.abs(saldo));
+  $("prSaldoL").textContent = `saldo da prorrogação para ${saldo >= 0 ? "Lula" : "Flávio"} (${fmtPct(Math.abs(saldo) / (M || 1), 1)} da diferença final)`;
+  const pLula = vEst === "Lula" ? precisa : 1 - precisa;
+  $("prPrec").textContent = !V ? "–" : precisa > 1 ? "impossível" : (vEst === "Lula" ? "acima de " : "abaixo de ") + fmtPct(pLula, 1);
+  const vPrec = pVenc > 0.5 ? M / (2 * pVenc - 1) : Infinity;
+  $("prVPrec").textContent = Number.isFinite(vPrec) ? fmtInt(vPrec) : "–";
+  $("prVPrecL").textContent = Number.isFinite(vPrec)
+    ? `votos depois das 17h que mudariam o vencedor, com as fatias acima (${(vPrec / (E || 1)).toLocaleString("pt-BR", {maximumFractionDigits: 1})} vezes o estimado)`
+    : `com as fatias acima, a prorrogação favorece ${vEst === "Lula" ? "Flávio" : "Lula"}: tirá-la não mudaria o vencedor`;
+  const ver = $("prVer");
+  ver.className = "veredito" + (muda ? " vira" : "");
+  ver.innerHTML = muda
+    ? `<b>O vencedor mudaria: ${vNormal} no horário normal, ${vEst} no estendido.</b>Com essas suposições, os votos depois das 17h superam a diferença final de ${fmtInt(M)} votos.`
+    : `<b>O vencedor não muda: ${vEst} vence nos dois horários.</b>${precisa > 1
+      ? `Mesmo que 100% dos votos depois das 17h fossem de ${vEst}, a diferença final de ${fmtInt(M)} votos é maior que os ${fmtInt(E)} votos estimados para a prorrogação.`
+      : `Para mudar, ${vEst} precisaria de mais de ${fmtPct(precisa, 1)} dos votos depois das 17h.`}`;
+}
+document.querySelectorAll(".so-pro").forEach(el => el.addEventListener("input", renderProrrogacao));
+$("prPerfil").onclick = proPerfil;
+$("prPadrao").onclick = () => { $("prPerfilNota").textContent = "Suposições iniciais restauradas."; proPadrao(); };
+$("prOficial").onclick = () => { if (proOficial(false)) { proOfTocado = false; renderProrrogacao(); } };
+// Enquanto ninguém editar o resultado oficial à mão, ele acompanha o TSE a cada atualização
+let proOfTocado = false;
+["prOfL", "prOfV"].forEach(id => $(id).addEventListener("input", () => { proOfTocado = true; }));
+proPadrao();
 
 renderPolls();
 update();
