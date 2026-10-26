@@ -186,6 +186,10 @@ details summary { cursor: pointer; font-weight: 600; }
 .conta b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 thead.quebra th { white-space: normal; vertical-align: bottom; }
 td.alto { color: var(--bad); font-weight: 600; }
+.logs-top { display: grid; gap: 8px; }
+.logs-top .big { display: block; font: 800 clamp(2.2rem, 7vw, 3.2rem)/1 var(--f-display); color: var(--accent); }
+.logs-top .meta { font-size: .9rem; color: var(--muted); }
+.logs-top p { margin: 0; font-size: .95rem; }
 .minbox { margin-top: 12px; border: 1px solid var(--warn); border-radius: 10px; padding: 12px 14px; font-size: .9rem; display: grid; gap: 8px; }
 .minbox h3 { margin: 0; font-size: 1rem; }
 .impossivel { background: var(--bad-soft); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; }
@@ -354,9 +358,36 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   </section>
 
 
+  <section class="panel so-pro" aria-label="Votos depois das 17h nos logs das urnas">
+    <p class="eyebrow">Dado real · logs das urnas</p>
+    <div class="logs-top">
+      <div><span class="big" id="lgTotal">≈ 35 mil</span><span class="meta">votos registrados depois das 17h no Brasil inteiro</span></div>
+      <p id="lgFrase"></p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b>35.521</b><span>levantamento do G1 com os logs do TSE (497.897 seções)</span></div>
+      <div class="kpi"><b>34.319</b><span>levantamento independente divulgado pela Jovem Pan: 32.337 das 17h às 18h e 1.982 das 18h às 19h</span></div>
+      <div class="kpi"><b id="lgPctM">–</b><span>da diferença final entre Lula e Flávio</span></div>
+      <div class="kpi"><b>1.667</b><span>seções ainda tinham votos depois das 18h (0,3% do total)</span></div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="tbl"><table>
+        <thead><tr><th>UF</th><th>Votos 17h–19h</th></tr></thead>
+        <tbody><tr><td class="uf">São Paulo</td><td>8.855</td></tr><tr><td class="uf">Bahia</td><td>4.188</td></tr><tr><td class="uf">Rio de Janeiro</td><td>4.146</td></tr><tr><td class="uf">Minas Gerais</td><td>2.253</td></tr><tr><td class="uf">Pernambuco</td><td>1.636</td></tr><tr><td class="uf">Pará</td><td>1.308</td></tr><tr><td class="uf">Ceará</td><td>1.074</td></tr><tr><td class="uf">Amazonas</td><td>1.004</td></tr><tr><td class="uf">Distrito Federal</td><td>980</td></tr><tr><td class="uf">Paraná</td><td>926</td></tr></tbody>
+      </table></div>
+      <div class="tbl"><table>
+        <thead><tr><th>Cidade</th><th>Votos 17h–19h</th></tr></thead>
+        <tbody><tr><td class="uf">São Paulo (SP)</td><td>4.487</td></tr><tr><td class="uf">Rio de Janeiro (RJ)</td><td>2.337</td></tr><tr><td class="uf">Salvador (BA)</td><td>1.766</td></tr><tr><td class="uf">Brasília (DF)</td><td>980</td></tr><tr><td class="uf">Manaus (AM)</td><td>621</td></tr><tr><td class="uf">Belo Horizonte (MG)</td><td>327</td></tr><tr><td class="uf">Fortaleza (CE)</td><td>302</td></tr></tbody>
+      </table></div>
+    </div>
+    <p class="note" style="margin-top:10px">Tabelas do levantamento divulgado pela Jovem Pan (34.319 votos; só as maiores UFs e cidades). Os logs registram a hora em que cada voto foi confirmado, não em quem: nenhum levantamento sabe quantos foram para Lula ou para Flávio. Parte desses eleitores já estava na fila às 17h e votaria de qualquer jeito. Não é um número oficial homologado pelo TSE.</p>
+    <div class="prbtns"><button type="button" id="lgAjusta">Ajustar as suposições abaixo para dar 35.521 votos</button></div>
+    <p class="note" style="margin-top:8px">Fontes: <a href="https://www.correio24horas.com.br/eleicoes/quantos-votos-foram-registrados-apos-as-17h-na-eleicao-presidencial-levantamento-mostra-total-1026" target="_blank" rel="noopener">Correio, com dados do G1</a> · <a href="https://jovempan.com.br/politica/34-319-votos-foram-registrados-entre-17h-e-19h-lula-venceu-por-443-milhoes/" target="_blank" rel="noopener">Jovem Pan</a> · <a href="https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026" target="_blank" rel="noopener">balanço do TSE</a></p>
+  </section>
+
   <section class="panel so-pro" aria-label="Horário normal e horário estendido">
     <p class="eyebrow">Horário normal (até 17h) × horário estendido (até 19h)</p>
-    <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> O TSE não divulgou quantos votos entraram depois das 17h. Os números desta aba saem das suposições que você coloca mais abaixo e não são dados oficiais.</p>
+    <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> Os cartões abaixo saem das suposições que você coloca mais abaixo e não são dados oficiais. O dado real é a contagem dos logs das urnas, no quadro acima.</p>
     <div class="cenarios">
       <div class="cen">
         <h3>Horário normal (estimativa) · oficial menos os votos supostos depois das 17h</h3>
@@ -411,7 +442,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
       <dt>Seções %</dt>
       <dd>Que fatia das seções do país fica nessa região (começa com a fatia do eleitorado: Sudeste 42,6%, Nordeste 27,1%…). Não muda o total de votos da prorrogação, só reparte entre as regiões: subir uma região tira peso das outras. A soma deveria dar 100%; agora dá <b id="prSomaSec">–</b>.</dd>
       <dt>Abertas %</dt>
-      <dd>Das seções da região, quantas ainda receberam eleitores depois das 17h. É o parâmetro que mais pesa: os votos da região crescem na mesma proporção (de 10% para 20%, os votos dobram). Os 10% iniciais (5% no Sul) são chute, porque o TSE não divulgou esse número.</dd>
+      <dd>Das seções da região, quantas ainda receberam eleitores depois das 17h. É o parâmetro que mais pesa: os votos da região crescem na mesma proporção (de 10% para 20%, os votos dobram). Os 10% iniciais (5% no Sul) são chute, porque ninguém divulgou quantas seções receberam votos depois das 17h; só se sabe que 1.667 ainda tinham votos depois das 18h.</dd>
       <dt>Lula %</dt>
       <dd>Fatia de Lula entre os votos dados depois das 17h; Flávio fica com o resto. Não muda quantos votos houve, só para quem foram. Com 50% a prorrogação empata e não mexe na diferença. Cada ponto acima de 50% dá a Lula um saldo de 2% dos votos da região (60% de Lula em 10 mil votos = 6 mil a 4 mil, saldo de 2 mil).</dd>
       <dt>Votos</dt>
@@ -424,7 +455,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
     <p class="note" style="margin:0">Fatia do comparecimento do dia em cada hora (%). A última hora (16h às 17h, em laranja) é a referência para o ritmo da prorrogação.</p>
     <div class="curva" id="prCurva"></div>
     <div class="prgeral">
-      <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="1" value="10"></label>
+      <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="0.1" value="1.9"></label>
       <label>Horas de prorrogação<input id="prHoras" type="number" min="0" max="2" step="0.25" value="2"></label>
       <label>Eleitores que votam por seção (média)<input id="prPorSec" type="number" min="0" step="1" value="261"></label>
       <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="490000"></label>
@@ -438,11 +469,11 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
         <dt>Fluxo por hora</dt>
         <dd>Como o comparecimento se espalha ao longo do dia. Só a última hora (16h às 17h) entra na conta: ela diz quantos eleitores chegavam por hora no fim da votação. Subir essa barra (ou baixar as outras) aumenta os votos da prorrogação na mesma proporção.</dd>
         <dt>Ritmo na prorrogação</dt>
-        <dd>Quanto do movimento da última hora continuou depois das 17h. 100% é o mesmo movimento das 16h às 17h; 10% é um décimo dele. Proporcional: dobrar o ritmo dobra os votos.</dd>
+        <dd>Quanto do movimento da última hora continuou depois das 17h. 100% é o mesmo movimento das 16h às 17h; 10% é um décimo dele. Proporcional: dobrar o ritmo dobra os votos. O valor inicial (1,9%) foi ajustado para a conta dar o total contado nos logs das urnas, cerca de 35 mil votos.</dd>
         <dt>Horas de prorrogação</dt>
         <dd>2 é das 17h às 19h. Proporcional. Como a orientação do TSE só saiu às 18h12, na prática muitas seções podem ter ficado abertas menos tempo.</dd>
         <dt>Eleitores que votam por seção</dt>
-        <dd>Comparecimento médio de uma seção no dia todo (cerca de 128 milhões de votantes divididos por 490 mil seções). Proporcional.</dd>
+        <dd>Comparecimento médio de uma seção no dia todo (128,2 milhões de votantes divididos por cerca de 498 mil seções, segundo o TSE). Proporcional.</dd>
         <dt>Total de seções no país</dt>
         <dd>Base da conta das seções abertas. Proporcional.</dd>
         <dt>Votos válidos sobre o comparecimento</dt>
@@ -450,7 +481,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
         <dt>Resultado oficial</dt>
         <dd>É o horário estendido, ponto de partida da conta. O horário normal é ele menos os votos da prorrogação. A diferença final entre os dois é a régua: a prorrogação só muda o vencedor se o saldo dela for maior que essa diferença. Quem já estava na fila às 17h vota pela regra normal, então não entra na prorrogação.</dd>
       </dl>
-      <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. O TSE não divulgou quantos votos entraram depois das 17h, por isso os números iniciais desta aba são suposições, não dados oficiais. Ajuste-os para testar cenários.</p>
+      <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. Levantamentos com os logs públicos das urnas contaram de 34 mil a 35,5 mil votos depois das 17h (quadro no topo da aba). Os logs não dizem em quem foram esses votos, e o TSE não divulgou quantas seções ficaram abertas, por isso as fatias por região e as seções abertas continuam sendo suposições.</p>
     </div>
   </section>
 
@@ -1210,9 +1241,11 @@ document.querySelector(".seg").addEventListener("click", e => {
 const PRO_PADRAO = {
   curva: [11, 14, 15, 13, 10, 9, 10, 10, 8],
   reg: [["Norte", 8.0, 10, 50], ["Nordeste", 27.1, 10, 68], ["Centro-Oeste", 7.4, 10, 40], ["Sudeste", 42.6, 10, 47], ["Sul", 14.7, 5, 41]],
-  geral: {prFator: 10, prHoras: 2, prPorSec: 261, prSecoes: 490000, prValid: 97, prOfL: 51.78, prOfV: 124.4}
+  geral: {prFator: 1.9, prHoras: 2, prPorSec: 257, prSecoes: 497900, prValid: 97, prOfL: 51.79, prOfV: 124.08}
 };
-const ABST_1T = 0.2108, ABST_2T = 0.1921;   // abstenção oficial: 1º turno (votação só até 17h) e 2º turno
+const ABST_1T = 0.2108, ABST_2T = 0.1921;
+// Votos registrados depois das 17h segundo os logs das urnas (levantamentos de imprensa, 26/10/2026; não diz o candidato)
+const LOGS = {g1: 35521, jp: 34319};   // abstenção oficial: 1º turno (votação só até 17h) e 2º turno
 const numIn = id => { const v = parseFloat(String($(id).value).replace(",", ".")); return Number.isFinite(v) ? v : 0; };
 function proPadrao() {
   $("prCurva").innerHTML = PRO_PADRAO.curva.map((v, i) => `<label class="col"><span class="hb${i === 8 ? " ult" : ""}" id="prHb${i}"></span>
@@ -1229,8 +1262,8 @@ function proPadrao() {
 function proOficial(silencioso) {
   const br = lastData && !lastData.sim ? lastData.br : null;
   if (br && br.l + br.f > 0) {
-    $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(4);
-    $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(4);
+    $("prOfL").value = (br.l / (br.l + br.f) * 100).toFixed(6);
+    $("prOfV").value = ((br.l + br.f) / 1e6).toFixed(6);
     return true;
   }
   if (!silencioso) { $("prOficial").textContent = "Sem dados do TSE ainda: toque em Atualizar"; setTimeout(() => { $("prOficial").textContent = "Usar o resultado do TSE"; }, 3000); }
@@ -1310,7 +1343,9 @@ function renderProrrogacao() {
     const nec = M / (2 * f - 1), pessoas = nec / (valid || 1), abst = 1 - (comparecN - pessoas) / aptosN;
     return `<tr><td>${fmtPct(f, 0)}</td><td>${fmtInt(nec)}</td><td>${fmtPct(nec / (L + F || 1), 1)}</td><td class="${abst > ABST_1T + 0.02 ? "alto" : ""}">${abst < 1 ? fmtPct(abst, 1) : "–"}</td></tr>`;
   }).join("");
-  $("prNecNota").innerHTML = `Abstenção até 17h: quanto teria sido a abstenção se esses votos não existissem, contra <b>${fmtPct(ABST_1T, 2)}</b> no 1º turno, quando todo mundo votou só até as 17h (no 2º turno, com a prorrogação, foi ${fmtPct(ABST_2T, 2)}). Para comparar, ${vEst} teve ${fmtPct((vEst === "Lula" ? L : F) / (L + F || 1), 2)} no resultado final. Com as suposições desta página, os votos depois das 17h seriam ${fmtInt(E)}.`;
+  $("prNecNota").innerHTML = `Abstenção até 17h: quanto teria sido a abstenção se esses votos não existissem, contra <b>${fmtPct(ABST_1T, 2)}</b> no 1º turno, quando todo mundo votou só até as 17h (no 2º turno, com a prorrogação, foi ${fmtPct(ABST_2T, 2)}). Para comparar, ${vEst} teve ${fmtPct((vEst === "Lula" ? L : F) / (L + F || 1), 2)} no resultado final. Com as suposições desta página, os votos depois das 17h seriam ${fmtInt(E)}; os logs das urnas registraram ${fmtInt(LOGS.g1)}.`;
+  $("lgPctM").textContent = M ? fmtPct(LOGS.g1 / M, 1) : "–";
+  $("lgFrase").innerHTML = M ? `Mesmo que <b>todos</b> esses ${fmtInt(LOGS.g1)} votos fossem de ${vEst}, sem eles ${vEst} ainda venceria por <b>${fmtInt(M - LOGS.g1)}</b> votos. Para mudar o vencedor, seriam precisos ${fmtInt(M)} votos depois das 17h, ${n1(M / LOGS.g1)} vezes o que os logs registraram.` : "";
   const ver = $("prVer");
   ver.className = "veredito" + (muda ? " vira" : "");
   ver.innerHTML = muda
@@ -1399,7 +1434,7 @@ function proMinimo() {
   // Por que o cenário não aconteceu: confronta cada suposição com fatos conhecidos
   const aptos = comparec / (1 - ABST_2T);
   const extra = r.E / (p0.valid || 1), abst17 = 1 - (comparec - extra) / aptos;
-  const motivos = [];
+  const motivos = [`<b>${fmtInt(r.E)} votos depois das 17h.</b> Os logs das urnas registraram cerca de ${fmtInt(LOGS.g1)}: o cenário precisaria de ${n1g(r.E / LOGS.g1)} vezes mais votos do que os que existiram.`];
   if (abMed(p) > 50) motivos.push(`<b>${fmtPct(abMed(p) / 100, 0)} das seções abertas depois das 17h.</b> O TSE limitou a prorrogação às seções que ainda tinham fila às 17h, não a todas.`);
   if (abst17 > ABST_1T + 0.02) motivos.push(`<b>${fmtInt(extra)} pessoas votando depois das 17h.</b> Sem elas, a abstenção até as 17h teria sido de ${fmtPct(abst17, 1)}, contra ${fmtPct(ABST_1T, 2)} no 1º turno, quando todo mundo votou só até as 17h.`);
   if (p.fator >= 50) motivos.push(`<b>${n1g(p.fator)}% do movimento das 16h às 17h, durante ${n1g(p.horas)} h.</b> A regra só foi confirmada pelo TSE às 18h12, e quem estava na fila às 17h já votaria de qualquer jeito.`);
@@ -1428,6 +1463,12 @@ function proMinimo() {
 }
 const n1g = x => Number(x).toLocaleString("pt-BR", {maximumFractionDigits: 1});
 $("prMin").onclick = proMinimo;
+// Ajusta o ritmo para a conta dar o total dos logs (votos registrados, inclusive brancos e nulos)
+$("lgAjusta").onclick = () => {
+  const alvo = LOGS.g1 * numIn("prValid") / 100, atual = proConta(proLer()).E;
+  if (atual > 0) $("prFator").value = Math.round(numIn("prFator") * alvo / atual * 1000) / 1000;
+  $("prMinBox").hidden = true; renderProrrogacao();
+};
 document.querySelectorAll(".so-pro").forEach(el => el.addEventListener("input", () => { $("prMinBox").hidden = true; renderProrrogacao(); }));
 $("prPerfil").onclick = proPerfil;
 $("prPadrao").onclick = () => { $("prPerfilNota").textContent = "Suposições iniciais restauradas."; proPadrao(); };
