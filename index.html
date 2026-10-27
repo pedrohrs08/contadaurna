@@ -1758,6 +1758,14 @@ Lula da Silva acaba de fazer o mesmo no Brasil.
     id: "lula-100-por-cento",
     data: "26/10/2026",
     titulo: "\"Lula pegou 100% dos votos dos outros candidatos + 3 milhões que nem votaram\"",
+    outras: [{data: "26/10/2026", texto: `Tem que ser muito mal caráter acreditar que esses números estão corretos, afinal, os números estão corretos, só a conta que não fecha, bando de burros alienados.
+
+[imagem com o placar do 1º turno: Flávio 47,1%, 56.064.534 votos; Lula 45,1%, 53.741.430 votos; e do 2º turno: Lula 51,79%, 64.256.232 votos; Flávio Bolsonaro 48,21%, 59.826.041 votos]
+
+10.514.802 votos a mais do primeiro do petista
+E 3.761.507 de Flávio Bolsonaro
+9.316.747 votos somados dos candidatos eliminados
+33.433.715 de Abstenção no primeiro turno e 30.437.935 no segundo turno somente um pouco mais de 3 milhões, ou seja de onde surgiu esses 10 milhões de votos do lula`}],
     texto: `Lula fechou com 64 milhões de votos.
 
 De 53 para 64M, a diferença é de Il milhões.
@@ -1787,6 +1795,13 @@ Ou seja: ele pegou 100% dos votos de todos os outros candidatos + 3 milhões de 
       </table></div>
       <p>A conta fecha exatamente com os dados oficiais: os 14,1 milhões de votos novos são a soma do que Lula e Flávio cresceram.</p>
       <p><b>Já aconteceu antes, com o outro lado.</b> Em 2022, Bolsonaro foi de 51.072.345 votos no 1º turno para 58.206.354 no 2º: <b>+7,1 milhões</b>, com cerca de 10 milhões de votos de outros candidatos disponíveis. No 2º turno, quem votou num candidato eliminado escolhe um dos dois, e é normal um lado levar a maior parte.</p>
+      <p><b>Sobre a outra versão do boato (a que diz "de onde surgiram esses 10 milhões"):</b></p>
+      <ul>
+        <li>Os números do 1º turno na imagem não são os finais do TSE. O certo é Lula com 53.879.538 e Flávio com 56.104.503. Por isso o post fala em +10.514.802 para Lula e +3.761.507 para Flávio, quando foram +10.376.694 e +3.721.538.</li>
+        <li>A abstenção também não bate: foi de 33.469.244 no 1º turno para 30.509.005 no 2º, uma queda de 2.960.239.</li>
+        <li>Os 9.316.747 votos dos candidatos eliminados estão certos.</li>
+        <li>O que falta na conta é o voto branco e nulo: 1.821.246 pessoas que votaram branco ou nulo no 1º turno escolheram um candidato no 2º. Com isso, a tabela acima fecha exatamente. Lula não precisou de "10 milhões que surgiram do nada": ficou com 74% dos 14,1 milhões de votos novos, e Flávio com 26%.</li>
+      </ul>
       <p><b>Outro erro:</b> o post trata os eleitores como se fossem sempre as mesmas pessoas. Na prática, milhões que votaram no 1º turno faltam no 2º e vice-versa; a conta só enxerga o saldo.</p>`,
     fontes: [
       ["Resultados oficiais do TSE (1º e 2º turnos de 2026)", "https://resultados.tse.jus.br/"],
@@ -1801,6 +1816,7 @@ function renderFakes() {
   $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk" id="fake-${f.id}">
     <header><span class="selo">${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
     <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
+    ${(f.outras || []).map(o => `<blockquote><span class="rot">Outra versão do mesmo boato (${o.data}), na íntegra</span>${esc(o.texto)}</blockquote>`).join("")}
     <div class="parecer"><p class="eyebrow" style="margin:0">Parecer</p><p class="curto">${f.curto}</p>${f.parecer}</div>
     <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
   </article>`).join("");
@@ -1932,7 +1948,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-26T23:15-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-26T23:20-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
