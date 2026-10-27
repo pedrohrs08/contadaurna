@@ -509,6 +509,47 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   </section>
   <div id="fkLista" class="so-fake fklista"></div>
 
+  <!-- ===== Envie seu print (bloco isolado: HTML, estilo e script próprios) ===== -->
+  <section class="panel so-fake envie" id="envie" aria-label="Envie um boato para checagem">
+    <style>
+      .envie { display: grid; gap: 10px; }
+      .envie h2 { margin: 0; }
+      .envie ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; max-width: 75ch; font-size: .92rem; }
+      .envie .botao { justify-self: start; display: inline-block; padding: 10px 16px; border-radius: 8px; background: var(--accent); color: var(--surface); font-weight: 700; text-decoration: none; }
+      .envie .botao[aria-disabled="true"] { background: var(--line); color: var(--muted); pointer-events: none; }
+      .envie details { font-size: .88rem; color: var(--muted); max-width: 75ch; }
+      .envie details p { margin: 6px 0; }
+    </style>
+    <p class="eyebrow">Envie um boato</p>
+    <h2>Recebeu algo sobre a eleição e quer saber se procede?</h2>
+    <p class="note" style="margin:0">Mande o print pelo formulário. Os boatos com mais alcance e que dá para conferir com dados públicos são checados e publicados nesta aba.</p>
+    <ul>
+      <li><b>Não respondemos individualmente</b> e não garantimos checar todos os envios.</li>
+      <li>Só aceitamos <b>uma imagem por envio</b> (até 10 MB). O formulário pede login no Google para evitar robôs.</li>
+      <li><b>O print nunca é publicado.</b> No site entra só o texto do boato, sem @, nome ou foto de quem postou.</li>
+      <li>A checagem é sobre a <b>afirmação</b>, nunca sobre a pessoa, e sempre com fontes.</li>
+      <li>Conteúdo ofensivo, ilegal ou fora do tema é descartado sem resposta.</li>
+    </ul>
+    <a class="botao" id="envieLink" target="_blank" rel="noopener">Enviar print para checagem</a>
+    <details>
+      <summary>Privacidade (LGPD)</summary>
+      <p><b>O que coletamos:</b> a imagem enviada e a conta Google usada no envio, registrada automaticamente pelo formulário. Não pedimos nome, telefone nem outros dados.</p>
+      <p><b>Para quê:</b> só para checar o boato. Não usamos para nenhum outro fim e não repassamos a ninguém.</p>
+      <p><b>Por quanto tempo:</b> os envios são apagados em até 30 dias.</p>
+      <p><b>Seus direitos:</b> para pedir a exclusão antes disso, use o mesmo formulário e escolha a opção “Quero apagar um envio meu”, com a data aproximada do envio.</p>
+    </details>
+    <script>
+      // Link do Google Forms. Enquanto estiver vazio, o botão aparece desativado.
+      const ENVIE_FORM_URL = "";
+      (() => {
+        const a = document.getElementById("envieLink");
+        if (ENVIE_FORM_URL) a.href = ENVIE_FORM_URL;
+        else { a.setAttribute("aria-disabled", "true"); a.textContent = "Formulário em preparação"; }
+      })();
+    </script>
+  </section>
+  <!-- ===== fim Envie seu print ===== -->
+
   <section class="panel so-pro" aria-label="A diferença e os votos depois das 17h">
     <p class="eyebrow">A diferença e os votos depois das 17h, na mesma escala</p>
     <div class="escala" role="img" aria-label="Barra da diferença de 4.430.191 votos e, na mesma escala, barra de 35.521 votos registrados depois das 17h">
