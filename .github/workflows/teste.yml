@@ -1,0 +1,49 @@
+# Versão de teste de cada PR: publica o site do PR em contadaurna.com.br/teste/pr-N/
+# para o Pedro testar antes do merge. Ao fechar o PR (merge ou não), a versão de teste é apagada.
+name: Versão de teste do PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: gh-pages   # mesmo grupo do pages.yml: um de cada vez escreve na branch gh-pages
+  cancel-in-progress: false
+
+jobs:
+  teste:
+    # PRs de forks não recebem permissão de escrita
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      PR: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Atualizar a pasta teste/pr-N na branch gh-pages
+        run: |
+          git clone -q --depth 1 -b gh-pages "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" publicado
+          rm -rf "publicado/teste/pr-${PR}"
+          if [ "${{ github.event.action }}" != "closed" ]; then
+            mkdir -p "publicado/teste/pr-${PR}"
+            cp -r index.html tse arquivo-fontes.json previa.png "publicado/teste/pr-${PR}/"
+            python3 scripts/marcar_teste.py "publicado/teste/pr-${PR}/index.html" "${PR}"
+          fi
+          cd publicado
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Versão de teste do PR #${PR} (${{ github.event.action }})"
+          git push -q origin gh-pages
+      - name: Avisar no PR onde testar
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        run: |
+          printf 'Versão de teste: https://contadaurna.com.br/teste/pr-%s/\n\nEla leva 1 ou 2 minutos para aparecer e é atualizada a cada novo commit neste PR. Teste lá; se estiver tudo certo, dê o merge para publicar no site oficial.\n' "${PR}" > corpo.md
+          gh pr comment "${PR}" --repo "${GITHUB_REPOSITORY}" --body-file corpo.md
