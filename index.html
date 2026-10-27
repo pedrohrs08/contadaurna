@@ -1690,6 +1690,39 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "minas-mais-votos-que-eleitores",
+    data: "26/10/2026",
+    titulo: "\"Como é possível o número de eleitores cadastrados em Minas Gerais ser menor que os votos computados?\"",
+    texto: `Alguém consegue me explicar como é possível o número de eleitores cadastrados em Minas Gerais ser menor que os votos computados na eleição?
+A informação foi retirada do site do TRE-MG, com dados do TSE do dia 20/07/2026, depois de encerrado o prazo para cadastro e regularização de títulos no Brasil, que foi em 06/05/2026.
+
+[tabela com o título "ELEITORES EM MINAS GERAIS: SITE TRE"]
+Cor/raça | Eleitorado
+Amarela | 18.613
+Branca | 1.306.528
+Indígena | 8.264
+Parda | 1.795.303
+Preta | 487.954
+Não informada | 12.760.997
+TOTAL EM 20/07/2026 | 16.377.659
+ELEIÇÕES 2º TURNO 2026 | 16.770.489
+DIFERENÇA A MAIOR | 392.830`,
+    curto: "Não procede. A primeira parte da tabela é verdadeira: o TRE-MG informou 16.377.659 eleitores aptos em 20/07. Mas o número do 2º turno não bate com nenhum dado oficial: segundo o TSE, 13.044.203 mineiros votaram, 3,3 milhões a menos que o eleitorado.",
+    parecer: `
+      <p><b>O que está certo:</b> a tabela por cor/raça é a do TRE-MG, publicada em 20/07/2026, com 16.377.659 eleitores aptos em Minas. A linha "Não informada" é grande (77,92%) porque a maioria dos eleitores não declarou cor/raça; ela entra na soma, então o total já é o eleitorado inteiro.</p>
+      <p><b>O que está errado:</b> o número "16.770.489" do 2º turno não aparece nos dados oficiais. No arquivo de resultados do TSE para Minas Gerais no 2º turno:</p>
+      <ul>
+        <li>Eleitores aptos: 16.372.144, só 5.515 a menos que o número de julho.</li>
+        <li>Compareceram e votaram: 13.044.203 (79,67%). Abstenção: 3.327.941 (20,33%).</li>
+        <li>Votos: Lula 6.351.099, Flávio 6.241.786, brancos 164.141 e nulos 287.177. A soma dá exatamente os 13.044.203 que compareceram.</li>
+      </ul>
+      <p><b>Conclusão:</b> houve 3,3 milhões de votos a <b>menos</b> que o eleitorado, não 392 mil a mais. Os números de cada urna e de cada município são públicos em resultados.tse.jus.br, e qualquer pessoa pode conferir a soma.</p>`,
+    fontes: [
+      ["TRE-MG: eleitorado mineiro apto em 2026 (20/07)", "https://www.tre-mg.jus.br/comunicacao/noticias/2026/Julho/conheca-o-eleitorado-mineiro-apto-a-votar-nas-eleicoes-2026"],
+      ["Resultados oficiais do TSE (Minas Gerais, 2º turno)", "https://resultados.tse.jus.br/"],
+    ],
+  },
+  {
     id: "venezuela-prorrogacao",
     data: "26/10/2026",
     selo: "Enganoso",
@@ -1899,7 +1932,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-26T21:45-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-26T23:15-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
