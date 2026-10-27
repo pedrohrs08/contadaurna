@@ -1841,6 +1841,43 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "urna-conversor-de-voto",
+    data: "27/10/2026",
+    titulo: "\"Imaginem que existe um sistema dentro das urnas que possa converter uma certa porcentagem de votos para o concorrente\"",
+    texto: `Agora imaginem que existe um sistema dentro das urnas que possa converter uma certa porcentagem de votos para o concorrente! Seria plausível dizer que ministros da Suprema Corte, que estão com a corda no pescoço, concordariam em mexer nessa regulação?
+
+P.S.: Isso é apenas uma história que imaginei enquanto dormia. A charge é uma mera ilustração. Escrevo histórias em quadrinhos, ok, TSE e STF?
+
+[hashtag com nome de perfil omitida] #eleicoes #flaviobolsonaro #lula
+
+[charge marcada pela rede como "Conteúdo de IA": um técnico com boné e camisa "TSE Suporte Técnico" gira um botão chamado "Conversor de voto", com escala de 0% a 100%, dentro de uma urna aberta da Justiça Eleitoral. Ele pergunta: "Tem certeza Xandão? O povo não irá desconfiar?". Um ministro de toga, com o rosto de Alexandre de Moraes, aponta para a urna e diz: "Coloca em 100%!"]`,
+    frase: "Não existe \"conversor de voto\": no 2º turno, as urnas sorteadas para o teste de integridade bateram voto a voto com as cédulas de papel, e quem comandou o TSE foi <b>Nunes Marques</b>, não Moraes.",
+    nums: [["0", "divergências no teste de integridade do 2º turno no TSE e em São Paulo"], ["389", "votos de papel conferidos só nas urnas do TSE, um a um"], ["2024", "ano em que Moraes deixou o TSE"]],
+    curto: "Não procede. O próprio autor diz que é uma história inventada, e a imagem foi feita por IA. Um desvio de votos em porcentagem apareceria no teste de integridade, feito no dia da eleição com cédulas preenchidas pelos partidos, e no 2º turno não houve nenhuma divergência. A eleição foi conduzida por Nunes Marques, indicado por Bolsonaro; Moraes saiu do TSE em 2024.",
+    parecer: `
+      <p><b>O que o post é:</b> uma pergunta hipotética ("imaginem"), com o aviso do próprio autor de que é "apenas uma história" e uma charge que a rede marcou como conteúdo de IA. Não traz nenhum documento, número ou indício de que esse sistema exista. É a imagem que circula, e muita gente vê só ela.</p>
+      <p><b>Um "conversor" seria pego no dia da eleição.</b> O teste de integridade existe exatamente para isso:</p>
+      <ul>
+        <li>Urnas sorteadas na véspera são retiradas das seções e levadas para um local público. Representantes dos partidos preenchem cédulas de papel, que são digitadas uma a uma na urna durante o horário de votação, com câmeras ligadas o dia todo.</li>
+        <li>No fim, o boletim impresso pela urna é comparado com a contagem das cédulas. Se a urna desviasse 1%, 10% ou 100% dos votos de um candidato para o outro, a diferença apareceria.</li>
+        <li>No 2º turno de 2026 não houve divergência: no TSE, os 389 votos de papel bateram com as urnas; em São Paulo, as 33 urnas testadas também bateram. O juiz que coordenou o teste no Mato Grosso, com 20 urnas, lembrou que ele é feito desde 2002 e nunca encontrou divergência.</li>
+        <li>No TSE, segundo o juiz auxiliar da Presidência, nenhum partido registrou impugnação em ata sobre a confiabilidade da urna.</li>
+      </ul>
+      <p><b>O programa não pode ser trocado depois.</b> O código-fonte ficou aberto para partidos, OAB, TCU, Congresso e universidades desde outubro de 2025; o Senado e o Ministério Público inspecionaram em 2026. Em 4/9 os sistemas foram assinados digitalmente e lacrados, e os partidos podem conferir se o programa instalado em cada urna é o lacrado. Ao fim da votação, cada urna imprime o boletim, que é entregue aos fiscais e pode ser comparado com o resultado publicado.</p>
+      <p><b>A charge erra até o personagem.</b> Quem presidiu o TSE nas eleições de 2026 foi Kassio Nunes Marques, indicado ao STF por Jair Bolsonaro, com André Mendonça, também indicado por Bolsonaro, como vice. Moraes deixou o TSE em junho de 2024, depois de quatro anos como titular, e foi sucedido na presidência por Cármen Lúcia.</p>
+      <p><b>O que é legítimo:</b> criticar ministros do STF, inclusive Moraes, e cobrar mais fiscalização das urnas. O próprio presidente do TSE pediu aos partidos que ampliassem o acompanhamento. Mas insinuar, com imagem de IA, que um ministro mandou desviar votos não tem nenhuma prova, e as auditorias do dia da eleição dizem o contrário.</p>`,
+    fontes: [
+      ["TSE: teste de integridade do 2º turno sem divergência", "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-do-2o-turno-no-tse-confirma-correspondencia-entre-cedulas-e-votos-nas-urnas"],
+      ["TRE-SP: 33 urnas testadas no 2º turno", "https://www.tre-sp.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-das-urnas-no-2o-turno-e-concluido-sem-divergencias-em-sao-paulo"],
+      ["TRE-MT: teste do 2º turno", "https://www.tre-mt.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-reforca-seguranca-e-confiabilidade-da-urna-eletronica-no-2o-turno"],
+      ["TSE: assinatura digital e lacração dos sistemas (4/9)", "https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/sistemas-das-eleicoes-gerais-de-2026-sao-assinados-digitalmente-e-lacrados-pelo-tse"],
+      ["O Povo: mecanismos de segurança das urnas", "https://www.opovo.com.br/noticias/politica/2026/07/29/tse-reafirma-mecanismos-de-seguranca-das-urnas-eletronicas-apos-criticas-ao-sistema-eleitoral.html"],
+      ["Poder360: Nunes Marques assume o TSE", "https://www.poder360.com.br/poder-justica/nunes-marques-assume-presidencia-do-tse/"],
+      ["Correio Braziliense: Moraes deixa o TSE (2024)", "https://www.correiobraziliense.com.br/politica/2024/06/6869678-nunes-marques-vai-presidir-tse-nas-eleicoes-de-2026.html"],
+      ["TSE: resultado e balanço do 2º turno", "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026"],
+    ],
+  },
+  {
     id: "minas-mais-votos-que-eleitores",
     data: "26/10/2026",
     titulo: "\"Como é possível o número de eleitores cadastrados em Minas Gerais ser menor que os votos computados?\"",
@@ -2135,7 +2172,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-27T10:30-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-27T12:30-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
