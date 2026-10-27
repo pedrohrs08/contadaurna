@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Servidor local do Placar de Probabilidade 2026.
+"""Servidor local do site contadaurna (Eleições 2026).
 
 Serve o index.html desta pasta e repassa /tse/... para https://resultados.tse.jus.br/...
 (evita bloqueios de CORS). Só usa a biblioteca padrão do Python 3.

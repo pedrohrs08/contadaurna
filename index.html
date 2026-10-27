@@ -804,7 +804,7 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   </section>
   <section class="panel correcoes" aria-label="Correções">
     <p class="eyebrow">Achou um erro?</p>
-    <p class="note" style="margin:0">Se alguma informação estiver errada ou desatualizada, <a id="linkCorrecao" href="https://github.com/pedrohrs08/probabilidade/issues/new" target="_blank" rel="noopener">envie uma correção</a> com a fonte que mostra o dado certo. O pedido fica público e cada correção feita é registrada abaixo, com a data. (É preciso uma conta gratuita no GitHub.)</p>
+    <p class="note" style="margin:0">Se alguma informação estiver errada ou desatualizada, <a id="linkCorrecao" href="https://github.com/pedrohrs08/contadaurna/issues/new" target="_blank" rel="noopener">envie uma correção</a> com a fonte que mostra o dado certo. O pedido fica público e cada correção feita é registrada abaixo, com a data. (É preciso uma conta gratuita no GitHub.)</p>
     <p class="note" style="margin:10px 0 0"><b>Registro de correções</b></p>
     <div id="listaCorrecoes" class="note"></div>
     <p class="note" style="margin:10px 0 0">Ao lado de cada fonte há um link <b>arquivo</b>, que abre a cópia da página guardada no archive.org. Ele continua funcionando se a notícia original sair do ar, mudar ou ficar atrás de paywall.</p>
@@ -2099,7 +2099,7 @@ $("atualizado").textContent = new Date(ATUALIZADO).toLocaleString("pt-BR", {time
 $("listaCorrecoes").innerHTML = CORRECOES.length
   ? `<ol>${CORRECOES.map(c => `<li><b>${c.data}:</b> ${c.texto}</li>`).join("")}</ol>`
   : "<p style=\"margin:4px 0 0\">Nenhuma correção até agora.</p>";
-$("linkCorrecao").href = "https://github.com/pedrohrs08/probabilidade/issues/new?" + new URLSearchParams({
+$("linkCorrecao").href = "https://github.com/pedrohrs08/contadaurna/issues/new?" + new URLSearchParams({
   title: "Correção: ",
   body: "Aba e item com o erro:\n\nO que está errado:\n\nO dado certo:\n\nFonte (link):\n",
 });
