@@ -14,8 +14,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: gh-pages   # mesmo grupo do teste.yml: um de cada vez escreve na branch gh-pages
+  cancel-in-progress: false
 
 jobs:
   publicar:
@@ -27,6 +27,10 @@ jobs:
           mkdir -p site
           cp -r index.html tse CNAME arquivo-fontes.json previa.png site/
           touch site/.nojekyll
+      - name: Manter as versões de teste dos PRs abertos (pasta teste/)
+        run: |
+          git clone -q --depth 1 -b gh-pages "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" publicado || exit 0
+          if [ -d publicado/teste ]; then cp -r publicado/teste site/; fi
       - name: Enviar para a branch gh-pages
         run: |
           cd site
