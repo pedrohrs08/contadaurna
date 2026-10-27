@@ -65,7 +65,25 @@ body[data-aba="fake"] #status, body[data-aba="cron"] #status { display: none !im
 .atualizado { margin: 8px 0 0; font-size: .82rem; color: var(--muted); }
 a.arq { font-size: .78em; color: var(--muted); margin-left: 3px; }
 .correcoes ol { margin: 6px 0 0; padding-left: 20px; }
-.sobre p { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; line-height: 1.45; }
+.sobre > p { margin: 0 0 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: .88rem; line-height: 1.45; }
+/* Resposta em uma frase no topo de cada aba; o método fica recolhido */
+.sobre > div { display: grid; gap: 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.sobre .frase { margin: 0; font-size: 1.1rem; font-weight: 600; line-height: 1.38; max-width: 70ch; text-wrap: pretty; }
+.sobre .frase b { font-weight: 800; }
+.sobre details p, .sobre-site p { margin: 6px 0 0; font-size: .86rem; line-height: 1.45; color: var(--muted); max-width: 80ch; }
+.sobre summary, .sobre-site summary, .mais > summary { font: 600 .88rem var(--f-narrow); color: var(--flavio); }
+.sobre-site { margin-top: 4px; }
+.sobre-site .nota-site { color: var(--fg); }
+/* Barra em escala da aba Impactos */
+.escala { display: grid; gap: 10px; margin: 4px 0 10px; }
+.escala .lab { display: flex; justify-content: space-between; gap: 8px; font-size: .88rem; margin-bottom: 3px; }
+.escala .lab b { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.escala .trilho { height: 20px; background: var(--bg); border: 1px solid var(--line); border-radius: 5px; overflow: hidden; }
+.escala .trilho i { display: block; height: 100%; background: var(--fg); }
+.escala .trilho i.peq { background: var(--warn); min-width: 3px; }
+.calc > summary { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; font-size: 1.02rem; font-weight: 800; }
+.calc > summary span { display: block; font: 400 .84rem var(--f-display); color: var(--muted); margin-top: 2px; }
+.calc-corpo { display: grid; gap: 20px; margin-top: 20px; }
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg); font: 15px/1.5 var(--f-display);
@@ -239,10 +257,26 @@ td.alto { color: var(--bad); font-weight: 600; }
 .crono h3 { margin: 0; font-size: 1rem; }
 .crono p { margin: 0; font-size: .92rem; max-width: 75ch; }
 .crono .fontes { font-size: .8rem; color: var(--muted); }
+.crono .prej-curto { font-size: .86rem; color: var(--muted); }
+.crono .prej-curto b { color: var(--fg); font-weight: 600; }
+.crono details { font-size: .92rem; }
+.crono details summary { font: 600 .84rem var(--f-narrow); color: var(--flavio); }
+.crono details p { margin: 6px 0 0; }
 .fklista { display: grid; gap: 20px; }
 .fk { display: grid; gap: 12px; }
 .fk header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
-.fk .selo { font: 800 .8rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--bad-soft); color: var(--bad); }
+.fk .selo { font: 800 1rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px; border-radius: 8px; background: var(--bad-soft); color: var(--bad); display: inline-flex; gap: 8px; align-items: center; }
+.fk .selo svg { width: 18px; height: 18px; flex: none; }
+.fk .selo.enganoso { background: var(--warn-soft); color: var(--warn); }
+.fk .frase { margin: 0; font-size: 1.12rem; font-weight: 600; line-height: 1.38; max-width: 70ch; }
+.fk .nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 720px; }
+.fk .nums div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; align-content: start; }
+.fk .nums b { font: 800 1.2rem var(--f-display); font-variant-numeric: tabular-nums; }
+.fk .nums span { font-size: .78rem; color: var(--muted); line-height: 1.3; }
+@media (max-width: 480px) { .fk .nums { grid-template-columns: 1fr; } }
+.fk details { border-top: 1px solid var(--line); padding-top: 10px; }
+.fk details > summary { font: 600 .92rem var(--f-narrow); color: var(--flavio); }
+.fk details > .parecer, .fk details > blockquote { margin-top: 10px; }
 .fk .quando { font: .8rem var(--f-mono); color: var(--muted); }
 .fk h3 { margin: 0; font-size: 1.1rem; flex-basis: 100%; }
 .fk blockquote { margin: 0; padding: 12px 14px; border-left: 4px solid var(--bad); background: var(--bg); border-radius: 0 8px 8px 0; white-space: pre-line; font-size: .95rem; }
@@ -307,8 +341,11 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   <header class="top">
     <div>
       <h1>Eleições 2026</h1>
-      <p class="sub">Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a comparação com as pesquisas da véspera, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
-      <p class="nota-site"><b>Nota:</b> este site não tem fins lucrativos nem vínculo ou viés político. Ele foi construído com uma metodologia definida explicitamente nas instruções (o prompt) dadas à inteligência artificial: registrar só fatos comprovados, avaliar os acontecimentos de forma imparcial e, quando aparecer uma opinião, uma hipótese ou uma estimativa, identificá-la como tal. Todas as informações vêm de dados públicos, disponíveis na internet, com link para a fonte.</p>
+      <p class="sub">O 2º turno de 25/10/2026, entre Lula e Flávio Bolsonaro, explicado com números oficiais do TSE. Cada dado tem fonte com link.</p>
+      <details class="sobre-site"><summary>Sobre o site e como ele foi feito</summary>
+        <p>Um lugar para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula e Flávio Bolsonaro, com números verificáveis: o resultado oficial, a comparação com as pesquisas da véspera, o efeito da prorrogação até as 19h, os boatos que circularam e a cronologia do dia. Os dados vêm dos arquivos públicos de resultados do TSE (1º e 2º turnos, por estado e grandes cidades), das pesquisas registradas na véspera, da contagem dos registros das urnas feita pelo G1 e pela Jovem Pan, e de reportagens de veículos com linhas editoriais diferentes, todas com link. É um projeto pessoal, sem ligação com partidos ou com o TSE, montado com ajuda de inteligência artificial (Claude) e conferido item a item com as fontes citadas.</p>
+        <p class="nota-site"><b>Nota:</b> este site não tem fins lucrativos nem vínculo ou viés político. Ele foi construído com uma metodologia definida explicitamente nas instruções (o prompt) dadas à inteligência artificial: registrar só fatos comprovados, avaliar os acontecimentos de forma imparcial e, quando aparecer uma opinião, uma hipótese ou uma estimativa, identificá-la como tal. Todas as informações vêm de dados públicos, disponíveis na internet, com link para a fonte.</p>
+      </details>
       <p class="atualizado">Conteúdo atualizado em <time id="atualizado"></time>. Os fatos posteriores a essa data ainda não estão no site.</p>
     </div>
   </header>
@@ -320,12 +357,17 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
     <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
   </nav>
   <div class="sobre" aria-label="Sobre esta aba">
-    <p class="so-res">Esta aba mostra o placar oficial do TSE: votos válidos de cada candidato, seções totalizadas e o resultado por região, por UF e no mapa.<br><b>Como foi montada:</b> o app lê os arquivos públicos de resultados do TSE (resultados.tse.jus.br) do 2º turno, do Brasil e de cada UF, e só faz somas e percentuais. No site publicado são os arquivos finais, salvos depois do fim da apuração; rodando ao vivo, o botão Atualizar busca a versão mais nova.</p>
+    <div class="so-res"><p class="frase">Lula venceu com <b>51,79%</b> dos votos válidos, <b>4,43 milhões</b> de votos à frente de Flávio Bolsonaro.</p>
+      <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba mostra o placar oficial do TSE: votos válidos de cada candidato, seções totalizadas e o resultado por região, por UF e no mapa.</p><p><b>Como foi montada:</b> o app lê os arquivos públicos de resultados do TSE (resultados.tse.jus.br) do 2º turno, do Brasil e de cada UF, e só faz somas e percentuais. No site publicado são os arquivos finais, salvos depois do fim da apuração; rodando ao vivo, o botão Atualizar busca a versão mais nova.</p></details></div>
     <p class="so-proj">Esta aba estima, durante a apuração, a chance de cada candidato vencer e o resultado final provável, antes de todas as urnas serem contadas.<br><b>Como foi montada:</b> parte do perfil de voto de capitais, grandes cidades e interior de cada UF no 1º turno (dados do TSE), ajusta pela média das pesquisas da véspera e corrige com o que já foi apurado em cada lugar; a incerteza vem de milhares de simulações. Os detalhes estão em “Parâmetros do modelo e como funciona”, no fim da página. Com a apuração encerrada, a projeção coincide com o resultado oficial.</p>
-    <p class="so-pxu">Esta aba compara o que as pesquisas da véspera diziam com o que as urnas mostraram e explica por que uma diferença entre os dois não é sinal de fraude.<br><b>Como foi montada:</b> os números de cada instituto vêm da compilação da RED publicada em 24/10, em votos válidos; o resultado é o oficial do TSE; os exemplos de 2022 vêm de reportagens da época, com link. Durante a apuração, esta aba mostrava a projeção de quem ia ganhar; com a eleição encerrada, ela deu lugar a esta comparação.</p>
-    <p class="so-pro">Esta aba mede quanto a prorrogação da votação até 19h, decidida pelo ministro Zanin, poderia ter mudado o resultado.<br><b>Como foi montada:</b> parte do resultado oficial do TSE e da contagem de votos registrados depois das 17h nos registros (logs) das urnas, feita pelo G1 e por um levantamento divulgado pela Jovem Pan. Os cenários de horário normal e estendido usam suposições por região que você pode editar; elas são estimativas e estão marcadas assim. Inclui a explicação simples, a hipótese de todas as seções abertas até 19h e o mínimo que Flávio precisaria para virar.</p>
-    <p class="so-fake">Esta aba reúne boatos sobre o 2º turno e mostra por que não procedem.<br><b>Como foi montada:</b> cada card traz o texto do boato na íntegra, como circulou, e depois o parecer, com as contas feitas a partir dos números oficiais do TSE do 1º e do 2º turno e links para as fontes. Boatos novos entram no topo.</p>
-    <p class="so-cron">Esta aba conta o dia da eleição hora a hora, separando fato, opinião e fake news, e diz qual candidatura cada acontecimento prejudicou em votos.<br><b>Como foi montada:</b> cruzando reportagens de veículos com linhas editoriais diferentes (vistos como à direita, ao centro e à esquerda) com fontes oficiais; quando os veículos discordam de horário ou número, o item mostra as versões.</p>
+    <div class="so-pxu"><p class="frase">As pesquisas da véspera davam empate técnico; Lula teve <b>2,7 pontos</b> a mais que a média delas. Pesquisa errar não é prova de fraude.</p>
+      <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba compara o que as pesquisas da véspera diziam com o que as urnas mostraram e explica por que uma diferença entre os dois não é sinal de fraude.</p><p><b>Como foi montada:</b> os números de cada instituto vêm da compilação da RED publicada em 24/10, em votos válidos; o resultado é o oficial do TSE; os exemplos de 2022 vêm de reportagens da época, com link. Durante a apuração, esta aba mostrava a projeção de quem ia ganhar; com a eleição encerrada, ela deu lugar a esta comparação.</p></details></div>
+    <div class="so-pro"><p class="frase">A prorrogação até 19h não decidiu a eleição: entraram <b>cerca de 35 mil votos</b> depois das 17h, <b>0,8%</b> da diferença de 4,43 milhões.</p>
+      <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba mede quanto a prorrogação da votação até 19h, decidida pelo ministro Zanin, poderia ter mudado o resultado.</p><p><b>Como foi montada:</b> parte do resultado oficial do TSE e da contagem de votos registrados depois das 17h nos registros (logs) das urnas, feita pelo G1 e por um levantamento divulgado pela Jovem Pan. Os cenários de horário normal e estendido usam suposições por região que você pode editar; elas são estimativas e estão marcadas assim. Inclui a explicação simples, a hipótese de todas as seções abertas até 19h e o mínimo que Flávio precisaria para virar.</p></details></div>
+    <div class="so-fake"><p class="frase"><span id="fkFrase"></span></p>
+      <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba reúne boatos sobre o 2º turno e mostra por que não procedem.</p><p><b>Como foi montada:</b> cada card traz o texto do boato na íntegra, como circulou, e depois o parecer, com as contas feitas a partir dos números oficiais do TSE do 1º e do 2º turno e links para as fontes. Boatos novos entram no topo.</p></details></div>
+    <div class="so-cron"><p class="frase"><b>17h</b> acaba o horário oficial · <b>17h01</b> Zanin prorroga até 19h · <b>18h12</b> o TSE limita às seções ainda abertas · <b>21h10</b> Lula é reeleito.</p>
+      <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba conta o dia da eleição hora a hora, separando fato, opinião e fake news, e diz qual candidatura cada acontecimento prejudicou em votos.</p><p><b>Como foi montada:</b> cruzando reportagens de veículos com linhas editoriais diferentes (vistos como à direita, ao centro e à esquerda) com fontes oficiais; quando os veículos discordam de horário ou número, o item mostra as versões.</p></details></div>
   </div>
   <div class="controls" id="topControls">
     <button id="btnUpdate" class="primary" type="button">Atualizar</button>
@@ -448,7 +490,8 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   <section class="panel so-cron" aria-label="Cronologia do dia da eleição">
     <p class="eyebrow">Cronologia · domingo, 25 de outubro de 2026 (horário de Brasília)</p>
     <h2 style="margin:0 0 6px">O dia do 2º turno, hora a hora</h2>
-    <p class="note" style="margin:0 0 10px">Cada item diz se é <b>fato</b> (aconteceu e está registrado), <b>opinião</b> (é o que alguém disse ou defende, inclusive as versões em disputa) ou <b>fake news</b> (afirmação desmentida pelos dados). Os horários vêm das próprias reportagens; quando os veículos dão horários diferentes, o item avisa. Cada item também diz <b>qual candidatura foi prejudicada no resultado</b>, isto é, em votos, e por quê. Prejuízo de imagem não conta. Quando não dá para saber de que lado eram os votos afetados, o item diz isso.</p>
+    <p class="note" style="margin:0 0 4px">Cada item é <b>fato</b>, <b>opinião</b> ou <b>fake news</b> e diz qual candidatura foi prejudicada em votos. Toque em “Detalhes” para ler o item inteiro.</p>
+    <details class="note mais" style="margin:0 0 12px"><summary>Como ler a cronologia</summary><p>Cada item diz se é <b>fato</b> (aconteceu e está registrado), <b>opinião</b> (é o que alguém disse ou defende, inclusive as versões em disputa) ou <b>fake news</b> (afirmação desmentida pelos dados). Os horários vêm das próprias reportagens; quando os veículos dão horários diferentes, o item avisa. Cada item também diz <b>qual candidatura foi prejudicada no resultado</b>, isto é, em votos, e por quê. Prejuízo de imagem não conta. Quando não dá para saber de que lado eram os votos afetados, o item diz isso.</p></details>
     <div class="seg cronfiltro" role="group" aria-label="Filtrar a linha do tempo">
       <button type="button" data-tipo="todos" aria-pressed="true">Tudo</button>
       <button type="button" data-tipo="fato" aria-pressed="false">Fatos</button>
@@ -466,9 +509,19 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   </section>
   <div id="fkLista" class="so-fake fklista"></div>
 
+  <section class="panel so-pro" aria-label="A diferença e os votos depois das 17h">
+    <p class="eyebrow">A diferença e os votos depois das 17h, na mesma escala</p>
+    <div class="escala" role="img" aria-label="Barra da diferença de 4.430.191 votos e, na mesma escala, barra de 35.521 votos registrados depois das 17h">
+      <div><div class="lab"><span>Diferença entre Lula e Flávio (TSE)</span><b>4.430.191</b></div><div class="trilho"><i style="width:100%"></i></div></div>
+      <div><div class="lab"><span>Votos registrados depois das 17h, em qualquer candidato (G1)</span><b>35.521</b></div><div class="trilho"><i class="peq" style="width:0.8%"></i></div></div>
+    </div>
+    <p class="note" style="margin:0">O tracinho laranja é 0,8% da barra de cima. Mesmo que todos esses votos fossem de Lula, ele ainda venceria por 4,39 milhões.</p>
+    <p class="note" style="margin:6px 0 0">Fontes: <a href="https://www.correio24horas.com.br/eleicoes/quantos-votos-foram-registrados-apos-as-17h-na-eleicao-presidencial-levantamento-mostra-total-1026" target="_blank" rel="noopener">Correio, com dados do G1</a> · <a href="https://jovempan.com.br/politica/34-319-votos-foram-registrados-entre-17h-e-19h-lula-venceu-por-443-milhoes/" target="_blank" rel="noopener">Jovem Pan</a> · <a href="https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026" target="_blank" rel="noopener">balanço do TSE</a></p>
+  </section>
+
   <section class="panel so-pro simples" aria-label="Explicação simples">
-    <details open>
-      <summary>Explicando de um jeito bem simples</summary>
+    <details>
+      <summary>Explicando de um jeito bem simples (Maracanãs e pote de balas)</summary>
       <h3>O que aconteceu?</h3>
       <p>A votação deveria acabar às 17h. Um ministro do STF mandou estender até as 19h, mas o TSE explicou que valia só para as seções que ainda tinham gente na fila. A maioria das seções já tinha fechado.</p>
       <h3>Qual é a pergunta?</h3>
@@ -514,152 +567,157 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
       </table></div>
     </div>
     <p class="note" style="margin-top:10px">Tabelas do levantamento divulgado pela Jovem Pan (34.319 votos; só as maiores UFs e cidades). Os logs registram a hora em que cada voto foi confirmado, não em quem: nenhum levantamento sabe quantos foram para Lula ou para Flávio. Parte desses eleitores já estava na fila às 17h e votaria de qualquer jeito. Não é um número oficial homologado pelo TSE.</p>
-    <div class="prbtns"><button type="button" id="lgAjusta">Ajustar as suposições abaixo para dar 35.521 votos</button></div>
+    <div class="prbtns"><button type="button" id="lgAjusta">Ajustar o simulador para dar 35.521 votos</button></div>
     <p class="note" style="margin-top:8px">Fontes: <a href="https://www.correio24horas.com.br/eleicoes/quantos-votos-foram-registrados-apos-as-17h-na-eleicao-presidencial-levantamento-mostra-total-1026" target="_blank" rel="noopener">Correio, com dados do G1</a> · <a href="https://jovempan.com.br/politica/34-319-votos-foram-registrados-entre-17h-e-19h-lula-venceu-por-443-milhoes/" target="_blank" rel="noopener">Jovem Pan</a> · <a href="https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026" target="_blank" rel="noopener">balanço do TSE</a></p>
   </section>
 
-  <section class="panel so-pro" aria-label="Horário normal e horário estendido">
-    <p class="eyebrow">Horário normal (até 17h) × horário estendido (até 19h)</p>
-    <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> Os cartões abaixo saem das suposições que você coloca mais abaixo e não são dados oficiais. O dado real é a contagem dos logs das urnas, no quadro acima.</p>
-    <div class="cenarios">
-      <div class="cen">
+  <details class="so-pro calc">
+    <summary>Faça a conta você mesmo<span>O número que decide, o simulador de horário normal × estendido e a hipótese de todas as seções abertas até 19h.</span></summary>
+    <div class="calc-corpo">
+    <section class="panel" aria-label="Horário normal e horário estendido">
+      <p class="eyebrow">Horário normal (até 17h) × horário estendido (até 19h)</p>
+      <p class="banner" style="margin:0 0 12px"><b>Simulador de hipóteses.</b> Os cartões abaixo saem das suposições que você coloca mais abaixo e não são dados oficiais. O dado real é a contagem dos logs das urnas, no quadro acima.</p>
+      <div class="cenarios">
+        <div class="cen">
+          <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
+          <h3>Horário normal (estimativa) · oficial menos os votos supostos depois das 17h</h3>
+          <div class="placar"><span class="l" id="prNL">–</span><span class="f" id="prNF">–</span></div>
+          <div class="bar" aria-hidden="true"><div class="bl" id="prNbL" style="width:50%"></div><div class="bf" id="prNbF" style="width:50%"></div><div class="mid"></div></div>
+          <span class="meta" id="prNM"></span>
+        </div>
+        <div class="cen">
+          <h3>Horário estendido · resultado oficial</h3>
+          <div class="placar"><span class="l" id="prEL">–</span><span class="f" id="prEF">–</span></div>
+          <div class="bar" aria-hidden="true"><div class="bl" id="prEbL" style="width:50%"></div><div class="bf" id="prEbF" style="width:50%"></div><div class="mid"></div></div>
+          <span class="meta" id="prEM"></span>
+        </div>
+      </div>
+      <div class="veredito" id="prVer" aria-live="polite"></div>
+      <div class="prbtns"><button type="button" id="prMin" class="primary">Qual o mínimo para Flávio ganhar?</button></div>
+      <div class="minbox" id="prMinBox" hidden aria-live="polite"></div>
+      <div class="kpis">
         <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
-        <h3>Horário normal (estimativa) · oficial menos os votos supostos depois das 17h</h3>
-        <div class="placar"><span class="l" id="prNL">–</span><span class="f" id="prNF">–</span></div>
-        <div class="bar" aria-hidden="true"><div class="bl" id="prNbL" style="width:50%"></div><div class="bf" id="prNbF" style="width:50%"></div><div class="mid"></div></div>
-        <span class="meta" id="prNM"></span>
+        <div class="kpi"><b id="prVotos">–</b><span>votos válidos depois das 17h (estim.)</span></div>
+        <div class="kpi"><b id="prSaldo">–</b><span id="prSaldoL">saldo da prorrogação</span></div>
+        <div class="kpi"><b id="prPrec">–</b><span>% para Lula na prorrogação que mudaria o vencedor</span></div>
+        <div class="kpi"><b id="prVPrec">–</b><span id="prVPrecL">votos na prorrogação necessários para mudar o vencedor</span></div>
       </div>
-      <div class="cen">
-        <h3>Horário estendido · resultado oficial</h3>
-        <div class="placar"><span class="l" id="prEL">–</span><span class="f" id="prEF">–</span></div>
-        <div class="bar" aria-hidden="true"><div class="bl" id="prEbL" style="width:50%"></div><div class="bf" id="prEbF" style="width:50%"></div><div class="mid"></div></div>
-        <span class="meta" id="prEM"></span>
+      <div class="conta">
+        <p class="eyebrow" style="margin:0 0 6px">A conta, passo a passo, com os números de agora</p>
+        <ol id="prConta"></ol>
       </div>
-    </div>
-    <div class="veredito" id="prVer" aria-live="polite"></div>
-    <div class="prbtns"><button type="button" id="prMin" class="primary">Qual o mínimo para Flávio ganhar?</button></div>
-    <div class="minbox" id="prMinBox" hidden aria-live="polite"></div>
-    <div class="kpis">
-      <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
-      <div class="kpi"><b id="prVotos">–</b><span>votos válidos depois das 17h (estim.)</span></div>
-      <div class="kpi"><b id="prSaldo">–</b><span id="prSaldoL">saldo da prorrogação</span></div>
-      <div class="kpi"><b id="prPrec">–</b><span>% para Lula na prorrogação que mudaria o vencedor</span></div>
-      <div class="kpi"><b id="prVPrec">–</b><span id="prVPrecL">votos na prorrogação necessários para mudar o vencedor</span></div>
-    </div>
-    <div class="conta">
-      <p class="eyebrow" style="margin:0 0 6px">A conta, passo a passo, com os números de agora</p>
-      <ol id="prConta"></ol>
-    </div>
-  </section>
+    </section>
 
-  <section class="panel so-pro" aria-label="Votos necessários para mudar o vencedor">
-    <p class="eyebrow">O número que decide · não depende das suposições</p>
-    <p class="note" style="margin:0" id="prNecIntro"></p>
-    <div class="tbl" style="margin-top:10px"><table>
-      <thead class="quebra"><tr><th id="prNecCol">Fatia de Lula</th><th>Votos necessários depois das 17h</th><th>% dos votos do dia</th><th>Abstenção até 17h</th></tr></thead>
-      <tbody id="prNecBody"></tbody>
-    </table></div>
-    <p class="note" style="margin-top:8px" id="prNecNota"></p>
-  </section>
+    <section class="panel" aria-label="Votos necessários para mudar o vencedor">
+      <p class="eyebrow">O número que decide · não depende das suposições</p>
+      <p class="note" style="margin:0" id="prNecIntro"></p>
+      <div class="tbl" style="margin-top:10px"><table>
+        <thead class="quebra"><tr><th id="prNecCol">Fatia de Lula</th><th>Votos necessários depois das 17h</th><th>% dos votos do dia</th><th>Abstenção até 17h</th></tr></thead>
+        <tbody id="prNecBody"></tbody>
+      </table></div>
+      <p class="note" style="margin-top:8px" id="prNecNota"></p>
+    </section>
 
-  <section class="panel so-pro" aria-label="Hipótese: todas as seções abertas até 19h">
-    <p class="eyebrow">Hipótese · e se todas as seções tivessem ficado abertas até as 19h?</p>
-    <p class="note" style="margin:0">Aqui a conta é ao contrário: em vez de tirar votos, o app <b>acrescenta</b> ao resultado oficial os votos que poderiam ter vindo das seções que fecharam às 17h, se elas também tivessem sido prorrogadas.</p>
-    <div class="prgeral">
-      <label>Seções que fecharam às 17h (%)<input id="hpFech" type="number" min="0" max="100" step="0.1" value="90"></label>
-      <label>Movimento nelas depois das 17h (% da última hora)<input id="hpRitmo" type="number" min="0" max="300" step="0.1" value="1.9"></label>
-      <label id="hpFatiaL">Fatia de Flávio nesses votos (%)<input id="hpFatia" type="number" min="0" max="100" step="0.1" value="48.21"></label>
-      <label style="align-content:end"><button type="button" id="hpMin">Qual o mínimo para Flávio ganhar?</button></label>
-    </div>
-    <div class="cenarios" style="margin-top:12px">
-      <div class="cen">
-        <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
-        <h3>Com todas as seções abertas (hipótese)</h3>
-        <div class="placar"><span class="l" id="hpL">–</span><span class="f" id="hpF">–</span></div>
-        <div class="bar" aria-hidden="true"><div class="bl" id="hpbL" style="width:50%"></div><div class="bf" id="hpbF" style="width:50%"></div><div class="mid"></div></div>
-        <span class="meta" id="hpM"></span>
+    <section class="panel" aria-label="Hipótese: todas as seções abertas até 19h">
+      <p class="eyebrow">Hipótese · e se todas as seções tivessem ficado abertas até as 19h?</p>
+      <p class="note" style="margin:0">Aqui a conta é ao contrário: em vez de tirar votos, o app <b>acrescenta</b> ao resultado oficial os votos que poderiam ter vindo das seções que fecharam às 17h, se elas também tivessem sido prorrogadas.</p>
+      <div class="prgeral">
+        <label>Seções que fecharam às 17h (%)<input id="hpFech" type="number" min="0" max="100" step="0.1" value="90"></label>
+        <label>Movimento nelas depois das 17h (% da última hora)<input id="hpRitmo" type="number" min="0" max="300" step="0.1" value="1.9"></label>
+        <label id="hpFatiaL">Fatia de Flávio nesses votos (%)<input id="hpFatia" type="number" min="0" max="100" step="0.1" value="48.21"></label>
+        <label style="align-content:end"><button type="button" id="hpMin">Qual o mínimo para Flávio ganhar?</button></label>
       </div>
-      <div class="cen">
-        <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
-        <h3>Votos a mais nas seções que fecharam</h3>
-        <div class="placar votos"><span class="l">Lula <b id="hpVL">–</b></span><span class="f">Flávio <b id="hpVF">–</b></span></div>
-        <span class="meta" id="hpVM"></span>
+      <div class="cenarios" style="margin-top:12px">
+        <div class="cen">
+          <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
+          <h3>Com todas as seções abertas (hipótese)</h3>
+          <div class="placar"><span class="l" id="hpL">–</span><span class="f" id="hpF">–</span></div>
+          <div class="bar" aria-hidden="true"><div class="bl" id="hpbL" style="width:50%"></div><div class="bf" id="hpbF" style="width:50%"></div><div class="mid"></div></div>
+          <span class="meta" id="hpM"></span>
+        </div>
+        <div class="cen">
+          <span class="selo-hip">Simulação hipotética · não é resultado oficial</span>
+          <h3>Votos a mais nas seções que fecharam</h3>
+          <div class="placar votos"><span class="l">Lula <b id="hpVL">–</b></span><span class="f">Flávio <b id="hpVF">–</b></span></div>
+          <span class="meta" id="hpVM"></span>
+        </div>
       </div>
-    </div>
-    <div class="veredito" id="hpVer" aria-live="polite"></div>
-    <div class="minbox" id="hpMinBox" hidden aria-live="polite"></div>
-    <div class="tbl" style="margin-top:12px"><table>
-      <thead class="quebra"><tr><th id="hpCol">Fatia de Flávio</th><th>Votos a mais necessários</th><th>Movimento necessário (% da última hora)</th><th>Vezes o movimento real</th></tr></thead>
-      <tbody id="hpBody"></tbody>
-    </table></div>
-    <dl class="explica">
-      <dt>Seções que fecharam às 17h</dt>
-      <dd>Quantas seções do país não foram prorrogadas. Os votos a mais crescem na mesma proporção. O valor inicial (90%) é coerente com as suposições da tabela por região, onde cerca de 9% ficaram abertas.</dd>
-      <dt>Movimento nelas depois das 17h</dt>
-      <dd>Quantos eleitores teriam aparecido em cada seção fechada, em % do movimento das 16h às 17h, durante as horas de prorrogação definidas mais abaixo. O valor inicial (1,9%) é o mesmo que reproduz os ~35 mil votos que os logs contaram nas seções que ficaram abertas, ou seja, supõe que as fechadas teriam o mesmo movimento. 100% seria o mesmo movimento da última hora normal, durante todo o tempo extra.</dd>
-      <dt>Fatia de Flávio nesses votos</dt>
-      <dd>Quanto desses votos a mais iria para Flávio. O valor inicial é a fatia que ele teve no país (48,21%). Abaixo de 50%, os votos a mais aumentam a vantagem de Lula.</dd>
-    </dl>
-  </section>
-
-  <section class="panel so-pro" aria-label="Suposições por região">
-    <p class="eyebrow">Suposições por região · edite à vontade</p>
-    <div class="tbl"><table>
-      <caption style="caption-side:top;text-align:left;padding-bottom:6px"><span class="selo-hip">Simulação hipotética · não é resultado oficial</span></caption>
-      <thead id="prRegHead"><tr><th>Região</th><th>Seções %</th><th>Abertas %</th><th>Lula %</th><th>Votos</th></tr></thead>
-      <tbody id="prRegBody"></tbody>
-    </table></div>
-    <div class="prbtns">
-      <button type="button" id="prPerfil">Usar o perfil de cada região (resultado do TSE)</button>
-      <button type="button" id="prPadrao">Voltar às suposições iniciais</button>
-    </div>
-    <p class="note" id="prPerfilNota" style="margin-top:8px">O botão de perfil copia a fatia de Lula que cada região teve no resultado oficial.</p>
-    <dl class="explica">
-      <dt>Seções %</dt>
-      <dd>Que fatia das seções do país fica nessa região (começa com a fatia do eleitorado: Sudeste 42,6%, Nordeste 27,1%…). Não muda o total de votos da prorrogação, só reparte entre as regiões: subir uma região tira peso das outras. A soma deveria dar 100%; agora dá <b id="prSomaSec">–</b>.</dd>
-      <dt>Abertas %</dt>
-      <dd>Das seções da região, quantas ainda receberam eleitores depois das 17h. É o parâmetro que mais pesa: os votos da região crescem na mesma proporção (de 10% para 20%, os votos dobram). Os 10% iniciais (5% no Sul) são chute, porque ninguém divulgou quantas seções receberam votos depois das 17h; só se sabe que 1.667 ainda tinham votos depois das 18h.</dd>
-      <dt>Lula %</dt>
-      <dd>Fatia de Lula entre os votos dados depois das 17h; Flávio fica com o resto. Não muda quantos votos houve, só para quem foram. Com 50% a prorrogação empata e não mexe na diferença. Cada ponto acima de 50% dá a Lula um saldo de 2% dos votos da região (60% de Lula em 10 mil votos = 6 mil a 4 mil, saldo de 2 mil).</dd>
-      <dt>Votos</dt>
-      <dd>Resultado da conta, não se edita: votos válidos estimados na região depois das 17h e, embaixo, quem ganhou esse pedaço e por quanto.</dd>
-    </dl>
-  </section>
-
-  <section class="panel so-pro" aria-label="Fluxo de eleitores e resultado oficial">
-    <p class="eyebrow">Fluxo de eleitores nas seções</p>
-    <p class="note" style="margin:0">Fatia do comparecimento do dia em cada hora (%). A última hora (16h às 17h, em laranja) é a referência para o ritmo da prorrogação.</p>
-    <div class="curva" id="prCurva"></div>
-    <div class="prgeral">
-      <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="0.1" value="1.9"></label>
-      <label>Horas de prorrogação<input id="prHoras" type="number" min="0" max="2" step="0.25" value="2"></label>
-      <label>Eleitores que votam por seção (média)<input id="prPorSec" type="number" min="0" step="1" value="261"></label>
-      <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="497900"></label>
-      <label>Votos válidos sobre o comparecimento (%)<input id="prValid" type="number" min="0" max="100" step="0.1" value="97"></label>
-      <label>Resultado oficial: Lula (% dos válidos)<input id="prOfL" type="number" min="0" max="100" step="0.01" value="51.78"></label>
-      <label>Resultado oficial: votos válidos (milhões)<input id="prOfV" type="number" min="0" step="0.1" value="124.4"></label>
-      <label style="align-content:end"><button type="button" id="prOficial">Usar o resultado do TSE</button></label>
-    </div>
-    <div class="note" style="margin-top:12px">
+      <div class="veredito" id="hpVer" aria-live="polite"></div>
+      <div class="minbox" id="hpMinBox" hidden aria-live="polite"></div>
+      <div class="tbl" style="margin-top:12px"><table>
+        <thead class="quebra"><tr><th id="hpCol">Fatia de Flávio</th><th>Votos a mais necessários</th><th>Movimento necessário (% da última hora)</th><th>Vezes o movimento real</th></tr></thead>
+        <tbody id="hpBody"></tbody>
+      </table></div>
       <dl class="explica">
-        <dt>Fluxo por hora</dt>
-        <dd>Como o comparecimento se espalha ao longo do dia. Só a última hora (16h às 17h) entra na conta: ela diz quantos eleitores chegavam por hora no fim da votação. Subir essa barra (ou baixar as outras) aumenta os votos da prorrogação na mesma proporção.</dd>
-        <dt>Ritmo na prorrogação</dt>
-        <dd>Quanto do movimento da última hora continuou depois das 17h. 100% é o mesmo movimento das 16h às 17h; 10% é um décimo dele. Proporcional: dobrar o ritmo dobra os votos. O valor inicial (1,9%) foi ajustado para a conta dar o total contado nos logs das urnas, cerca de 35 mil votos.</dd>
-        <dt>Horas de prorrogação</dt>
-        <dd>2 é das 17h às 19h. Proporcional. Como a orientação do TSE só saiu às 18h12, na prática muitas seções podem ter ficado abertas menos tempo.</dd>
-        <dt>Eleitores que votam por seção</dt>
-        <dd>Comparecimento médio de uma seção no dia todo (128,2 milhões de votantes divididos por cerca de 498 mil seções, segundo o TSE). Proporcional.</dd>
-        <dt>Total de seções no país</dt>
-        <dd>Base da conta das seções abertas. Proporcional.</dd>
-        <dt>Votos válidos sobre o comparecimento</dt>
-        <dd>Tira os brancos e nulos, que não contam para nenhum dos dois. Proporcional.</dd>
-        <dt>Resultado oficial</dt>
-        <dd>É o horário estendido, ponto de partida da conta. O horário normal é ele menos os votos da prorrogação. A diferença final entre os dois é a régua: a prorrogação só muda o vencedor se o saldo dela for maior que essa diferença. Quem já estava na fila às 17h vota pela regra normal, então não entra na prorrogação.</dd>
+        <dt>Seções que fecharam às 17h</dt>
+        <dd>Quantas seções do país não foram prorrogadas. Os votos a mais crescem na mesma proporção. O valor inicial (90%) é coerente com as suposições da tabela por região, onde cerca de 9% ficaram abertas.</dd>
+        <dt>Movimento nelas depois das 17h</dt>
+        <dd>Quantos eleitores teriam aparecido em cada seção fechada, em % do movimento das 16h às 17h, durante as horas de prorrogação definidas mais abaixo. O valor inicial (1,9%) é o mesmo que reproduz os ~35 mil votos que os logs contaram nas seções que ficaram abertas, ou seja, supõe que as fechadas teriam o mesmo movimento. 100% seria o mesmo movimento da última hora normal, durante todo o tempo extra.</dd>
+        <dt>Fatia de Flávio nesses votos</dt>
+        <dd>Quanto desses votos a mais iria para Flávio. O valor inicial é a fatia que ele teve no país (48,21%). Abaixo de 50%, os votos a mais aumentam a vantagem de Lula.</dd>
       </dl>
-      <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. Levantamentos com os logs públicos das urnas contaram de 34 mil a 35,5 mil votos depois das 17h (quadro no topo da aba). Os logs não dizem em quem foram esses votos, e o TSE não divulgou quantas seções ficaram abertas, por isso as fatias por região e as seções abertas continuam sendo suposições.</p>
+    </section>
+
+    <section class="panel" aria-label="Suposições por região">
+      <p class="eyebrow">Suposições por região · edite à vontade</p>
+      <div class="tbl"><table>
+        <caption style="caption-side:top;text-align:left;padding-bottom:6px"><span class="selo-hip">Simulação hipotética · não é resultado oficial</span></caption>
+        <thead id="prRegHead"><tr><th>Região</th><th>Seções %</th><th>Abertas %</th><th>Lula %</th><th>Votos</th></tr></thead>
+        <tbody id="prRegBody"></tbody>
+      </table></div>
+      <div class="prbtns">
+        <button type="button" id="prPerfil">Usar o perfil de cada região (resultado do TSE)</button>
+        <button type="button" id="prPadrao">Voltar às suposições iniciais</button>
+      </div>
+      <p class="note" id="prPerfilNota" style="margin-top:8px">O botão de perfil copia a fatia de Lula que cada região teve no resultado oficial.</p>
+      <dl class="explica">
+        <dt>Seções %</dt>
+        <dd>Que fatia das seções do país fica nessa região (começa com a fatia do eleitorado: Sudeste 42,6%, Nordeste 27,1%…). Não muda o total de votos da prorrogação, só reparte entre as regiões: subir uma região tira peso das outras. A soma deveria dar 100%; agora dá <b id="prSomaSec">–</b>.</dd>
+        <dt>Abertas %</dt>
+        <dd>Das seções da região, quantas ainda receberam eleitores depois das 17h. É o parâmetro que mais pesa: os votos da região crescem na mesma proporção (de 10% para 20%, os votos dobram). Os 10% iniciais (5% no Sul) são chute, porque ninguém divulgou quantas seções receberam votos depois das 17h; só se sabe que 1.667 ainda tinham votos depois das 18h.</dd>
+        <dt>Lula %</dt>
+        <dd>Fatia de Lula entre os votos dados depois das 17h; Flávio fica com o resto. Não muda quantos votos houve, só para quem foram. Com 50% a prorrogação empata e não mexe na diferença. Cada ponto acima de 50% dá a Lula um saldo de 2% dos votos da região (60% de Lula em 10 mil votos = 6 mil a 4 mil, saldo de 2 mil).</dd>
+        <dt>Votos</dt>
+        <dd>Resultado da conta, não se edita: votos válidos estimados na região depois das 17h e, embaixo, quem ganhou esse pedaço e por quanto.</dd>
+      </dl>
+    </section>
+
+    <section class="panel" aria-label="Fluxo de eleitores e resultado oficial">
+      <p class="eyebrow">Fluxo de eleitores nas seções</p>
+      <p class="note" style="margin:0">Fatia do comparecimento do dia em cada hora (%). A última hora (16h às 17h, em laranja) é a referência para o ritmo da prorrogação.</p>
+      <div class="curva" id="prCurva"></div>
+      <div class="prgeral">
+        <label>Ritmo na prorrogação (% do ritmo da última hora)<input id="prFator" type="number" min="0" max="300" step="0.1" value="1.9"></label>
+        <label>Horas de prorrogação<input id="prHoras" type="number" min="0" max="2" step="0.25" value="2"></label>
+        <label>Eleitores que votam por seção (média)<input id="prPorSec" type="number" min="0" step="1" value="261"></label>
+        <label>Total de seções no país<input id="prSecoes" type="number" min="0" step="1000" value="497900"></label>
+        <label>Votos válidos sobre o comparecimento (%)<input id="prValid" type="number" min="0" max="100" step="0.1" value="97"></label>
+        <label>Resultado oficial: Lula (% dos válidos)<input id="prOfL" type="number" min="0" max="100" step="0.01" value="51.78"></label>
+        <label>Resultado oficial: votos válidos (milhões)<input id="prOfV" type="number" min="0" step="0.1" value="124.4"></label>
+        <label style="align-content:end"><button type="button" id="prOficial">Usar o resultado do TSE</button></label>
+      </div>
+      <div class="note" style="margin-top:12px">
+        <dl class="explica">
+          <dt>Fluxo por hora</dt>
+          <dd>Como o comparecimento se espalha ao longo do dia. Só a última hora (16h às 17h) entra na conta: ela diz quantos eleitores chegavam por hora no fim da votação. Subir essa barra (ou baixar as outras) aumenta os votos da prorrogação na mesma proporção.</dd>
+          <dt>Ritmo na prorrogação</dt>
+          <dd>Quanto do movimento da última hora continuou depois das 17h. 100% é o mesmo movimento das 16h às 17h; 10% é um décimo dele. Proporcional: dobrar o ritmo dobra os votos. O valor inicial (1,9%) foi ajustado para a conta dar o total contado nos logs das urnas, cerca de 35 mil votos.</dd>
+          <dt>Horas de prorrogação</dt>
+          <dd>2 é das 17h às 19h. Proporcional. Como a orientação do TSE só saiu às 18h12, na prática muitas seções podem ter ficado abertas menos tempo.</dd>
+          <dt>Eleitores que votam por seção</dt>
+          <dd>Comparecimento médio de uma seção no dia todo (128,2 milhões de votantes divididos por cerca de 498 mil seções, segundo o TSE). Proporcional.</dd>
+          <dt>Total de seções no país</dt>
+          <dd>Base da conta das seções abertas. Proporcional.</dd>
+          <dt>Votos válidos sobre o comparecimento</dt>
+          <dd>Tira os brancos e nulos, que não contam para nenhum dos dois. Proporcional.</dd>
+          <dt>Resultado oficial</dt>
+          <dd>É o horário estendido, ponto de partida da conta. O horário normal é ele menos os votos da prorrogação. A diferença final entre os dois é a régua: a prorrogação só muda o vencedor se o saldo dela for maior que essa diferença. Quem já estava na fila às 17h vota pela regra normal, então não entra na prorrogação.</dd>
+        </dl>
+        <p><b>O que se sabe.</b> O STF (ministro Zanin) prorrogou a votação até 19h; às 18h12 o TSE orientou que a prorrogação valia só para as seções ainda abertas, que tinham fila. Levantamentos com os logs públicos das urnas contaram de 34 mil a 35,5 mil votos depois das 17h (quadro no topo da aba). Os logs não dizem em quem foram esses votos, e o TSE não divulgou quantas seções ficaram abertas, por isso as fatias por região e as seções abertas continuam sendo suposições.</p>
+      </div>
+    </section>
     </div>
-  </section>
+  </details>
 
   <section class="panel so-proj">
     <details>
@@ -1686,6 +1744,7 @@ $("hpMin").onclick = hpMinimo;
 $("prMin").onclick = proMinimo;
 // Ajusta o ritmo para a conta dar o total dos logs (votos registrados, inclusive brancos e nulos)
 $("lgAjusta").onclick = () => {
+  document.querySelector(".calc").open = true;
   const alvo = LOGS.g1 * numIn("prValid") / 100, atual = proConta(proLer()).E;
   if (atual > 0) $("prFator").value = Math.round(numIn("prFator") * alvo / atual * 1000) / 1000;
   $("prMinBox").hidden = true; renderProrrogacao();
@@ -1720,6 +1779,8 @@ Não informada | 12.760.997
 TOTAL EM 20/07/2026 | 16.377.659
 ELEIÇÕES 2º TURNO 2026 | 16.770.489
 DIFERENÇA A MAIOR | 392.830`,
+    frase: "Em Minas, <b>13.044.203</b> pessoas votaram no 2º turno: 3,3 milhões a menos que o eleitorado, não 392 mil a mais.",
+    nums: [["16.372.144", "eleitores aptos em Minas no 2º turno (TSE)"], ["13.044.203", "votaram em Minas no 2º turno (TSE)"], ["16.770.489", "número do post, que não aparece em nenhum dado oficial"]],
     curto: "Não procede. A primeira parte da tabela é verdadeira: o TRE-MG informou 16.377.659 eleitores aptos em 20/07. Mas o número do 2º turno não bate com nenhum dado oficial: segundo o TSE, 13.044.203 mineiros votaram, 3,3 milhões a menos que o eleitorado.",
     parecer: `
       <p><b>O que está certo:</b> a tabela por cor/raça é a do TRE-MG, publicada em 20/07/2026, com 16.377.659 eleitores aptos em Minas. A linha "Não informada" é grande (77,92%) porque a maioria dos eleitores não declarou cor/raça; ela entra na soma, então o total já é o eleitorado inteiro.</p>
@@ -1745,6 +1806,8 @@ DIFERENÇA A MAIOR | 392.830`,
 Lula da Silva acaba de fazer o mesmo no Brasil.
 
 [imagem com fotos de Maduro e de Lula]`,
+    frase: "Quem prorrogou foi o ministro Zanin, não Lula, e os cerca de 35 mil votos depois das 17h não chegam a <b>1%</b> da diferença.",
+    nums: [["2024", "na última eleição da Venezuela o horário não foi prorrogado; a fraude denunciada foi o sumiço das atas"], ["35.521", "votos depois das 17h no Brasil (G1)"], ["4.430.191", "votos de diferença entre Lula e Flávio (TSE)"]],
     curto: "Enganoso. Na última eleição da Venezuela (2024) o horário não foi prorrogado e a fraude denunciada foi o sumiço das atas das seções. Quando a Venezuela prorrogou, em 2015, a oposição venceu. No Brasil, quem prorrogou foi o ministro Zanin, não Lula, e os cerca de 35 mil votos depois das 17h não chegam a 1% da diferença.",
     parecer: `
       <p><b>Venezuela, 2024 (a eleição mais recente):</b> o voto terminou às 18h. O CNE só deixou votar quem já estava na fila, regra comum em eleições, não uma prorrogação. A fraude denunciada foi outra: o CNE declarou Maduro vencedor sem mostrar as atas de cada seção, enquanto a oposição publicou cerca de 80% delas, que davam vitória a Edmundo González.</p>
@@ -1789,6 +1852,8 @@ De 53 para 64M, a diferença é de Il milhões.
 No 1º turno, os outros candidatos somavam 8,7 milhões.
 
 Ou seja: ele pegou 100% dos votos de todos os outros candidatos + 3 milhões de pessoas que nem tinham votado no 1° turno`,
+    frase: "Lula ficou com <b>74%</b> dos 14,1 milhões de votos novos do 2º turno, não com 100%.",
+    nums: [["14,1 mi", "votos novos: dos eliminados, de quem não votou e de quem votou branco ou nulo no 1º turno"], ["74%", "foram para Lula (+10,38 milhões)"], ["26%", "foram para Flávio (+3,72 milhões)"]],
     curto: "Não procede. O post erra os números e esquece duas fontes de voto: quem votou branco ou nulo no 1º turno e o crescimento do próprio Flávio. Lula precisou de cerca de 3 em cada 4 votos novos, não de 100%.",
     parecer: `
       <p><b>Os números certos (TSE):</b></p>
@@ -1833,15 +1898,29 @@ Ou seja: ele pegou 100% dos votos de todos os outros candidatos + 3 milhões de 
   },
 ];
 function renderFakes() {
-  $("fkResumo").textContent = `${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}. Em cada um, o texto aparece na íntegra, como circulou, e logo abaixo o parecer com os números oficiais.`;
+  // Frase-resposta da aba: quantos boatos, agrupados pelo selo
+  const selos = {};
+  FAKES.forEach(f => { const k = (f.selo || "Não procede").toLowerCase(); selos[k] = (selos[k] || 0) + 1; });
+  const verbo = (k, n) => k === "não procede" ? (n === 1 ? "não procede" : "não procedem") : (n === 1 ? "é " : "são ") + k + (n === 1 ? "" : "s");
+  const partes = Object.entries(selos).map(([k, n]) => `${n} ${verbo(k, n)}`);
+  $("fkFrase").innerHTML = `<b>${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}</b> com os números oficiais: ${partes.length > 1 ? partes.slice(0, -1).join(", ") + " e " + partes.at(-1) : partes[0]}.`;
+  $("fkResumo").textContent = "O veredito vem primeiro. O parecer completo e o texto do boato, na íntegra, ficam a um toque. Boatos novos entram no topo.";
   const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  $("fkLista").innerHTML = FAKES.map(f => `<article class="panel fk" id="fake-${f.id}">
-    <header><span class="selo">${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
-    <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
-    ${(f.outras || []).map(o => `<blockquote><span class="rot">Outra versão do mesmo boato (${o.data}), na íntegra</span>${esc(o.texto)}</blockquote>`).join("")}
-    <div class="parecer"><p class="eyebrow" style="margin:0">Parecer</p><p class="curto">${f.curto}</p>${f.parecer}</div>
+  const icone = `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  $("fkLista").innerHTML = FAKES.map(f => {
+    const versoes = 1 + (f.outras || []).length;
+    return `<article class="panel fk" id="fake-${f.id}">
+    <header><span class="selo ${(f.selo || "").toLowerCase() === "enganoso" ? "enganoso" : ""}">${icone}${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
+    <p class="frase">${f.frase || f.curto}</p>
+    ${f.nums ? `<div class="nums">${f.nums.map(([v, r]) => `<div><b>${v}</b><span>${r}</span></div>`).join("")}</div>` : ""}
     <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
-  </article>`).join("");
+    <details><summary>Ver as contas, passo a passo</summary><div class="parecer"><p class="curto">${f.curto}</p>${f.parecer}</div></details>
+    <details><summary>Ler o boato na íntegra${versoes > 1 ? ` (${versoes} versões)` : ""}</summary>
+      <blockquote><span class="rot">Texto que circula nas redes, na íntegra</span>${esc(f.texto)}</blockquote>
+      ${(f.outras || []).map(o => `<blockquote><span class="rot">Outra versão do mesmo boato (${o.data}), na íntegra</span>${esc(o.texto)}</blockquote>`).join("")}
+    </details>
+  </article>`;
+  }).join("");
 }
 renderFakes();
 // Link direto para um parecer: contadaurna.com.br/#fake-<id> (#fake abre só a aba)
@@ -1970,7 +2049,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-26T23:30-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-26T23:45-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
@@ -2005,8 +2084,9 @@ function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
   $("cronLista").innerHTML = CRONO.filter(c => cronFiltro === "todos" || c.tipo === cronFiltro).map(c => `<li class="${c.tipo}">
     <div class="topo"><span class="hora">${c.hora}</span><span class="tipo">${TIPO[c.tipo]}</span></div>
-    <h3>${c.titulo}</h3><p>${c.texto}</p>
-    ${c.prej ? `<p class="prej"><b>Prejudicada no resultado:</b> ${c.prej[0]}. <span>${c.prej[1]}</span></p>` : ""}
+    <h3>${c.titulo}</h3>
+    ${c.prej ? `<p class="prej-curto"><b>Prejudicada no resultado:</b> ${c.prej[0]}</p>` : ""}
+    <details><summary>Detalhes</summary><p>${c.texto}</p>${c.prej ? `<p class="prej"><b>Por quê:</b> <span>${c.prej[1]}</span></p>` : ""}</details>
     ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
   </li>`).join("");
   marcarArquivos($("cronLista"));
