@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 48 48%27%3E%3Ccircle cx=%2724%27 cy=%2724%27 r=%2722%27 fill=%27%2311875b%27/%3E%3Cg stroke=%27%23fff%27 stroke-width=%273.4%27 stroke-linecap=%27round%27%3E%3Cpath d=%27M15 14v20M21 14v20M27 14v20M33 14v20M10.5 31L37.5 17%27/%3E%3C/g%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="icone.png">
 <meta name="theme-color" content="#11875b">
-<script>/* Tema escolhido no botão claro/escuro; sem escolha, segue o aparelho */ try { const t = localStorage.getItem("tema"); if (t === "claro" || t === "escuro") document.documentElement.dataset.theme = t === "escuro" ? "dark" : "light"; } catch {}</script>
+<script>/* Modo claro por padrão; o escuro só com a chave do topo (escolha guardada no aparelho) */ document.documentElement.dataset.theme = "light"; try { if (localStorage.getItem("tema") === "escuro") document.documentElement.dataset.theme = "dark"; } catch {}</script>
 <!-- Prévia do link em WhatsApp, Instagram etc. (a mesma para todos os #fake-..., porque o # não chega ao servidor) -->
 <meta name="description" content="Resultado, votos por estado e as contas completas do 2º turno, com os dados oficiais do TSE.">
 <meta property="og:type" content="website">
@@ -1357,8 +1357,7 @@ $("conf").addEventListener("change", () => { if (lastResult) render(lastResult);
 let lastData = null, busy = false;
 function setStatus(msg, err) { $("status").textContent = msg; $("status").classList.toggle("err", !!err); }
 // ---------- Botão modo claro/escuro ----------
-const escuroAparelho = matchMedia("(prefers-color-scheme: dark)");
-function temaEscuro() { const t = document.documentElement.dataset.theme; return t ? t === "dark" : escuroAparelho.matches; }
+function temaEscuro() { return document.documentElement.dataset.theme === "dark"; }
 function syncTema() {
   $("btnTema").setAttribute("aria-checked", temaEscuro() ? "true" : "false");
   if (lastResult) render(lastResult); // mapa e gráfico leem as cores do tema ao desenhar
@@ -1369,7 +1368,6 @@ $("btnTema").addEventListener("click", () => {
   try { localStorage.setItem("tema", esc ? "escuro" : "claro"); } catch {}
   syncTema();
 });
-escuroAparelho.addEventListener("change", syncTema);
 syncTema();
 
 function recompute() { if (!lastData) return; const r = runModel(lastData.base, lastData.ufs, lastData.br); lastResult = r; render(r); }
