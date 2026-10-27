@@ -2,7 +2,7 @@
 
 Site para entender o 2º turno presidencial de 25 de outubro de 2026, entre Lula (13) e Flávio Bolsonaro (22), com números que qualquer pessoa pode conferir.
 
-**No ar:** https://pedrohrs08.github.io/probabilidade/ (domínio próprio em configuração)
+**No ar:** https://contadaurna.com.br/
 
 ## Propósito
 
@@ -126,4 +126,4 @@ Tudo fica no `index.html`:
 - Na Cronologia, a classificação fato/opinião e a "candidatura prejudicada" são análise, não dado. Cada item explica o motivo e cita a fonte.
 - Parte das fontes pode não ter cópia no archive.org; o registro está em `arquivo-fontes.json`.
 
-Encontrou um erro? [Abra uma correção](https://github.com/pedrohrs08/probabilidade/issues/new) com o link da fonte que mostra o dado certo.
+Encontrou um erro? [Abra uma correção](https://github.com/pedrohrs08/contadaurna/issues/new) com o link da fonte que mostra o dado certo.
