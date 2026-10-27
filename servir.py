@@ -30,7 +30,7 @@ AO_VIVO = SALVAR or "--ao-vivo" in sys.argv or not os.path.exists(os.path.join(o
 NUVEM = "--nuvem" in sys.argv
 CACHE_SEG = 30  # com muita gente acessando, cada arquivo do TSE é buscado no máximo uma vez a cada 30 s
 _cache, _trava = {}, threading.Lock()
-PUBLICOS = {"/", "/index.html", "/arquivo-fontes.json", "/previa.png"}  # o resto da pasta (código, .git) não é servido
+PUBLICOS = {"/", "/index.html", "/arquivo-fontes.json", "/previa.png", "/icone.png"}  # o resto da pasta (código, .git) não é servido
 
 
 def busca_tse(caminho):
