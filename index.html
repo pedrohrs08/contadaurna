@@ -54,8 +54,9 @@
 body[data-aba="res"] .so-proj, body[data-aba="pro"] .so-proj { display: none !important; }
 body:not([data-aba="res"]) .so-res { display: none !important; }
 body:not([data-aba="pro"]) .so-pro { display: none !important; }
-body:not([data-aba="fake"]) .so-fake, body:not([data-aba="cron"]) .so-cron { display: none !important; }
+body:not([data-aba="fake"]) .so-fake, body:not([data-aba="cron"]) .so-cron, body:not([data-aba="envie"]) .so-envie { display: none !important; }
 body[data-aba="pro"] .so-map, body[data-aba="pro"] #banner,
+body[data-aba="envie"] .so-map, body[data-aba="envie"] #banner, body[data-aba="envie"] .so-proj,
 body[data-aba="fake"] .so-map, body[data-aba="fake"] #banner, body[data-aba="fake"] .so-proj,
 body[data-aba="cron"] .so-map, body[data-aba="cron"] #banner, body[data-aba="cron"] .so-proj { display: none !important; }
 body[data-aba="res"] .seg { grid-template-columns: 1fr 1fr; }
@@ -66,8 +67,8 @@ body[data-aba="proj"] .so-proj, body[data-aba="proj"] .so-map, body[data-aba="pr
 body:not([data-aba="proj"]) .so-pxu { display: none !important; }
 .pxu td.dentro { color: var(--muted); }
 .pxu td.fora { font-weight: 600; }
-body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls,
-body[data-aba="fake"] #status, body[data-aba="cron"] #status { display: none !important; }
+body[data-aba="pro"] #topControls, body[data-aba="fake"] #topControls, body[data-aba="cron"] #topControls, body[data-aba="envie"] #topControls,
+body[data-aba="fake"] #status, body[data-aba="cron"] #status, body[data-aba="envie"] #status { display: none !important; }
 .nota-site { margin: 10px 0 0; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; font-size: .88rem; line-height: 1.45; }
 .atualizado { margin: 8px 0 0; font-size: .82rem; color: var(--muted); }
 a.arq { font-size: .78em; color: var(--muted); margin-left: 3px; }
@@ -123,6 +124,7 @@ h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; margin: 0; t
 .tabs button[aria-selected="true"] { background: var(--brand-soft); color: var(--brand-deep); box-shadow: inset 0 0 0 1px var(--brand); }
 .tabs button { grid-column: span 2; }
 .tabs #tabProj, .tabs #tabFake { grid-column: span 3; }
+.tabs #tabEnvie { grid-column: span 6; }
 button {
   font: 600 .95rem var(--f-display); border-radius: 8px; border: 1px solid var(--line);
   background: var(--surface); color: var(--fg); padding: 9px 14px; cursor: pointer; min-height: 40px;
@@ -340,8 +342,8 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .grid2 { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
   .mapgrid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
   .seg { display: inline-grid; grid-template-columns: repeat(4, auto); width: auto; }
-  .tabs { max-width: 800px; grid-template-columns: repeat(5, 1fr); }
-  .tabs button, .tabs #tabProj, .tabs #tabFake { grid-column: auto; }
+  .tabs { max-width: 980px; grid-template-columns: repeat(6, auto); }
+  .tabs button, .tabs #tabProj, .tabs #tabFake, .tabs #tabEnvie { grid-column: auto; padding: 0 12px; }
   .cenarios { grid-template-columns: 1fr 1fr; }
   .prgeral { grid-template-columns: repeat(4, 1fr); }
   body[data-aba="res"] .seg { grid-template-columns: repeat(2, auto); }
@@ -355,7 +357,7 @@ body { padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
 </style>
 <script>
 // GoatCounter: estatística de visitas sem cookies. Os links diretos #fake-... contam como páginas separadas.
-window.goatcounter = {path: () => location.pathname + (location.hash.startsWith("#fake") ? location.hash : "")};
+window.goatcounter = {path: () => location.pathname + (/^#(fake|envie)/.test(location.hash) ? location.hash : "")};
 </script>
 <script data-goatcounter="https://contadaurna.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </head>
@@ -380,6 +382,7 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
     <button type="button" role="tab" id="tabPro" aria-selected="false">Impactos da Extensão</button>
     <button type="button" role="tab" id="tabProj" aria-selected="false">Pesquisas × urnas</button>
     <button type="button" role="tab" id="tabFake" aria-selected="false">Fake news</button>
+    <button type="button" role="tab" id="tabEnvie" aria-selected="false">Envie para checagem</button>
   </nav>
   <div class="sobre" aria-label="Sobre esta aba">
     <div class="so-res"><p class="frase">Lula venceu com <b>51,79%</b> dos votos válidos, <b>4,43 milhões</b> de votos à frente de Flávio Bolsonaro.</p>
@@ -391,6 +394,8 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
       <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba mede quanto a prorrogação da votação até 19h, decidida pelo ministro Zanin, poderia ter mudado o resultado.</p><p><b>Como foi montada:</b> parte do resultado oficial do TSE e da contagem de votos registrados depois das 17h nos registros (logs) das urnas, feita pelo G1 e por um levantamento divulgado pela Jovem Pan. Os cenários de horário normal e estendido usam suposições por região que você pode editar; elas são estimativas e estão marcadas assim. Inclui a explicação simples, a hipótese de todas as seções abertas até 19h e o mínimo que Flávio precisaria para virar.</p></details></div>
     <div class="so-fake"><p class="frase"><span id="fkFrase"></span></p>
       <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba reúne boatos sobre o 2º turno e mostra por que não procedem.</p><p><b>Como foi montada:</b> cada card traz o texto do boato na íntegra, como circulou, e depois o parecer, com as contas feitas a partir dos números oficiais do TSE do 1º e do 2º turno e links para as fontes. Boatos novos entram no topo.</p></details></div>
+    <div class="so-envie"><p class="frase">Recebeu algo sobre a eleição e ficou na dúvida? <b>Mande o print</b> e acompanhe a checagem pelo código de protocolo.</p>
+      <details><summary>O que esta aba mostra e como funciona</summary><p>Esta aba recebe prints de boatos sobre a eleição. Os que têm mais alcance e podem ser conferidos com dados públicos viram parecer na aba Fake news.</p><p><b>Como funciona:</b> o envio é anônimo e gera um código de protocolo. Se quiser, deixe um e-mail para ser avisado. Ele fica criptografado e é apagado depois do aviso. Link direto para esta aba: contadaurna.com.br/#envie.</p></details></div>
     <div class="so-cron"><p class="frase"><b>17h</b> acaba o horário oficial · <b>17h01</b> Zanin prorroga até 19h · <b>18h12</b> o TSE limita às seções ainda abertas · <b>21h10</b> Lula é reeleito.</p>
       <details><summary>O que esta aba mostra e como foi montada</summary><p>Esta aba conta o dia da eleição hora a hora, separando fato, opinião e fake news, e diz qual candidatura cada acontecimento prejudicou em votos.</p><p><b>Como foi montada:</b> cruzando reportagens de veículos com linhas editoriais diferentes (vistos como à direita, ao centro e à esquerda) com fontes oficiais; quando os veículos discordam de horário ou número, o item mostra as versões.</p></details></div>
   </div>
@@ -531,11 +536,12 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
     <p class="eyebrow">Desmentindo fake news</p>
     <h2 style="margin:0 0 4px">Boatos sobre o 2º turno de 2026, checados com os números oficiais</h2>
     <p class="note" style="margin:0" id="fkResumo"></p>
+    <p class="note" style="margin:6px 0 0">Viu um boato que não está aqui? <a href="#envie">Envie para checagem</a>.</p>
   </section>
   <div id="fkLista" class="so-fake fklista"></div>
 
   <!-- ===== Envie seu print (bloco isolado: HTML, estilo e script próprios; servidor em envios/) ===== -->
-  <section class="panel so-fake envie" id="envie" aria-label="Envie um boato para checagem">
+  <section class="panel so-envie envie" id="envio-print" aria-label="Envie um boato para checagem">
     <style>
       .envie { display: grid; gap: 10px; }
       .envie h2, .envie h3 { margin: 0; }
@@ -558,7 +564,7 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
     </style>
     <p class="eyebrow">Envie um boato</p>
     <h2>Recebeu algo sobre a eleição e quer saber se procede?</h2>
-    <p class="note" style="margin:0">Mande o print. Os boatos com mais alcance e que dá para conferir com dados públicos são checados e publicados nesta aba.</p>
+    <p class="note" style="margin:0">Mande o print. Os boatos com mais alcance e que dá para conferir com dados públicos são checados e publicados na aba Fake news.</p>
     <ul>
       <li><b>Não precisa se identificar.</b> Você recebe um código de protocolo para acompanhar o resultado aqui.</li>
       <li>Se quiser, deixe um e-mail para ser avisado. <b>Quem faz a checagem não vê o seu e-mail</b>: ele fica criptografado e é apagado logo depois do aviso.</li>
@@ -596,8 +602,8 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
     <script>
       // Endereço do servidor de envios (Render) e chave pública do Cloudflare Turnstile.
       // Enquanto algum estiver vazio, o formulário fica escondido e aparece "Envio em preparação".
-      const ENVIE_API = "";
-      const ENVIE_TURNSTILE = "";
+      const ENVIE_API = "https://contadaurna-envios-y0sp.onrender.com";
+      const ENVIE_TURNSTILE = "0x4AAAAAAFp4RlJTxE7y2m6H";
       (() => {
         const $e = (id) => document.getElementById(id);
         const STATUS = {
@@ -1523,6 +1529,7 @@ function setAba(a) {
   aba = a;
   $("tabRes").setAttribute("aria-selected", a === "res"); $("tabProj").setAttribute("aria-selected", a === "proj");
   $("tabPro").setAttribute("aria-selected", a === "pro"); $("tabFake").setAttribute("aria-selected", a === "fake"); $("tabCron").setAttribute("aria-selected", a === "cron");
+  $("tabEnvie").setAttribute("aria-selected", a === "envie");
   document.body.dataset.aba = a;
   if (a === "pro") renderProrrogacao();
   if (a === "res" && (mapaModo === "final" || mapaModo === "prob")) setMapaModo("parcial");
@@ -1534,6 +1541,7 @@ $("tabProj").onclick = () => setAba("proj");
 $("tabPro").onclick = () => setAba("pro");
 $("tabFake").onclick = () => setAba("fake");
 $("tabCron").onclick = () => setAba("cron");
+$("tabEnvie").onclick = () => setAba("envie");
 let timer = null;
 $("auto").onchange = () => { clearInterval(timer); if ($("auto").checked) timer = setInterval(update, 60000); };
 window.addEventListener("resize", () => lastResult && drawHist(lastResult.shares));
@@ -2571,13 +2579,17 @@ function renderFakes() {
 }
 renderFakes();
 // Link direto para um parecer: contadaurna.com.br/#fake-<id> (#fake abre só a aba)
+// e para a aba de envio: contadaurna.com.br/#envie
 function abrirHash() {
+  if (location.hash === "#envie") { setAba("envie"); scrollTo(0, 0); return; }
   const m = location.hash.match(/^#fake(?:-([\w-]+))?$/);
   if (!m) return;
   setAba("fake");
   const el = m[1] && document.getElementById("fake-" + m[1]);
   if (el) requestAnimationFrame(() => el.scrollIntoView({block: "start"}));
 }
+// Se o endereço já termina em #envie, clicar no link de novo não dispara "hashchange"
+document.addEventListener("click", (e) => { if (e.target.closest('a[href="#envie"]') && location.hash === "#envie") abrirHash(); });
 window.addEventListener("hashchange", () => {
   abrirHash();
   if (window.goatcounter && window.goatcounter.count) window.goatcounter.count();

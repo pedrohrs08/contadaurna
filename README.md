@@ -25,6 +25,7 @@ Depois do 2º turno circularam muitas versões sobre o que aconteceu no dia: ôn
 | **Impactos da Extensão** | Quanto a prorrogação até 19h poderia ter mudado o resultado: votos registrados depois das 17h, cenários de horário normal × estendido, o mínimo que o perdedor precisaria para virar e a hipótese contrária ("e se todas as seções ficassem abertas?"). Inclui uma explicação em linguagem simples. | Resultado do TSE e contagens dos registros (logs) das urnas feitas pelo G1 (35.521 votos) e pela Jovem Pan (34.319). As suposições por região são editáveis e marcadas como estimativa. |
 | **Pesquisas × urnas** | A média das pesquisas da véspera (Lula 49,1% dos válidos) comparada com o resultado (51,8%), instituto por instituto, com exemplos de erro de pesquisa em 2022 e por que essa diferença não indica fraude. | Compilação da RED (24/10/2026) e reportagens de 2022 |
 | **Fake news** | Boatos que circularam, com o texto original na íntegra e o parecer, feito com os números oficiais do 1º e do 2º turno. | Resultados do TSE |
+| **Envie para checagem** | Formulário para enviar o print de um boato, com código de protocolo e e-mail opcional. Link direto: `contadaurna.com.br/#envie`. | Servidor próprio em `envios/` (veja `envios/README.md`) |
 
 No fim da página há a seção **"Achou um erro?"**, com link para pedir uma correção (abre uma issue neste repositório) e o registro público das correções feitas.
 
