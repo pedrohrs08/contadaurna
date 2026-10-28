@@ -1841,6 +1841,52 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "flavio-nao-fugiu",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Flávio não fugiu! Não havia mandado de prisão contra ele\"",
+    texto: `Estudar nunca é demais. Estudar bem é claro, é suficiente para não virar petista.
+
+[imagem com texto branco sobre fundo preto:]
+Só quero deixar uma coisa bem clara:
+Flávio não fugiu!
+Não havia mandado de prisão contra ele.
+Sair do país não é, por si só, crime, muito menos sinônimo de fuga da Justiça.
+Acho que parte da imprensa e da população precisa começar a estudar um pouquinho de Direito Processual Penal antes de sair espalhando narrativas.
+Conceitos jurídicos não se adaptam à conveniência política.
+Só acho!
+Beijos!`,
+    frase: "É verdade que <b>não havia mandado de prisão</b>. Mas o post esconde o principal: o STF tinha <b>proibido Flávio de sair do país</b> e mandado entregar os passaportes. Ele não entregou e saiu mesmo assim, contra uma ordem judicial.",
+    nums: [["26/10", "Moraes proíbe Flávio de deixar o país e manda entregar os passaportes"], ["27/10, 11h", "vence o prazo sem a entrega; a PF cancela os passaportes"], ["27/10, 22h50", "Flávio entra na Argentina por Puerto Iguazú, segundo a imigração argentina, e voa para o Equador"]],
+    curto: "Enganoso. Duas frases do post estão certas: não havia mandado de prisão, e sair do país, em geral, não é crime. Mas Flávio não estava numa situação geral: desde 26/10 havia uma ordem do STF proibindo a saída do país e mandando entregar os passaportes. Ele não entregou e saiu sem registro na PF. Juristas divergem se isso se chama \"fuga\", mas concordam que foi descumprimento de ordem judicial, o que pode levar à prisão preventiva.",
+    parecer: `
+      <p><b>O que está certo:</b></p>
+      <ul>
+        <li><b>Não havia mandado de prisão.</b> Até a manhã de 28/10, o STF não tinha decretado a prisão de Flávio. Deputados do PT pediram a prisão preventiva em 27/10, mas pedido não é decisão.</li>
+        <li><b>Tecnicamente, ele não é "foragido".</b> O professor de Direito Processual Penal Gustavo Badaró (USP) explicou à BBC que foragido é quem tem uma ordem de prisão contra si e não se apresenta para cumpri-la. Sem mandado, a palavra não se aplica.</li>
+        <li><b>Sair do país, para quem não tem nenhuma restrição, não é crime.</b></li>
+      </ul>
+      <p><b>O que o post esconde:</b></p>
+      <ul>
+        <li><b>Flávio tinha restrição.</b> Em 26/10, o ministro Alexandre de Moraes, num inquérito que investiga Flávio e o advogado Willer Tomaz por suspeita de lavagem de dinheiro, proibiu o senador de deixar o país e mandou entregar os passaportes à PF. O próprio Flávio divulgou a decisão e disse: "Eu vou entregar os meus passaportes e vou me defender dessa aberração".</li>
+        <li><b>Ele não entregou e saiu.</b> O prazo venceu às 11h de 27/10 e a PF cancelou os passaportes. Não há registro de saída dele nos postos da PF. A imigração argentina informou que ele entrou por Puerto Iguazú às 22h50 de 27/10 e embarcou num voo privado para o Equador; o governo dos EUA disse que vai dar vistos a ele e à família.</li>
+        <li><b>Descumprir medida cautelar tem consequência.</b> A proibição de sair do país é uma medida alternativa à prisão. Quando ela é descumprida, o juiz pode trocá-la pela prisão preventiva. Especialistas ouvidos pela CNN dizem que deixar o país contra ordem judicial é um fundamento clássico para a preventiva. O professor Thiago Bottino (FGV) disse à BBC que deixar de entregar os passaportes caracteriza desobediência (art. 330 do Código Penal) e que, como ele descumpriu a ordem que proibia a saída, "fugiu".</li>
+        <li><b>A palavra "fuga" não é invenção de um lado só.</b> Jovem Pan e CartaCapital usaram "fugir" nos títulos; os próprios aliados de Flávio, segundo o Metrópoles, esperam que Moraes decrete a prisão.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> criticar a decisão de Moraes, tomada logo depois do resultado e com base em parte numa fala de Eduardo Bolsonaro, e lembrar que Flávio é investigado, não condenado. Também é correto dizer que ele não é "foragido" sem mandado de prisão. Mas dizer que ele "não fugiu" porque "sair do país não é crime" omite que, no caso dele, havia uma ordem judicial justamente proibindo a saída.</p>`,
+    fontes: [
+      ["Agência Brasil: Moraes proíbe Flávio de deixar o país (26/10)", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/moraes-manda-flavio-entregar-passaporte-e-o-proibe-de-deixar-o-pais"],
+      ["Agência Brasil: PF cancela os passaportes (27/10)", "https://agenciabrasil.ebc.com.br/politica/noticia/2026-10/policia-federal-cancela-passaportes-de-flavio-bolsonaro"],
+      ["BBC, via A Gazeta: ele pode ser considerado foragido?", "https://www.agazeta.com.br/mundo/se-flavio-estiver-fora-do-pais-pode-ser-considerado-foragido-1026"],
+      ["CNN Brasil: saída pode motivar prisão preventiva", "https://www.cnnbrasil.com.br/politica/fuga-de-flavio-pode-motivar-prisao-preventiva-dizem-especialistas/"],
+      ["CNN Brasil: Argentina diz que Flávio entrou no país e voou ao Equador", "https://www.cnnbrasil.com.br/internacional/argentina-diz-que-flavio-entrou-no-pais-na-noite-de-terca-e-voou-ao-equador/"],
+      ["Gazeta do Povo: PT pede prisão preventiva", "https://www.gazetadopovo.com.br/republica/pt-pede-prisao-preventiva-de-flavio-bolsonaro-e-inclusao-na-difusao-vermelha-da-interpol/"],
+      ["Gazeta do Povo: governo Trump vai conceder vistos", "https://www.gazetadopovo.com.br/mundo/governo-trump-vai-conceder-vistos-a-flavio-bolsonaro-e-sua-familia-diz-imprensa-dos-eua/"],
+      ["Jovem Pan: Flávio chega aos EUA", "https://jovempan.com.br/politica/apos-fugir-do-brasil-flavio-bolsonaro-chega-aos-eua/"],
+      ["Metrópoles: aliados esperam decretação da prisão", "https://www.metropoles.com/colunas/igor-gadelha/moraes-deve-decretar-prisao-de-flavio-em-breve-apostam-aliados-do-senador"],
+    ],
+  },
+  {
     id: "mapa-nomes-trocados",
     data: "28/10/2026",
     titulo: "\"O mapa está correto... os golpistas trocaram os nomes\"",
@@ -2261,7 +2307,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T08:15-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-28T08:25-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
