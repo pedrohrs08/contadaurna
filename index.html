@@ -1841,6 +1841,73 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "escala-6x1-recuo",
+    data: "27/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Passada a eleição, governo Lula recua e vai manter escala 6x1 para vários setores\"",
+    texto: `[foto de Lula; selo "GOVERNO"; logotipo e endereço do site que publicou omitidos]
+
+Passada a eleição, governo Lula recua e vai manter escala 6x1 para vários setores
+
+Com as urnas fechadas, o Planalto prepara exclusões na proposta do fim da escala 6x1, e muito trabalhador que esperava folga extra seguirá na jornada atual`,
+    frase: "O fim da 6x1 já é <b>emenda constitucional</b> desde 16/10 e não foi revogado. Existe, sim, discussão sobre regras para setores específicos, mas ela é pública desde setembro e nenhum texto foi apresentado.",
+    nums: [["16/10", "data em que a Emenda Constitucional 141 foi promulgada, antes do 2º turno"], ["75 a 1", "votação no Senado, com voto a favor de Flávio Bolsonaro"], ["2/9", "data em que a PEC paralela para regimes especiais foi anunciada em público"]],
+    curto: "Enganoso. É verdade que senadores e a base do governo preparam regras para setores com jornada especial, como petróleo, aviação e plantões. Mas isso foi anunciado em setembro, antes da eleição; o fim da 6x1 já está na Constituição desde 16/10, o presidente não pode mudá-lo sozinho, e nenhum texto com exclusões foi apresentado. Dizer que \"muito trabalhador seguirá na jornada atual\" não tem base em nenhuma proposta conhecida.",
+    parecer: `
+      <p><b>O que está certo:</b> há uma discussão real sobre regras para setores que funcionam sem parar. A Coluna do Estadão informou em 15/10 que a base do governo prepara uma nova PEC com ajustes, a ser apresentada depois do 2º turno. O relator, Omar Aziz, citou trabalhadores de plataformas de petróleo e pilotos. Em 27/10, a líder do governo no Senado, Teresa Leitão, disse que o Ministério do Trabalho estuda regras para plantões e aviação, mas sem texto definido.</p>
+      <p><b>O que está errado:</b></p>
+      <ul>
+        <li><b>Não é recuo de depois da eleição.</b> A PEC paralela foi anunciada em público pelo líder do MDB, Eduardo Braga, em 2/9, durante a votação na CCJ do Senado, mais de um mês antes do 1º turno. Em outubro, ele disse ao Estadão que a ideia não mexe nos dois dias de descanso.</li>
+        <li><b>O fim da 6x1 já vale como regra da Constituição.</b> A Emenda Constitucional 141 foi aprovada no Senado por 75 a 1 em 14/10 (Flávio Bolsonaro votou a favor) e promulgada em 16/10, com Lula presente. Emenda constitucional não passa por sanção, e o presidente não pode retirar setores dela por conta própria: seria preciso outra PEC, com três quintos dos votos na Câmara e no Senado, em dois turnos.</li>
+        <li><b>As exceções que existem já estavam no texto aprovado.</b> A emenda permite escalas diferentes por acordo ou convenção coletiva, desde que a média seja de dois dias de descanso por semana no mês, e prevê lei para regimes especiais, sempre dentro do limite de 40 horas. Também há regras próprias para quem tem diploma e salário acima de cerca de R$ 21 mil, e prazo de até um ano para terceirizados de contratos públicos.</li>
+        <li><b>Não há lista de setores excluídos.</b> Até 27/10 nenhum texto com exclusões tinha sido apresentado. A frase "muito trabalhador que esperava folga extra seguirá na jornada atual" não aparece em nenhuma proposta conhecida.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar o governo por deixar para depois da eleição a discussão sobre os ajustes, como mostrou o Estadão, e acompanhar se a nova PEC vai preservar as duas folgas. Mas, até agora, o que há é uma proposta em discussão, não um recuo.</p>`,
+    fontes: [
+      ["Revista Oeste: Alcolumbre promulga o fim da 6x1 (16/10)", "https://revistaoeste.com/politica/ao-lado-de-lula-alcolumbre-promulga-fim-da-escala-6x1/"],
+      ["eixos: Braga anuncia PEC paralela na CCJ (2/9)", "https://eixos.com.br/politica/congresso/lider-do-mdb-propoe-pec-paralela-para-regimes-de-escala-apos-ccj-aprovar-fim-da-6x1/"],
+      ["Guia do Investidor, com a Coluna do Estadão: ajustes depois do 2º turno", "https://guiadoinvestidor.com.br/noticias/governo-lula-prepara-em-sigilo-alteracoes-na-lei-da-escala-6x1-apos-eleicoes-para-excluir-setores-diz-jornal/"],
+      ["Portal N10: checagem e o que a emenda prevê", "https://portaln10.com.br/politica/e-falso-que-lula-tenha-voltado-atras-no-fim-da-escala-6x1-apos-vencer-eleicao-356397/"],
+    ],
+  },
+  {
+    id: "urna-conversor-de-voto",
+    data: "27/10/2026",
+    titulo: "\"Imaginem que existe um sistema dentro das urnas que possa converter uma certa porcentagem de votos para o concorrente\"",
+    texto: `Agora imaginem que existe um sistema dentro das urnas que possa converter uma certa porcentagem de votos para o concorrente! Seria plausível dizer que ministros da Suprema Corte, que estão com a corda no pescoço, concordariam em mexer nessa regulação?
+
+P.S.: Isso é apenas uma história que imaginei enquanto dormia. A charge é uma mera ilustração. Escrevo histórias em quadrinhos, ok, TSE e STF?
+
+[hashtag com nome de perfil omitida] #eleicoes #flaviobolsonaro #lula
+
+[charge marcada pela rede como "Conteúdo de IA": um técnico com boné e camisa "TSE Suporte Técnico" gira um botão chamado "Conversor de voto", com escala de 0% a 100%, dentro de uma urna aberta da Justiça Eleitoral. Ele pergunta: "Tem certeza Xandão? O povo não irá desconfiar?". Um ministro de toga, com o rosto de Alexandre de Moraes, aponta para a urna e diz: "Coloca em 100%!"]`,
+    frase: "Não existe \"conversor de voto\": no 2º turno, as urnas sorteadas para o teste de integridade bateram voto a voto com as cédulas de papel, e quem comandou o TSE foi <b>Nunes Marques</b>, não Moraes.",
+    nums: [["0", "divergências no teste de integridade do 2º turno no TSE e em São Paulo"], ["389", "votos de papel conferidos só nas urnas do TSE, um a um"], ["2024", "ano em que Moraes deixou o TSE"]],
+    curto: "Não procede. O próprio autor diz que é uma história inventada, e a imagem foi feita por IA. Um desvio de votos em porcentagem apareceria no teste de integridade, feito no dia da eleição com cédulas preenchidas pelos partidos, e no 2º turno não houve nenhuma divergência. A eleição foi conduzida por Nunes Marques, indicado por Bolsonaro; Moraes saiu do TSE em 2024.",
+    parecer: `
+      <p><b>O que o post é:</b> uma pergunta hipotética ("imaginem"), com o aviso do próprio autor de que é "apenas uma história" e uma charge que a rede marcou como conteúdo de IA. Não traz nenhum documento, número ou indício de que esse sistema exista. É a imagem que circula, e muita gente vê só ela.</p>
+      <p><b>Um "conversor" seria pego no dia da eleição.</b> O teste de integridade existe exatamente para isso:</p>
+      <ul>
+        <li>Urnas sorteadas na véspera são retiradas das seções e levadas para um local público. Representantes dos partidos preenchem cédulas de papel, que são digitadas uma a uma na urna durante o horário de votação, com câmeras ligadas o dia todo.</li>
+        <li>No fim, o boletim impresso pela urna é comparado com a contagem das cédulas. Se a urna desviasse 1%, 10% ou 100% dos votos de um candidato para o outro, a diferença apareceria.</li>
+        <li>No 2º turno de 2026 não houve divergência: no TSE, os 389 votos de papel bateram com as urnas; em São Paulo, as 33 urnas testadas também bateram. O juiz que coordenou o teste no Mato Grosso, com 20 urnas, lembrou que ele é feito desde 2002 e nunca encontrou divergência.</li>
+        <li>No TSE, segundo o juiz auxiliar da Presidência, nenhum partido registrou impugnação em ata sobre a confiabilidade da urna.</li>
+      </ul>
+      <p><b>O programa não pode ser trocado depois.</b> O código-fonte ficou aberto para partidos, OAB, TCU, Congresso e universidades desde outubro de 2025; o Senado e o Ministério Público inspecionaram em 2026. Em 4/9 os sistemas foram assinados digitalmente e lacrados, e os partidos podem conferir se o programa instalado em cada urna é o lacrado. Ao fim da votação, cada urna imprime o boletim, que é entregue aos fiscais e pode ser comparado com o resultado publicado.</p>
+      <p><b>A charge erra até o personagem.</b> Quem presidiu o TSE nas eleições de 2026 foi Kassio Nunes Marques, indicado ao STF por Jair Bolsonaro, com André Mendonça, também indicado por Bolsonaro, como vice. Moraes deixou o TSE em junho de 2024, depois de quatro anos como titular, e foi sucedido na presidência por Cármen Lúcia.</p>
+      <p><b>O que é legítimo:</b> criticar ministros do STF, inclusive Moraes, e cobrar mais fiscalização das urnas. O próprio presidente do TSE pediu aos partidos que ampliassem o acompanhamento. Mas insinuar, com imagem de IA, que um ministro mandou desviar votos não tem nenhuma prova, e as auditorias do dia da eleição dizem o contrário.</p>`,
+    fontes: [
+      ["TSE: teste de integridade do 2º turno sem divergência", "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-do-2o-turno-no-tse-confirma-correspondencia-entre-cedulas-e-votos-nas-urnas"],
+      ["TRE-SP: 33 urnas testadas no 2º turno", "https://www.tre-sp.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-das-urnas-no-2o-turno-e-concluido-sem-divergencias-em-sao-paulo"],
+      ["TRE-MT: teste do 2º turno", "https://www.tre-mt.jus.br/comunicacao/noticias/2026/Outubro/teste-de-integridade-reforca-seguranca-e-confiabilidade-da-urna-eletronica-no-2o-turno"],
+      ["TSE: assinatura digital e lacração dos sistemas (4/9)", "https://www.tse.jus.br/comunicacao/noticias/2026/Setembro/sistemas-das-eleicoes-gerais-de-2026-sao-assinados-digitalmente-e-lacrados-pelo-tse"],
+      ["O Povo: mecanismos de segurança das urnas", "https://www.opovo.com.br/noticias/politica/2026/07/29/tse-reafirma-mecanismos-de-seguranca-das-urnas-eletronicas-apos-criticas-ao-sistema-eleitoral.html"],
+      ["Poder360: Nunes Marques assume o TSE", "https://www.poder360.com.br/poder-justica/nunes-marques-assume-presidencia-do-tse/"],
+      ["Correio Braziliense: Moraes deixa o TSE (2024)", "https://www.correiobraziliense.com.br/politica/2024/06/6869678-nunes-marques-vai-presidir-tse-nas-eleicoes-de-2026.html"],
+      ["TSE: resultado e balanço do 2º turno", "https://www.tse.jus.br/comunicacao/noticias/2026/Outubro/presidente-do-tse-anuncia-reeleicao-de-lula-e-faz-balanco-do-2o-turno-das-eleicoes-2026"],
+    ],
+  },
+  {
     id: "minas-mais-votos-que-eleitores",
     data: "26/10/2026",
     titulo: "\"Como é possível o número de eleitores cadastrados em Minas Gerais ser menor que os votos computados?\"",
@@ -2149,7 +2216,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-27T19:50-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-27T23:45-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
