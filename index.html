@@ -290,6 +290,7 @@ td.alto { color: var(--bad); font-weight: 600; }
 .fk .selo { font: 800 1rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px; border-radius: 8px; background: var(--bad-soft); color: var(--bad); display: inline-flex; gap: 8px; align-items: center; }
 .fk .selo svg { width: 18px; height: 18px; flex: none; }
 .fk .selo.enganoso { background: var(--warn-soft); color: var(--warn); }
+.fk .selo.procede { background: var(--ok-soft); color: var(--accent); }
 .fk .frase { margin: 0; font-size: 1.12rem; font-weight: 600; line-height: 1.38; max-width: 70ch; }
 .fk .nums { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 720px; }
 .fk .nums div { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; align-content: start; }
@@ -1841,6 +1842,140 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "flavio-106-urnas-zeradas",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Foiiii Fraudeeeee\": Flávio teve votação zerada em 106 urnas",
+    texto: `Foiiii Fraudeeeee 🚨‼️
+
+[vídeo de uma pessoa enrolada numa bandeira do Brasil, com o rosto coberto por um filtro, e um print de notícia sobreposto:]
+POLÍTICA
+Flávio teve votação zerada em 106 urnas
+Maior parte das seções fica nas regiões Norte e Nordeste; Lula recebeu quase 15 mil votos nesses locais
+
+#reels #politica #direita #foryou #eleições2026`,
+    frase: "O número é <b>verdadeiro</b>, mas não indica fraude: são <b>106 de 497.897 urnas</b> (0,02%), quase todas em <b>aldeias indígenas</b>, povoados ribeirinhos e quilombos, seções pequenas em que um candidato costuma levar quase tudo. Lula também zerou em 4 urnas.",
+    nums: [["0,02%", "das urnas do país tiveram zero voto para Flávio"], ["68", "dessas 106 urnas ficam em aldeias ou escolas indígenas"], ["4", "urnas em que foi Lula quem teve zero voto"]],
+    curto: "Enganoso. A manchete é real: um levantamento da Paris Group, publicado pela Folha, achou 106 urnas sem nenhum voto para Flávio no 2º turno, com 14.860 votos para Lula. Mas isso é 0,02% das urnas, e a maioria fica em aldeias indígenas, comunidades ribeirinhas, quilombos e assentamentos, seções pequenas e muito homogêneas. O mesmo acontece ao contrário: em 4 urnas Lula teve zero.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>A manchete existe e o número confere.</b> O levantamento é da Paris Group, divulgado pela coluna Painel, da Folha de S.Paulo, e repercutido por vários sites, de todos os lados. Nas 106 urnas em que Flávio teve zero voto no 2º turno, Lula somou 14.860 votos, cerca de 140 por urna.</li>
+      </ul>
+      <p><b>Por que isso não é sinal de fraude:</b></p>
+      <ul>
+        <li><b>É uma fração mínima.</b> São 106 das 497.897 urnas do país (0,02%). Os 14.860 votos não mudam nada num resultado decidido por milhões de votos.</li>
+        <li><b>Quase todas ficam em comunidades muito homogêneas.</b> Pelo cadastro do TSE, 68 estão em aldeias, escolas ou comunidades indígenas, 29 em povoados rurais e ribeirinhos, 5 em quilombos e 2 em assentamentos. Amazonas (30), Maranhão (20) e Pará (16) concentram a maior parte. Em seções pequenas assim, é comum um candidato levar quase todos os votos.</li>
+        <li><b>Acontece dos dois lados.</b> Em 4 urnas foi Lula quem teve zero voto, com 296 votos para Flávio. No 1º turno, Flávio já tinha zerado em 81 urnas, e Lula em 8.</li>
+        <li><b>A cidade não acompanha a urna.</b> Em 16 das 67 cidades que têm uma dessas urnas, quem venceu no município foi Flávio.</li>
+        <li><b>Cada urna pode ser conferida.</b> O boletim de cada seção é impresso e afixado no local de votação ao fim do dia, e os fiscais dos partidos recebem cópias. Qualquer pessoa pode comparar o boletim com o total publicado pelo TSE.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> perguntar por que certas comunidades votam em bloco, ou cobrar fiscalização em seções remotas. Mas uma urna sem votos para um candidato, em uma comunidade pequena que vota em bloco, não é prova de fraude.</p>`,
+    fontes: [
+      ["Jornal Razão: onde ficam as 106 urnas (com conferência nos boletins do TSE)", "https://jornalrazao.com/politica/lula-14860-votos-106-urnas-flavio-zera-aldeias-indigenas"],
+      ["Cristiano Lima: Flávio teve votação zerada em 106 urnas", "https://cristianolima.com/2026/10/27/flavio-teve-votacao-zerada-em-106-urnas/"],
+      ["Voz da Bahia: levantamento da Paris Group, divulgado pela Folha", "https://vozdabahia.com.br/flavio-bolsonaro-teve-votacao-zerada-em-106-urnas-no-segundo-turno-aponta-levantamento/"],
+      ["Revista Oeste: Flávio teve votação zerada em 106 urnas", "https://revistaoeste.com/politica/flavio-teve-votacao-zerada-em-106-urnas/"],
+      ["ContraFatos: Flávio não recebe nenhum voto em 106 urnas", "https://www.contrafatos.com.br/flavio-bolsonaro-nao-recebe-nenhum-voto-em-106-urnas-no-segundo-turno"],
+    ],
+  },
+  {
+    id: "bahia-mais-eleitores-que-habitantes",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Bahia tem 23 municípios com mais eleitores do que habitantes\", apresentado como indício de fraude",
+    texto: `[post que circula nas redes com a manchete abaixo, apresentada como indício de fraude na eleição]
+Bahia tem 23 municípios com mais eleitores do que habitantes`,
+    frase: "O número é <b>verdadeiro</b>, mas não indica fraude: muita gente se muda de cidade pequena e <b>não transfere o título</b>, e a conta compara o cadastro eleitoral com uma <b>estimativa</b> do IBGE. Em 2022 eram 36 cidades baianas nessa situação; agora são 23.",
+    nums: [["23", "cidades baianas com mais eleitores que habitantes estimados"], ["733", "cidades assim no Brasil, 701 delas com menos de 10 mil habitantes"], ["36", "cidades baianas nessa situação em 2022"]],
+    curto: "Enganoso. O dado é de um levantamento da Agência Tatu publicado pelo jornal A Tarde em julho, e está correto. Mas a própria reportagem diz que isso não indica irregularidade. O fenômeno acontece em cidades pequenas que perdem moradores: quem se muda costuma continuar votando na cidade de origem. E o eleitor só vota se estiver no caderno da seção e se identificar por biometria ou documento com foto.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>A manchete é real.</b> Um levantamento da Agência Tatu, publicado pelo jornal A Tarde em 28/07/2026, cruzou o eleitorado de 2026 com a estimativa de população do IBGE e achou 23 cidades baianas com mais eleitores que habitantes. Catolândia lidera, com 117% (cerca de 3,6 mil moradores). Todas têm menos de 15 mil habitantes.</li>
+      </ul>
+      <p><b>Por que isso não é sinal de fraude:</b></p>
+      <ul>
+        <li><b>O título não acompanha a mudança.</b> Quem sai de uma cidade pequena para estudar ou trabalhar em outra costuma manter o título na cidade de origem. A pessoa deixa de ser contada como moradora, mas continua no cadastro eleitoral. Em cidades pequenas, lideranças locais também incentivam essas transferências, porque poucas dezenas de votos decidem uma eleição municipal.</li>
+        <li><b>A população é uma estimativa.</b> O número de habitantes usado na conta é uma projeção do IBGE, não uma contagem de cada morador.</li>
+        <li><b>É um fenômeno nacional e antigo.</b> São 733 cidades assim no Brasil, 701 delas com menos de 10 mil habitantes, inclusive em estados onde Flávio venceu. Na Bahia, o número caiu de 36, em 2022, para 23.</li>
+        <li><b>Não dá para votar no lugar de outra pessoa.</b> O eleitor precisa estar no caderno da seção e se identificar por biometria ou documento com foto. Os cartórios informam os óbitos à Justiça Eleitoral todo mês, e os títulos de quem morreu são cancelados. Menores de 16 anos não podem ter título.</li>
+        <li><b>Mais eleitores no cadastro não é mais votos na urna.</b> A urna só aceita votos dos eleitores daquela seção. Veja também o parecer <a href="#fake-minas-mais-votos-que-eleitores">"Minas teve mais votos que eleitores"</a>.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar que o cadastro eleitoral seja atualizado e fiscalizar transferências de título em cidades pequenas, como sugere a cientista política ouvida pelo A Tarde. Mas o dado, sozinho, não prova voto irregular.</p>`,
+    fontes: [
+      ["A Tarde: Bahia tem 23 municípios com mais eleitores que habitantes em 2026", "https://atarde.com.br/eleicoes/bahia-tem-23-municipios-com-mais-eleitores-que-habitantes-em-2026-1396858"],
+      ["Aos Fatos: número maior de eleitores do que habitantes não indica fraude", "https://www.aosfatos.org/noticias/numero-maior-eleitores-habitantes-bahia/"],
+      ["Correio: Bahia tem 23 cidades com mais eleitores do que habitantes", "https://www.correio24horas.com.br/minha-bahia/bahia-tem-23-cidades-com-mais-eleitores-do-que-habitantes-calculados-no-censo-0923"],
+      ["Bahia Notícias: com censo atrasado, uma a cada 10 cidades tem mais eleitores que moradores", "https://www.bahianoticias.com.br/noticia/271668-com-censo-atrasado-uma-a-cada-10-cidades-tem-mais-eleitores-que-moradores"],
+    ],
+  },
+  {
+    id: "jf-carvao-candiota",
+    data: "28/10/2026",
+    selo: "Procede",
+    titulo: "\"Governo Lula prepara contrato de 15 anos para comprar energia a carvão do grupo J&F por valor 50,2% acima da média\"",
+    texto: `[print de uma página de notícias, com logotipo omitido, repostado com a legenda "A gente bem assim 🤡 ..."]
+Governo Lula prepara contrato de 15 anos para comprar energia a carvão do grupo J&F, dos irmãos Joesley e Wesley Batista, por valor 50,2% acima da média de leilões que usam o mesmo combustível
+
+[foto de Lula de chapéu e foto de uma usina com chaminés]`,
+    frase: "<b>Procede.</b> Em abril, o Ministério de Minas e Energia aprovou um contrato até 2040 para a usina de Candiota (RS), da J&F, por <b>R$ 859,8 milhões por ano</b>, pagos na conta de luz. A compra foi imposta por uma lei que o <b>Congresso aprovou</b> e que <b>Lula sancionou</b> sem vetar esse trecho.",
+    nums: [["R$ 859,8 mi", "por ano de receita fixa para a usina, até 2040"], ["R$ 12,9 bi", "ao longo do contrato, segundo o conselho de consumidores"], ["50,2%", "acima da média de leilões a carvão, cálculo da Folha"]],
+    curto: "Procede. O post é de março, quando o contrato estava em consulta pública, e foi confirmado em 16/04/2026 com receita fixa de R$ 859,8 milhões por ano até 2040. A comparação de 50,2% acima da média de leilões a carvão é da Folha de S.Paulo. O que o post não conta: a contratação foi incluída pelo Congresso numa lei sobre o setor elétrico e Lula a sancionou, contra a recomendação do Ministério do Meio Ambiente.",
+    parecer: `
+      <p><b>O que o post diz e está certo:</b></p>
+      <ul>
+        <li><b>O contrato existe.</b> Em 16/04/2026, o Ministério de Minas e Energia publicou no Diário Oficial a autorização para recontratar a usina a carvão de Candiota III (RS), de 350 MW, da Âmbar, empresa do grupo J&F, até 31/12/2040.</li>
+        <li><b>Os valores.</b> A receita fixa é de R$ 859,8 milhões por ano (R$ 540,27 por MWh). O Conselho Nacional de Consumidores de Energia estima R$ 12,9 bilhões ao longo dos 15 anos e diz que os preços estão "muito acima das médias". O número de 50,2% acima da média de leilões a carvão foi calculado pela Folha de S.Paulo quando o contrato estava em consulta pública, em março.</li>
+        <li><b>Quem paga.</b> A usina foi contratada como energia de reserva, e o custo entra como encargo na conta de luz de todos os consumidores.</li>
+      </ul>
+      <p><b>O contexto que faltou:</b></p>
+      <ul>
+        <li><b>A obrigação veio de uma lei.</b> O Congresso incluiu, numa medida provisória sobre o setor elétrico, um trecho que manda contratar até 2040 as térmicas a carvão com contrato vigente em 2022. A lei não cita a J&F, mas na prática beneficia Candiota e uma usina menor da Copel.</li>
+        <li><b>Lula poderia ter vetado.</b> O Ministério do Meio Ambiente, associações de consumidores e ambientalistas pediram o veto. Lula sancionou o trecho em novembro de 2025, e o MME fez o contrato.</li>
+        <li><b>Foi sem leilão.</b> Por isso não houve disputa de preço, uma das principais críticas do conselho de consumidores. Um deputado pediu ao TCU que suspenda a contratação.</li>
+      </ul>
+      <p><b>Resumo:</b> o fato é verdadeiro. A responsabilidade é dividida entre o Congresso, que criou a obrigação, e o governo, que a sancionou e assinou o contrato.</p>`,
+    fontes: [
+      ["IstoÉ Dinheiro: governo aprova recontratação de usina a carvão da J&F até 2040", "https://istoedinheiro.com.br/usina-a-carvao-da-jf"],
+      ["Money Times: recontratação de Candiota, valores e críticas", "https://www.moneytimes.com.br/governo-aprova-recontratacao-de-usina-a-carvao-da-jf-ate-2040-pads/"],
+      ["Canal Solar (com a Folha): contrato 50,2% acima da média de leilões", "https://canalsolar.com.br/governo-lula-comprar-energia-a-carvao-jef/"],
+      ["Jornal de Brasília: governo analisa se sanciona ou veta energia a carvão até 2040", "https://jornaldebrasilia.com.br/noticias/politica-e-poder/governo-lula-analisa-durante-cop-se-sanciona-ou-veta-energia-a-carvao-ate-2040/"],
+      ["eixos: governo recua e carvão ganha sobrevida", "https://eixos.com.br/politica/governo-recua-e-carvao-ganha-sobrevida-com-lula-do-nordeste-ao-sul/"],
+      ["Canal Solar: deputado aciona TCU para suspender a contratação", "https://canalsolar.com.br/deputado-aciona-tcu-suspensao-termeletrica/"],
+    ],
+  },
+  {
+    id: "band-editorial-6x1",
+    data: "28/10/2026",
+    selo: "Procede",
+    titulo: "\"Band divulga editorial contra o fim da escala 6x1 e causa revolta: 'Contra a sociedade'\"",
+    texto: `[vídeo do Jornal da Band, com o apresentador e a tarja "EDITORIAL"; marca d'água e nome dos perfis que publicaram omitidos]
+Band divulga editorial contra o fim da escala 6x1 e causa revolta: 'Contra a sociedade'`,
+    frase: "<b>Procede.</b> O Jornal da Band exibiu editoriais contra o fim da escala 6x1, assinados como <b>\"opinião do Grupo Bandeirantes\"</b>, e eles foram muito criticados nas redes. É uma <b>opinião da emissora</b>, não uma notícia nem uma decisão sobre a jornada.",
+    nums: [["09/06", "editorial chama a proposta de \"grande armadilha\" para o trabalhador"], ["09/10", "novo editorial: \"vendendo uma falsa vantagem\""], ["0", "mudanças na escala 6x1 decididas até agora"]],
+    curto: "Procede. A Band levou ao ar, no Jornal da Band, editoriais contra o fim da escala 6x1, um em 9 de junho e outro em 9 de outubro de 2026, ambos encerrados com \"Esta é a opinião do Grupo Bandeirantes de Comunicação\". Houve críticas nas redes. O post não inventa nada; só vale lembrar que editorial é a opinião da empresa.",
+    parecer: `
+      <p><b>O que aconteceu:</b></p>
+      <ul>
+        <li><b>Junho.</b> Em 9 de junho de 2026, o âncora do Jornal da Band leu um editorial que chama o fim da escala 6x1 de "uma grande armadilha" para o trabalhador e diz que a mudança prejudicaria a economia. O texto termina com "Esta é a opinião do Grupo Bandeirantes de Comunicação". O vídeo foi publicado nas redes da emissora e recebeu muitas críticas.</li>
+        <li><b>Outubro.</b> Em 9 de outubro, um novo editorial voltou ao tema, dizendo que o fim da 6x1 pode encarecer produtos e serviços: "Estão vendendo uma falsa vantagem para entregar, depois, uma vida cara e bem mais difícil."</li>
+        <li><b>Não é a primeira vez.</b> Em novembro de 2024, o mesmo âncora já tinha chamado de "irreal" reduzir a jornada sem reduzir o salário.</li>
+      </ul>
+      <p><b>O contexto:</b></p>
+      <ul>
+        <li><b>Editorial é opinião.</b> É a posição da empresa sobre um tema, separada do noticiário. Jornais e emissoras de todo o espectro publicam editoriais, e concordar ou discordar deles é legítimo.</li>
+        <li><b>"Contra a sociedade" é a reação de quem criticou</b>, não uma frase do editorial.</li>
+        <li><b>O fim da 6x1 continua em debate no Congresso.</b> Veja também o parecer <a href="#fake-escala-6x1-recuo">"Governo recua e vai manter a 6x1"</a>.</li>
+      </ul>`,
+    fontes: [
+      ["Área VIP: Band causa revolta após editorial contra o fim da 6x1 (junho)", "https://www.areavip.com.br/televisao/band-causa-revolta-apos-editorial-contra-o-fim-da-escala-6x1-no-jornal-da-band/"],
+      ["Blog TV Web Sertão: Band critica fim da escala 6x1 (outubro)", "https://www.blogtvwebsertao.com.br/2026/10/band-critica-fim-da-escala-6x1-e-alerta.html"],
+      ["Contigo!: Band divulga editorial contra o fim da escala 6x1", "https://contigo.com.br/noticias/tv/band-divulga-editorial-contra-o-fim-da-escala-6x1-e-causa-revolta-contra-a-sociedade.phtml"],
+      ["Diário do Centro do Mundo: âncora da Band chama fim da 6x1 de \"irreal\" (2024)", "https://www.diariodocentrodomundo.com.br/essencial/video-ancora-do-jornal-da-band-ataca-movimento-pelo-fim-da-escala-6x1-irreal/"],
+    ],
+  },
+  {
     id: "flavio-governo-paralelo",
     data: "28/10/2026",
     selo: "Enganoso",
@@ -2296,16 +2431,17 @@ function renderFakes() {
   // Frase-resposta da aba: quantos boatos, agrupados pelo selo
   const selos = {};
   FAKES.forEach(f => { const k = (f.selo || "Não procede").toLowerCase(); selos[k] = (selos[k] || 0) + 1; });
-  const verbo = (k, n) => k === "não procede" ? (n === 1 ? "não procede" : "não procedem") : (n === 1 ? "é " : "são ") + k + (n === 1 ? "" : "s");
+  const verbo = (k, n) => k === "não procede" ? (n === 1 ? "não procede" : "não procedem") : k === "procede" ? (n === 1 ? "procede" : "procedem") : (n === 1 ? "é " : "são ") + k + (n === 1 ? "" : "s");
   const partes = Object.entries(selos).map(([k, n]) => `${n} ${verbo(k, n)}`);
   $("fkFrase").innerHTML = `<b>${FAKES.length} ${FAKES.length === 1 ? "boato checado" : "boatos checados"}</b> com os números oficiais: ${partes.length > 1 ? partes.slice(0, -1).join(", ") + " e " + partes.at(-1) : partes[0]}.`;
   $("fkResumo").textContent = "O veredito vem primeiro. O parecer completo e o texto do boato, na íntegra, ficam a um toque. Boatos novos entram no topo.";
   const esc = t => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const icone = `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6.6 6.6l6.8 6.8M13.4 6.6l-6.8 6.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  const iconeOk = `<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8.6" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 10.4l2.7 2.7L14.2 7.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   $("fkLista").innerHTML = FAKES.map(f => {
     const versoes = 1 + (f.outras || []).length;
     return `<article class="panel fk" id="fake-${f.id}">
-    <header><span class="selo ${(f.selo || "").toLowerCase() === "enganoso" ? "enganoso" : ""}">${icone}${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
+    <header><span class="selo ${({enganoso: "enganoso", procede: "procede"})[(f.selo || "").toLowerCase()] || ""}">${(f.selo || "").toLowerCase() === "procede" ? iconeOk : icone}${f.selo || "Não procede"}</span><span class="quando">${f.data}</span><a class="link-direto" href="#fake-${f.id}">Link direto</a><h3>${esc(f.titulo)}</h3></header>
     <p class="frase">${f.frase || f.curto}</p>
     ${f.nums ? `<div class="nums">${f.nums.map(([v, r]) => `<div><b>${v}</b><span>${r}</span></div>`).join("")}</div>` : ""}
     <p class="fontes">Fontes: ${f.fontes.map(([t, u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join(" · ")}</p>
@@ -2469,7 +2605,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T09:20-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-28T14:10-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
