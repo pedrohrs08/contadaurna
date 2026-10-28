@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Fila de envios</title>
+<style>
+  :root { color-scheme: light dark; --linha: #8884; --ok: #127a5a; --ruim: #b3261e; }
+  body { font: 16px/1.45 system-ui, sans-serif; margin: 0 auto; max-width: 760px; padding: 16px; }
+  h1 { font-size: 1.3rem; }
+  input, select, button { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linha); }
+  button { cursor: pointer; }
+  .item { border: 1px solid var(--linha); border-radius: 12px; padding: 12px; margin: 12px 0; display: grid; gap: 8px; }
+  .item img { max-width: 100%; border-radius: 8px; }
+  .linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .prot { font: 700 1rem ui-monospace, monospace; }
+  .meta { color: #888; font-size: .9rem; }
+  .aviso { font-size: .9rem; }
+  .erro { color: var(--ruim); }
+  .apagar { color: var(--ruim); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<h1>Fila de envios</h1>
+<form id="entrar" class="linha">
+  <input id="senha" type="password" autocomplete="current-password" placeholder="Senha de administração (ADMIN_TOKEN)" required style="flex:1;min-width:220px">
+  <button>Entrar</button>
+</form>
+<p id="msg" class="aviso"></p>
+<div id="painel" hidden>
+  <div class="linha"><button id="atualizar" type="button">Atualizar</button><button id="sair" type="button">Sair</button></div>
+  <p class="aviso">Os e-mails nunca aparecem aqui. “Pediu aviso” só indica que a pessoa deixou um e-mail, que o servidor guarda criptografado e apaga depois de avisar.</p>
+  <div id="lista"></div>
+</div>
+<template id="modelo">
+  <div class="item">
+    <div class="linha"><span class="prot"></span><span class="meta"></span></div>
+    <div class="onde"></div>
+    <div class="linha"><button type="button" class="ver">Ver print</button><button type="button" class="apagar">Apagar envio</button></div>
+    <img alt="Print enviado" hidden>
+    <div class="linha">
+      <select class="res">
+        <option value="publicado">Publicado (parecer no site)</option>
+        <option value="procede">Procede (não é fake)</option>
+        <option value="descartado">Descartado</option>
+      </select>
+      <input class="link" type="url" placeholder="https://contadaurna.com.br/#fake-..." style="flex:1;min-width:220px">
+      <button type="button" class="concluir">Concluir</button>
+    </div>
+    <div class="retorno aviso"></div>
+  </div>
+</template>
+<script src="/admin.js"></script>
+</body>
+</html>

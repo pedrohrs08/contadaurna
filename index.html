@@ -534,42 +534,146 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
   </section>
   <div id="fkLista" class="so-fake fklista"></div>
 
-  <!-- ===== Envie seu print (bloco isolado: HTML, estilo e script próprios) ===== -->
+  <!-- ===== Envie seu print (bloco isolado: HTML, estilo e script próprios; servidor em envios/) ===== -->
   <section class="panel so-fake envie" id="envie" aria-label="Envie um boato para checagem">
     <style>
       .envie { display: grid; gap: 10px; }
-      .envie h2 { margin: 0; }
+      .envie h2, .envie h3 { margin: 0; }
+      .envie h3 { font-size: 1rem; }
       .envie ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; max-width: 75ch; font-size: .92rem; }
-      .envie .botao { justify-self: start; display: inline-block; padding: 10px 16px; border-radius: 8px; background: var(--accent); color: var(--surface); font-weight: 700; text-decoration: none; }
-      .envie .botao[aria-disabled="true"] { background: var(--line); color: var(--muted); pointer-events: none; }
+      .envie form { display: grid; gap: 10px; max-width: 560px; }
+      .envie label { display: grid; gap: 4px; font-size: .92rem; font-weight: 600; }
+      .envie label small { font-weight: 400; color: var(--muted); }
+      .envie input[type=text], .envie input[type=email], .envie input[type=file] { font: inherit; font-weight: 400; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: inherit; min-width: 0; }
+      .envie .botao { justify-self: start; padding: 10px 16px; border: 0; border-radius: 8px; background: var(--accent); color: var(--surface); font: inherit; font-weight: 700; cursor: pointer; }
+      .envie .botao:disabled { background: var(--line); color: var(--muted); cursor: default; }
+      .envie .sec { background: none; border: 1px solid var(--line); color: inherit; font-weight: 600; }
+      .envie .resp { font-size: .95rem; max-width: 75ch; }
+      .envie .resp:empty { display: none; }
+      .envie .prot { font: 700 1.2rem var(--f-mono); letter-spacing: .05em; }
+      .envie .linha { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .envie .linha input { flex: 1; min-width: 160px; }
       .envie details { font-size: .88rem; color: var(--muted); max-width: 75ch; }
       .envie details p { margin: 6px 0; }
     </style>
     <p class="eyebrow">Envie um boato</p>
     <h2>Recebeu algo sobre a eleição e quer saber se procede?</h2>
-    <p class="note" style="margin:0">Mande o print pelo formulário. Os boatos com mais alcance e que dá para conferir com dados públicos são checados e publicados nesta aba.</p>
+    <p class="note" style="margin:0">Mande o print. Os boatos com mais alcance e que dá para conferir com dados públicos são checados e publicados nesta aba.</p>
     <ul>
-      <li><b>Não respondemos individualmente</b> e não garantimos checar todos os envios.</li>
-      <li>Só aceitamos <b>uma imagem por envio</b> (até 10 MB). O formulário pede login no Google para evitar robôs.</li>
+      <li><b>Não precisa se identificar.</b> Você recebe um código de protocolo para acompanhar o resultado aqui.</li>
+      <li>Se quiser, deixe um e-mail para ser avisado. <b>Quem faz a checagem não vê o seu e-mail</b>: ele fica criptografado e é apagado logo depois do aviso.</li>
       <li><b>O print nunca é publicado.</b> No site entra só o texto do boato, sem @, nome ou foto de quem postou.</li>
-      <li>A checagem é sobre a <b>afirmação</b>, nunca sobre a pessoa, e sempre com fontes.</li>
-      <li>Conteúdo ofensivo, ilegal ou fora do tema é descartado sem resposta.</li>
+      <li>Não garantimos checar todos os envios. Conteúdo ofensivo, ilegal ou fora do tema é descartado.</li>
     </ul>
-    <a class="botao" id="envieLink" target="_blank" rel="noopener">Enviar print para checagem</a>
+    <form id="envieForm" hidden>
+      <label>Print do boato <small>JPG, PNG ou WEBP, até 10 MB</small>
+        <input type="file" name="imagem" accept="image/jpeg,image/png,image/webp" required></label>
+      <label>Onde você viu? <small>opcional: rede social, grupo, site</small>
+        <input type="text" name="onde" maxlength="300" autocomplete="off"></label>
+      <label>E-mail para receber o resultado <small>opcional</small>
+        <input type="email" name="email" maxlength="254" autocomplete="email"></label>
+      <div id="envieCaptcha"></div>
+      <button class="botao" id="envieBotao">Enviar para checagem</button>
+    </form>
+    <p class="note" id="envieIndisp" style="margin:0"><b>Envio em preparação.</b> Em breve você poderá mandar seu print por aqui.</p>
+    <div class="resp" id="envieResp" role="status" aria-live="polite"></div>
+    <h3>Acompanhar um envio</h3>
+    <div class="linha">
+      <input type="text" id="envieProt" placeholder="Código de protocolo (ex.: ABCD-EFGH-2345)" autocomplete="off" aria-label="Código de protocolo">
+      <button type="button" class="botao sec" id="envieConsultar">Consultar</button>
+      <button type="button" class="botao sec" id="envieApagar">Apagar meu envio</button>
+    </div>
+    <div class="resp" id="envieStatus" role="status" aria-live="polite"></div>
     <details>
-      <summary>Privacidade (LGPD)</summary>
-      <p><b>O que coletamos:</b> a imagem enviada e a conta Google usada no envio, registrada automaticamente pelo formulário. Não pedimos nome, telefone nem outros dados.</p>
-      <p><b>Para quê:</b> só para checar o boato. Não usamos para nenhum outro fim e não repassamos a ninguém.</p>
-      <p><b>Por quanto tempo:</b> os envios são apagados em até 30 dias.</p>
-      <p><b>Seus direitos:</b> para pedir a exclusão antes disso, use o mesmo formulário e escolha a opção “Quero apagar um envio meu”, com a data aproximada do envio.</p>
+      <summary>Privacidade (LGPD) e código aberto</summary>
+      <p><b>O que guardamos:</b> a imagem (regravada sem metadados, como local, aparelho ou autor), o campo “onde você viu” e, só se você preencher, o e-mail. Não pedimos nome nem telefone e não gravamos o seu IP: o servidor só o usa embaralhado, na memória e por até uma hora, para barrar abusos. A hospedagem (Render) mantém registros técnicos de acesso por pouco tempo.</p>
+      <p><b>O e-mail:</b> é gravado criptografado e só o servidor consegue abri-lo, no momento de mandar o aviso; depois disso é apagado. A tela de quem faz a checagem mostra só o protocolo. O aviso sai pelo serviço de e-mail Brevo, que guarda um registro técnico do envio por tempo limitado.</p>
+      <p><b>Para quê:</b> só para checar o boato e, se você pediu, avisar o resultado. Não usamos para nenhum outro fim e não repassamos a ninguém.</p>
+      <p><b>Por quanto tempo:</b> tudo é apagado automaticamente em até 30 dias.</p>
+      <p><b>Seus direitos:</b> com o código de protocolo, você apaga o seu envio a qualquer momento pelo botão “Apagar meu envio”.</p>
+      <p><b>Código aberto:</b> o código deste site e do servidor de envios é público e pode ser auditado em <a href="https://github.com/pedrohrs08/contadaurna/tree/main/envios" target="_blank" rel="noopener">github.com/pedrohrs08/contadaurna</a>.</p>
     </details>
     <script>
-      // Link do Google Forms. Enquanto estiver vazio, o botão aparece desativado.
-      const ENVIE_FORM_URL = "";
+      // Endereço do servidor de envios (Render) e chave pública do Cloudflare Turnstile.
+      // Enquanto algum estiver vazio, o formulário fica escondido e aparece "Envio em preparação".
+      const ENVIE_API = "";
+      const ENVIE_TURNSTILE = "";
       (() => {
-        const a = document.getElementById("envieLink");
-        if (ENVIE_FORM_URL) a.href = ENVIE_FORM_URL;
-        else { a.setAttribute("aria-disabled", "true"); a.textContent = "Formulário em preparação"; }
+        const $e = (id) => document.getElementById(id);
+        const STATUS = {
+          na_fila: "Recebido, esperando checagem.",
+          publicado: "Checado: o parecer está publicado.",
+          procede: "Checado: pelo que apuramos, a informação procede, por isso não virou parecer de fake news.",
+          descartado: "Não entrou na checagem (fora do tema, sem como verificar com dados públicos ou repetido).",
+        };
+        const escreve = (el, partes) => { el.replaceChildren(...partes.map((p) => typeof p === "string" ? document.createTextNode(p) : p)); };
+        const link = (href) => { const a = document.createElement("a"); a.href = href; a.textContent = href; return a; };
+        const protValido = (p) => /^[A-Z2-7]{4}-[A-Z2-7]{4}-[A-Z2-7]{4}$/.test(p);
+        const pedir = async (caminho, opcoes) => {
+          const r = await fetch(ENVIE_API.replace(/\/$/, "") + caminho, opcoes);
+          let d = {}; try { d = await r.json(); } catch (e) {}
+          return [r.ok, d];
+        };
+        if (!ENVIE_API) { $e("envieConsultar").disabled = $e("envieApagar").disabled = true; return; }
+
+        $e("envieConsultar").onclick = async () => {
+          const p = $e("envieProt").value.trim().toUpperCase();
+          if (!protValido(p)) return escreve($e("envieStatus"), ["Confira o código: são 12 letras e números no formato ABCD-EFGH-2345."]);
+          escreve($e("envieStatus"), ["Consultando…"]);
+          try {
+            const [ok, d] = await pedir("/status/" + p);
+            if (!ok) return escreve($e("envieStatus"), [d.erro || "Não foi possível consultar agora."]);
+            escreve($e("envieStatus"), d.link && d.link.startsWith("https://contadaurna.com.br/") ? [STATUS[d.status] + " ", link(d.link)] : [STATUS[d.status] || ""]);
+          } catch (e) { escreve($e("envieStatus"), ["Não foi possível consultar agora. Tente de novo em instantes."]); }
+        };
+        $e("envieApagar").onclick = async () => {
+          const p = $e("envieProt").value.trim().toUpperCase();
+          if (!protValido(p)) return escreve($e("envieStatus"), ["Digite o código de protocolo do envio que quer apagar."]);
+          if (!confirm("Apagar o envio " + p + "? A imagem e o e-mail, se houver, são apagados na hora.")) return;
+          try {
+            const [ok, d] = await pedir("/envio/" + p, {method: "DELETE"});
+            escreve($e("envieStatus"), [ok ? "Envio apagado." : (d.erro || "Não foi possível apagar agora.")]);
+          } catch (e) { escreve($e("envieStatus"), ["Não foi possível apagar agora. Tente de novo em instantes."]); }
+        };
+
+        if (!ENVIE_TURNSTILE) return;
+        $e("envieForm").hidden = false; $e("envieIndisp").hidden = true;
+        let widget = null;
+        const carregaCaptcha = () => {
+          if (window.turnstile || document.getElementById("envieTsScript")) return;
+          window.envieTsPronto = () => { widget = window.turnstile.render("#envieCaptcha", {sitekey: ENVIE_TURNSTILE, language: "pt-br"}); };
+          const s = document.createElement("script");
+          s.id = "envieTsScript"; s.async = true;
+          s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=envieTsPronto";
+          document.head.append(s);
+        };
+        // Só carrega o anti-robô do Cloudflare quando a pessoa chega perto do formulário
+        new IntersectionObserver((es, ob) => { if (es.some((e) => e.isIntersecting)) { carregaCaptcha(); ob.disconnect(); } }).observe($e("envieForm"));
+
+        $e("envieForm").onsubmit = async (ev) => {
+          ev.preventDefault();
+          const f = $e("envieForm"), arq = f.imagem.files[0];
+          if (!arq) return;
+          if (arq.size > 10 * 1024 * 1024) return escreve($e("envieResp"), ["A imagem passa de 10 MB. Recorte ou envie um print menor."]);
+          const dados = new FormData(f);
+          if (!dados.get("cf-turnstile-response")) return escreve($e("envieResp"), ["Aguarde a verificação anti-robô terminar e tente de novo."]);
+          $e("envieBotao").disabled = true;
+          escreve($e("envieResp"), ["Enviando… (o servidor pode levar até 1 minuto para acordar)"]);
+          try {
+            const [ok, d] = await pedir("/envio", {method: "POST", body: dados});
+            if (!ok) { escreve($e("envieResp"), [d.erro || "Não foi possível enviar agora."]); return; }
+            const b = document.createElement("span"); b.className = "prot"; b.textContent = d.protocolo;
+            escreve($e("envieResp"), ["Recebido! Guarde o seu código de protocolo: ", b,
+              f.email.value ? ". Avisaremos por e-mail quando a checagem terminar." : ". Use-o abaixo para acompanhar o resultado."]);
+            $e("envieProt").value = d.protocolo;
+            f.reset();
+          } catch (e) {
+            escreve($e("envieResp"), ["Não foi possível enviar agora. Tente de novo em instantes."]);
+          } finally {
+            $e("envieBotao").disabled = false;
+            if (window.turnstile && widget !== null) window.turnstile.reset(widget);
+          }
+        };
       })();
     </script>
   </section>

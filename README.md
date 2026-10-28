@@ -83,7 +83,9 @@ Os parâmetros não foram calibrados com 2018 e 2022.
 | `arquivo-fontes.json` | Registro gerado automaticamente com a cópia arquivada de cada fonte. |
 | `.github/workflows/pages.yml` | A cada push na `main`, publica o site no GitHub Pages (branch `gh-pages`). |
 | `.github/workflows/arquivar.yml` | A cada mudança no `index.html`, arquiva as fontes no archive.org. Também pode ser rodado à mão em Actions. |
-| `render.yaml` | Configuração alternativa para publicar no Render como site estático. |
+| `envios/` | Servidor de envio de prints da aba Fake news (Render), com página de administração e testes. Desenho de segurança e configuração em [`envios/README.md`](envios/README.md). |
+| `.github/workflows/envios.yml` | Roda os testes do servidor de envios a cada PR que mexe em `envios/`. |
+| `render.yaml` | Configuração do Render: o site estático e o servidor de envios. |
 | `CNAME` | Domínio próprio do GitHub Pages. |
 
 Só usa a biblioteca padrão do Python 3; não há dependências para instalar.
