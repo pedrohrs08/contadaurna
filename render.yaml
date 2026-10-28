@@ -11,3 +11,36 @@ services:
       - path: /*
         name: Cache-Control
         value: public, max-age=600
+
+  # Servidor de envio de prints da aba Fake news (veja envios/README.md).
+  # EMAIL_KEY e ADMIN_TOKEN são gerados pelo próprio Render; os demais segredos
+  # (sync: false) são preenchidos à mão no painel e nunca entram no repositório.
+  - type: web
+    name: contadaurna-envios
+    runtime: python
+    plan: free
+    rootDir: envios
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 --threads 4 --timeout 60 -b 0.0.0.0:$PORT 'app:criar_app()'
+    healthCheckPath: /saude
+    envVars:
+      - key: ORIGENS
+        value: https://contadaurna.com.br,https://www.contadaurna.com.br
+      - key: EMAIL_KEY
+        generateValue: true
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: R2_CONTA
+        sync: false
+      - key: R2_CHAVE
+        sync: false
+      - key: R2_SEGREDO
+        sync: false
+      - key: R2_BALDE
+        sync: false
+      - key: TURNSTILE_SECRET
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: EMAIL_REMETENTE
+        sync: false
