@@ -1841,6 +1841,43 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "flavio-governo-paralelo",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Flávio Bolsonaro pretende se autodeclarar presidente e montar um governo paralelo nos EUA\"",
+    texto: `🇧🇷 Flávio Bolsonaro pretende se autodeclarar presidente do Brasil e montar um governo paralelo comandado a partir dos EUA, assim como Juan Guaidó fez com a Venezuela. No entanto, grandes potências já reconheceram Lula como presidente eleito e o plano de Flávio deve falhar.
+
+[imagem com um mapa das Américas, os EUA em azul e o Brasil em vermelho, ao lado de uma foto de Flávio Bolsonaro]`,
+    frase: "Existe um <b>rumor</b>, publicado com base numa fonte anônima, de que Flávio pensa num \"governo no exílio\" nos EUA. Mas <b>ele não disse que vai se declarar presidente</b>, e nenhuma reportagem trouxe isso como plano confirmado. A parte sobre o reconhecimento de Lula é verdadeira.",
+    nums: [["27/10", "Flávio deixa o Brasil, contra ordem do STF, rumo aos EUA"], ["0", "declarações públicas de Flávio sobre se proclamar presidente"], ["12+", "países e a UE já parabenizaram Lula; os EUA, ainda não oficialmente"]],
+    curto: "Enganoso. O post transforma um rumor em fato. Uma reportagem do UOL, com base numa fonte anônima na Flórida, falou que Flávio pensaria num \"governo no exílio\" ao estilo Guaidó, mas ele não anunciou nada disso e a ideia de se \"autodeclarar presidente\" não foi confirmada. Em público, ele só disse que vai liderar a oposição. É verdade que China, Rússia, Índia, União Europeia e outros reconheceram Lula; os EUA ainda não reconheceram oficialmente.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>Flávio está fora do Brasil.</b> Ele deixou o país em 27/10, apesar da ordem do STF que o proibia de sair, e o Departamento de Estado dos EUA disse que vai dar vistos a ele e à família (veja o parecer <a href="#fake-flavio-nao-fugiu">"Flávio não fugiu"</a>).</li>
+        <li><b>Grandes potências reconheceram Lula.</b> Até 26/10, parabenizaram Lula a China (pelo porta-voz da chancelaria), a Rússia, a Índia, a União Europeia, a França, a Espanha, o Canadá, o México e vários vizinhos, inclusive governos de direita, como Chile, Paraguai, Peru e Equador.</li>
+      </ul>
+      <p><b>O que não está confirmado:</b></p>
+      <ul>
+        <li><b>O "governo paralelo" é um rumor de fonte anônima.</b> A origem é uma reportagem da correspondente do UOL nos EUA, que ouviu uma fonte na Flórida. Segundo essa fonte, Flávio chegou com a ideia de uma espécie de "governo no exílio", como Guaidó, para tentar caracterizar o Brasil como um regime não democrático. Não há declaração de Flávio nesse sentido.</li>
+        <li><b>"Se autodeclarar presidente" não aparece como plano dele.</b> Nem a reportagem que deu origem ao rumor atribui a Flávio a intenção de se proclamar presidente. Em público, o que ele disse, segundo a Reuters, foi que vai organizar a oposição ao governo Lula. O PL, partido dele, reconheceu a vitória de Lula em 26/10.</li>
+        <li><b>Os EUA não reconheceram nenhum "governo paralelo".</b> Trump disse em 26/10, sem provas, que a eleição "pareceu mais uma eleição fraudada", mas também que gosta de Lula e que não comanda o Brasil. Os EUA ainda não reconheceram oficialmente o resultado, e dar visto a uma pessoa não é reconhecer um governo.</li>
+        <li><b>"O plano deve falhar"</b> é uma opinião do post, não um fato.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> discutir o risco de Flávio tentar desacreditar a eleição a partir do exterior, já que ele não reconheceu a derrota e Trump pôs o resultado em dúvida. Mas apresentar como certo que ele "pretende se autodeclarar presidente" vai além do que as fontes mostram até agora. Se ele anunciar algo assim, este parecer será atualizado.</p>`,
+    fontes: [
+      ["Movimento Econômico: Flávio planeja oposição no \"exílio\", segundo o UOL", "https://movimentoeconomico.com.br/politica/2026/10/27/com-visto-nos-eua-flavio-planeja-oposicao-no-exilio-com-apoio-de-trump-e-rubio/"],
+      ["Forbes/Reuters: Flávio viajou aos EUA, afirmam aliado e fonte do governo americano", "https://forbes.com.br/geral/2026/10/flavio-bolsonaro-viajou-aos-eua-afirmam-aliado-e-fonte-do-governo-americano/"],
+      ["SBT News: Flávio desembarcou nos EUA, dizem aliados", "https://sbtnews.sbt.com.br/noticia/brasil/flavio-bolsonaro-desembarcou-nos-eua-dizem-aliados"],
+      ["CNN Brasil: aliados consideram \"inaceitável\" a saída de Flávio", "https://www.cnnbrasil.com.br/politica/aliados-consideram-inaceitavel-possivel-fuga-de-flavio-do-brasil/"],
+      ["Gazeta do Povo: governo Trump vai conceder vistos a Flávio", "https://www.gazetadopovo.com.br/mundo/governo-trump-vai-conceder-vistos-a-flavio-bolsonaro-e-sua-familia-diz-imprensa-dos-eua/"],
+      ["CNN Brasil: Trump diz que eleição pareceu fraudada, mas que gosta de Lula", "https://www.cnnbrasil.com.br/internacional/trump-diz-que-eleicao-do-brasil-pareceu-fraudada-mas-que-gosta-de-lula/"],
+      ["CNN Brasil (Lourival Sant'Anna): Trump assume posição ambígua", "https://www.cnnbrasil.com.br/blogs/lourival-santanna/internacional/trump-assume-posicao-ambigua-sobre-reeleicao-de-lula/"],
+      ["O Tempo: governantes internacionais parabenizam Lula", "https://www.otempo.com.br/eleicoes/2026/presidentes/2026/10/26/governantes-internacionais-parabenizam-lula-pela-vitoria-nas-eleicoes-trump-fica-em-silencio"],
+      ["BPMoney: China, Rússia, Índia e Europa parabenizam Lula", "https://bpmoney.com.br/mundo/lideres-internacionais-parabenizam-lula-reeleicao-eua-silencio/"],
+    ],
+  },
+  {
     id: "saude-educacao-6-bi",
     data: "28/10/2026",
     titulo: "\"Gravíssimo! Lula acaba de cortar quase R$ 6 bilhões da Saúde e Educação\"",
@@ -2432,7 +2469,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T09:10-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-28T09:20-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
