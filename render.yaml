@@ -17,6 +17,7 @@ services:
   # (sync: false) são preenchidos à mão no painel e nunca entram no repositório.
   - type: web
     name: contadaurna-envios
+    region: virginia
     runtime: python
     plan: free
     rootDir: envios

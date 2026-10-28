@@ -647,8 +647,20 @@ window.goatcounter = {path: () => location.pathname + (location.hash.startsWith(
           s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=envieTsPronto";
           document.head.append(s);
         };
-        // Só carrega o anti-robô do Cloudflare quando a pessoa chega perto do formulário
-        new IntersectionObserver((es, ob) => { if (es.some((e) => e.isIntersecting)) { carregaCaptcha(); ob.disconnect(); } }).observe($e("envieForm"));
+        // Quando a pessoa chega perto do formulário: pergunta ao servidor se ainda há espaço para guardar
+        // imagens (isso também "acorda" o servidor) e só então carrega o anti-robô do Cloudflare.
+        const confereCapacidade = async () => {
+          try {
+            const [ok, d] = await pedir("/capacidade");
+            if (ok && d.aceitando === false) {
+              $e("envieForm").hidden = true; $e("envieIndisp").hidden = false;
+              escreve($e("envieIndisp"), ["Recebemos muitos envios e atingimos o limite de armazenamento. Tente de novo em alguns dias. A consulta de protocolo abaixo continua funcionando."]);
+              return;
+            }
+          } catch (e) {} // se o servidor não responder, o formulário segue; ele confere de novo no envio
+          carregaCaptcha();
+        };
+        new IntersectionObserver((es, ob) => { if (es.some((e) => e.isIntersecting)) { confereCapacidade(); ob.disconnect(); } }).observe($e("envieForm"));
 
         $e("envieForm").onsubmit = async (ev) => {
           ev.preventDefault();
