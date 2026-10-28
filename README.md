@@ -77,6 +77,7 @@ Os parâmetros não foram calibrados com 2018 e 2022.
 | Arquivo | Para que serve |
 |---|---|
 | `index.html` | O site inteiro: layout, cálculos e conteúdo. |
+| `privacidade.html` | Política de privacidade (LGPD) e termos de uso, em página própria. Ao mudar a coleta de dados, atualize-a junto. |
 | `tse/` | Cópias dos arquivos do TSE (dados finais) e `congelado.json`, que liga o modo estático. |
 | `congelar.py` | Baixa do TSE os arquivos que o app usa e grava em `tse/`. |
 | `servir.py` | Servidor local e proxy do TSE para o modo ao vivo. |
@@ -103,7 +104,7 @@ Se a porta 8000 estiver ocupada, o servidor usa a próxima livre e mostra qual n
 
 ## Publicar
 
-**GitHub Pages (atual):** cada push na `main` dispara o workflow `pages.yml`, que copia `index.html`, `tse/` e `CNAME` para a branch `gh-pages`. Em Settings → Pages, a origem é a branch `gh-pages`, pasta raiz.
+**GitHub Pages (atual):** cada push na `main` dispara o workflow `pages.yml`, que copia `index.html`, `privacidade.html`, `tse/` e `CNAME` para a branch `gh-pages`. Em Settings → Pages, a origem é a branch `gh-pages`, pasta raiz.
 
 **Versão de teste (antes de publicar):** todo PR aberto neste repositório ganha uma cópia em `https://contadaurna.com.br/teste/pr-N/` (workflow `teste.yml`, que usa `scripts/marcar_teste.py`). A cópia tem uma faixa laranja avisando que é teste, não é indexada pelo Google e não conta visitas no GoatCounter. O link aparece num comentário do próprio PR e é atualizado a cada novo commit. Testou e está certo: dê o merge, e o site oficial é publicado. Ao fechar o PR (com ou sem merge), a cópia de teste é apagada. O `pages.yml` preserva a pasta `teste/` dos PRs ainda abertos quando republica o site.
 

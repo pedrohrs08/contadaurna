@@ -32,8 +32,9 @@ jobs:
           rm -rf "publicado/teste/pr-${PR}"
           if [ "${{ github.event.action }}" != "closed" ]; then
             mkdir -p "publicado/teste/pr-${PR}"
-            cp -r index.html tse arquivo-fontes.json previa.png icone.png "publicado/teste/pr-${PR}/"
+            cp -r index.html privacidade.html tse arquivo-fontes.json previa.png icone.png "publicado/teste/pr-${PR}/"
             python3 scripts/marcar_teste.py "publicado/teste/pr-${PR}/index.html" "${PR}"
+            python3 scripts/marcar_teste.py "publicado/teste/pr-${PR}/privacidade.html" "${PR}"
           fi
           cd publicado
           git config user.name "github-actions[bot]"
