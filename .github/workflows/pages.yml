@@ -25,7 +25,7 @@ jobs:
       - name: Montar o site
         run: |
           mkdir -p site
-          cp -r index.html tse CNAME arquivo-fontes.json previa.png icone.png site/
+          cp -r index.html privacidade.html tse CNAME arquivo-fontes.json previa.png icone.png site/
           touch site/.nojekyll
       - name: Manter as versões de teste dos PRs abertos (pasta teste/)
         run: |
