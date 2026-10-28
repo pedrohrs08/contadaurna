@@ -22,6 +22,10 @@ async function carregar() {
   const r = await api("/admin/api/fila");
   if (!r.ok) { $("msg").textContent = (await r.json()).erro || "Erro."; return; }
   const itens = await r.json();
+  api("/admin/api/uso").then((u) => u.ok && u.json()).then((u) => {
+    if (u) $("uso").textContent = "Armazenamento: " + (u.bytes / 1024 ** 2).toFixed(1) + " MB de " + (u.limite_bytes / 1024 ** 3).toFixed(0) +
+      " GB · " + u.envios + " de " + u.limite_envios + " envios guardados. Ao chegar no limite, o site para de aceitar envios.";
+  }).catch(() => {});
   $("entrar").hidden = true; $("painel").hidden = false;
   $("msg").textContent = itens.length ? itens.filter((i) => i.status === "na_fila").length + " na fila, " + itens.length + " no total." : "Nenhum envio.";
   const lista = $("lista"); lista.replaceChildren();

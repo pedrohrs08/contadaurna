@@ -35,10 +35,14 @@ LADO_MAX = 4000
 PROTOCOLO_RE = re.compile(r"^[A-Z2-7]{4}-[A-Z2-7]{4}-[A-Z2-7]{4}$")
 EMAIL_RE = re.compile(r"^[^@\s<>\"',;]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$")
 RESULTADOS = {"publicado", "procede", "descartado"}
-FILA_MAX = 500            # envios esperando checagem; acima disso, novos envios são recusados
+FILA_MAX = 500            # envios guardados; acima disso, novos envios são recusados
+LIMITE_GB_PADRAO = 8      # espaço máximo no R2 (o plano grátis vai até 10 GB); muda com a variável LIMITE_GB
+CACHE_USO_SEG = 60        # a consulta pública de capacidade relê o balde no máximo 1 vez por minuto
 ENVIOS_POR_HORA_IP = 5
 ENVIOS_POR_HORA_TOTAL = 120
 FALHAS_ADMIN_POR_HORA = 10
+CONSULTAS_POR_HORA_IP = 60       # consultas e pedidos de apagar por protocolo
+CONSULTAS_POR_HORA_TOTAL = 1500  # teto geral: cada consulta é uma leitura paga no R2 acima da cota grátis
 
 ASSUNTO = "Seu envio ao Conta da Urna ({p})"
 TEXTOS = {
@@ -73,10 +77,13 @@ class ArmazemR2:
         self.s3.delete_object(Bucket=self.balde, Key=chave)
 
     def listar(self, prefixo):
-        chaves, pag = [], self.s3.get_paginator("list_objects_v2")
+        return [k for k, _ in self.listar_com_tamanho(prefixo)]
+
+    def listar_com_tamanho(self, prefixo):
+        itens, pag = [], self.s3.get_paginator("list_objects_v2")
         for p in pag.paginate(Bucket=self.balde, Prefix=prefixo):
-            chaves += [o["Key"] for o in p.get("Contents", [])]
-        return chaves
+            itens += [(o["Key"], o["Size"]) for o in p.get("Contents", [])]
+        return itens
 
 
 class ArmazemLocal:
@@ -106,12 +113,16 @@ class ArmazemLocal:
             pass
 
     def listar(self, prefixo):
+        return [k for k, _ in self.listar_com_tamanho(prefixo)]
+
+    def listar_com_tamanho(self, prefixo):
         saida = []
         for raiz, _, arqs in os.walk(self.pasta):
             for a in arqs:
-                k = os.path.relpath(os.path.join(raiz, a), self.pasta).replace(os.sep, "/")
+                c = os.path.join(raiz, a)
+                k = os.path.relpath(c, self.pasta).replace(os.sep, "/")
                 if k.startswith(prefixo):
-                    saida.append(k)
+                    saida.append((k, os.path.getsize(c)))
         return saida
 
 
@@ -222,6 +233,11 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     token_admin = env["ADMIN_TOKEN"].encode()
     link_ok = tuple(o.rstrip("/") + "/" for o in origens)
     limitador = Limitador()
+    try:
+        limite_bytes = int(float(env.get("LIMITE_GB") or LIMITE_GB_PADRAO) * 1024 ** 3)
+    except ValueError:
+        raise RuntimeError("LIMITE_GB precisa ser um número (em GB)")
+    cache_uso = {"t": 0.0, "uso": None}
 
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = TAMANHO_MAX + 64 * 1024
@@ -239,6 +255,21 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
 
     def salvar_meta(p, m):
         armazem.por(f"envios/{p}/meta.json", json.dumps(m).encode(), "application/json")
+
+    def uso():
+        """Quantos envios e quantos bytes estão guardados no balde (uma listagem só)."""
+        itens = armazem.listar_com_tamanho("")
+        r = {"envios": sum(1 for k, _ in itens if k.startswith("envios/") and k.endswith("/meta.json")),
+             "bytes": sum(t for _, t in itens)}
+        cache_uso.update(t=time.time(), uso=r)
+        return r
+
+    def tem_espaco(u, extra=0):
+        return u["envios"] < FILA_MAX and u["bytes"] + extra <= limite_bytes
+
+    def consulta_permitida():
+        return (limitador.permite("consulta-ip:" + ip_hash(), CONSULTAS_POR_HORA_IP)
+                and limitador.permite("consulta-total", CONSULTAS_POR_HORA_TOTAL))
 
     def admin_ok():
         h = request.headers.get("Authorization", "")
@@ -290,6 +321,9 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             return erro("Muitos envios seguidos. Tente de novo em uma hora.", 429)
         if not limitador.permite("total", ENVIOS_POR_HORA_TOTAL):
             return erro("Recebemos muitos envios agora. Tente de novo mais tarde.", 503)
+        u = uso()
+        if not tem_espaco(u):
+            return erro("Atingimos o limite de envios guardados. Tente de novo em alguns dias.", 503)
         arq = request.files.get("imagem")
         if not arq:
             return erro("Escolha uma imagem.", 400)
@@ -300,8 +334,8 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             jpeg = reprocessar_imagem(arq.read(TAMANHO_MAX + 1))
         except Exception:
             return erro("Não conseguimos abrir a imagem. Envie um JPG, PNG ou WEBP de até 10 MB.", 400)
-        if len([k for k in armazem.listar("envios/") if k.endswith("/meta.json")]) >= FILA_MAX:
-            return erro("A fila de checagem está cheia. Tente de novo em alguns dias.", 503)
+        if not tem_espaco(u, len(jpeg) + 4096):
+            return erro("Atingimos o limite de envios guardados. Tente de novo em alguns dias.", 503)
         p = novo_protocolo()
         armazem.por(f"envios/{p}/print.jpg", jpeg, "image/jpeg")
         if email:
@@ -310,8 +344,18 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
                         "status": "na_fila", "link": "", "concluido": "", "tem_email": bool(email)})
         return jsonify({"protocolo": p}), 201
 
+    @app.get("/capacidade")
+    def capacidade():
+        """O site pergunta isto antes de mostrar o formulário, para ninguém enviar à toa."""
+        if not consulta_permitida():
+            return erro("Muitas consultas. Tente de novo mais tarde.", 429)
+        u = cache_uso["uso"] if time.time() - cache_uso["t"] < CACHE_USO_SEG else uso()
+        return jsonify({"aceitando": tem_espaco(u)})
+
     @app.get("/status/<p>")
     def status(p):
+        if not consulta_permitida():
+            return erro("Muitas consultas. Tente de novo mais tarde.", 429)
         p = p.upper()
         m = PROTOCOLO_RE.match(p) and meta(p)
         if not m:
@@ -321,6 +365,8 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     @app.delete("/envio/<p>")
     def apagar_proprio(p):
         """Quem tem o protocolo pode apagar o próprio envio a qualquer momento (LGPD)."""
+        if not consulta_permitida():
+            return erro("Muitas consultas. Tente de novo mais tarde.", 429)
         p = p.upper()
         if not (PROTOCOLO_RE.match(p) and meta(p)):
             return erro("Protocolo não encontrado.", 404)
@@ -353,6 +399,12 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
         itens = sorted([m for m in itens if m], key=lambda m: (m["status"] != "na_fila", m["criado"]))
         return jsonify(itens)  # sem e-mails: só diz se a pessoa pediu aviso (tem_email)
+
+    @app.get("/admin/api/uso")
+    @exige_admin
+    def uso_admin():
+        u = uso()
+        return jsonify({**u, "limite_bytes": limite_bytes, "limite_envios": FILA_MAX})
 
     @app.get("/admin/api/print/<p>")
     @exige_admin
