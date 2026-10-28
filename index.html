@@ -1841,6 +1841,131 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "saude-educacao-6-bi",
+    data: "28/10/2026",
+    titulo: "\"Gravíssimo! Lula acaba de cortar quase R$ 6 bilhões da Saúde e Educação\"",
+    texto: `[print de um telejornal da CNN Brasil, com a frase sobreposta:]
+Gravíssimo! Lula acaba de cortar quase R$ 6 bilhões da Saúde e Educação`,
+    frase: "O vídeo é de uma reportagem da CNN de <b>31 de julho de 2024</b>, reaproveitada como se fosse de agora. E mesmo em 2024 não foi corte: foi uma <b>contenção temporária</b> de gastos, que podia ser revertida ao longo do ano.",
+    nums: [["31/07/2024", "data da reportagem usada no post, mais de dois anos atrás"], ["R$ 5,7 bi", "contidos em 2024: R$ 4,4 bi da Saúde e R$ 1,3 bi da Educação"], ["0", "cortes desse tipo anunciados depois do 2º turno de 2026"]],
+    curto: "Não procede. O post reaproveita uma reportagem de julho de 2024 sobre a contenção de R$ 15 bilhões no Orçamento daquele ano, da qual R$ 4,4 bilhões eram da Saúde e R$ 1,3 bilhão da Educação. Não houve nenhum anúncio parecido depois da eleição de 2026, e a contenção de 2024 não era corte definitivo: o dinheiro seguia previsto no Orçamento.",
+    parecer: `
+      <p><b>De onde vem o número:</b> em 30/07/2024, o governo publicou um decreto que conteve R$ 15 bilhões do Orçamento de 2024 para cumprir as regras fiscais: R$ 11,2 bilhões bloqueados e R$ 3,8 bilhões contingenciados. A Saúde foi a pasta mais atingida, com R$ 4,4 bilhões, e a Educação teve R$ 1,3 bilhão. Somados, dão R$ 5,7 bilhões, os "quase R$ 6 bilhões" do post. A CNN Brasil noticiou isso em 31/07/2024, e é desse programa o print.</p>
+      <ul>
+        <li><b>Não é notícia de agora.</b> O Aos Fatos localizou a reportagem original e checou que não houve anúncio de corte de R$ 6 bilhões em Saúde e Educação na semana da eleição. O post circula no Instagram desde o 2º turno e passou de 150 mil compartilhamentos.</li>
+        <li><b>Contenção não é corte.</b> Bloqueio e contingenciamento seguram a execução de despesas por um tempo. O dinheiro continua no Orçamento e pode ser liberado se a arrecadação melhorar ou se outras despesas caírem. Corte definitivo exigiria mudar o Orçamento.</li>
+        <li><b>"Acaba de cortar" é falso.</b> Desde 25/10, o governo não publicou decreto novo de contenção atingindo essas pastas.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> criticar as contenções na Saúde e na Educação, que de fato aconteceram em 2024 e atrasam programas. Também há uma discussão real e recente sobre o piso da saúde em 2027, que tratamos em outro parecer (<a href="#fake-saude-educacao-16-bi">o dos R$ 16 bilhões</a>). Mas apresentar um vídeo de 2024 como se fosse desta semana engana quem compartilha.</p>`,
+    fontes: [
+      ["Aos Fatos: notícia sobre bloqueio de R$ 6 bi é de julho de 2024", "https://www.aosfatos.org/noticias/noticia-sobre-bloqueio-de-r-6-bilhoes-na-saude-e-educacao-e-de-julho-de-2024/"],
+      ["Congresso em Foco: decreto de contenção, saúde é a mais afetada (31/07/2024)", "https://www.congressoemfoco.com.br/noticia/8375/governo-publica-decreto-de-contencao-de-gastos-saude-e-a-mais-afetada"],
+    ],
+  },
+  {
+    id: "saude-educacao-16-bi",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Lula permite corte de R$ 16 bilhões em saúde e educação após má gestão fiscal\"",
+    texto: `[título de matéria republicada em 27/10/2026 por um site de notícias; nome do site omitido]
+Lula permite corte de R$ 16 bilhões em saúde e educação após má gestão fiscal`,
+    frase: "A lei existe e reduz o mínimo da saúde e da educação em 2027. Mas ela é de <b>agosto</b>, não de depois da eleição, e <b>R$ 16,6 bilhões é o teto</b> de uma estimativa. O órgão do Senado que acompanha as contas calcula <b>R$ 4,7 bilhões</b> a menos no piso da saúde.",
+    nums: [["27/08", "data em que Lula sancionou a Lei Complementar 235, sem vetos"], ["R$ 4,7 bi", "a menos no piso da saúde em 2027, pela IFI do Senado"], ["até R$ 16,6 bi", "pior cenário, somando saúde e educação, em cálculo de economistas"]],
+    curto: "Enganoso. É verdade que a Lei Complementar 235, sancionada por Lula em 27/08 sem vetos, tira a receita do petróleo da conta do piso da saúde enquanto o governo tiver déficit, o que reduz o mínimo obrigatório em 2027. Mas o post circula como novidade de depois da eleição e usa só o maior número disponível, sem o \"até\": a estimativa da IFI do Senado é de R$ 4,7 bilhões a menos no piso da saúde, e o valor de R$ 16,6 bilhões é o pior cenário de um cálculo de economistas.",
+    parecer: `
+      <p><b>O que está certo:</b></p>
+      <ul>
+        <li><b>A lei existe e foi sancionada por Lula.</b> A Lei Complementar 235 nasceu como um pacote para conter os efeitos da alta do petróleo. Na Câmara, entrou um artigo que tira as receitas da venda de petróleo e gás da União da base de cálculo do piso da saúde (15% da receita corrente líquida) enquanto houver déficit. O PL tentou derrubar o artigo e perdeu por 43 a 20. Lula sancionou em 27/08 sem vetos.</li>
+        <li><b>O mínimo da saúde cai em 2027.</b> A Instituição Fiscal Independente (IFI), ligada ao Senado, estima R$ 4,7 bilhões a menos no piso da saúde em 2027. A lei também antecipou para 2026 R$ 3 bilhões que estavam previstos para 2027. O Pé-de-Meia passou a contar dentro do piso da educação.</li>
+        <li><b>O governo admite a mudança.</b> O ministro Dario Durigan chegou a dizer que o projeto não prejudicaria as áreas, mas depois reconheceu a exclusão da receita do petróleo e chamou as medidas de "ajustes por dentro dos pisos".</li>
+      </ul>
+      <p><b>O que está errado ou falta:</b></p>
+      <ul>
+        <li><b>Não é de agora.</b> A lei foi aprovada em 12/08 e sancionada em 27/08. Os sites que espalham o título em 27/10 apresentam como se fosse uma decisão de depois do 2º turno.</li>
+        <li><b>R$ 16 bilhões é o teto, não o valor.</b> Gazeta do Povo, Revista Oeste e ND Mais, que noticiaram a lei em agosto, escreveram "até R$ 16,6 bilhões". Esse número é o pior cenário de economistas, somando saúde e educação; uma nota técnica citada pelo Estadão fala em R$ 8,6 a R$ 14,3 bilhões. O post tira o "até".</li>
+        <li><b>Piso menor não é o mesmo que corte já feito.</b> O piso é o mínimo que a Constituição obriga a gastar. Baixar o mínimo abre espaço para gastar menos, mas quanto será gasto de fato em 2027 depende do Orçamento, que ainda está em votação no Congresso.</li>
+        <li><b>"Má gestão fiscal" é opinião.</b> A justificativa do governo foi o déficit e a dívida, que chegou a R$ 9,27 trilhões em junho. Chamar isso de má gestão é uma avaliação legítima, mas é avaliação, não fato.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> criticar a lei. Ela foi aprovada em um dia, sem audiência pública, e reduz o mínimo da saúde. O próprio PT criticou o congelamento dos pisos no governo Temer e foi ao STF contra ele em 2017. Mas o post exagera o número e apresenta uma decisão de agosto como se fosse uma reação ao resultado da eleição.</p>`,
+    fontes: [
+      ["Gazeta do Povo: Lula muda regra e pode retirar até R$ 16,6 bi (31/08)", "https://www.gazetadopovo.com.br/vida-e-cidadania/lula-muda-regra-retira-16-bi-saude-educacao-2027/"],
+      ["ND Mais: sem vetos, Lula sanciona a lei (31/08)", "https://ndmais.com.br/politica/lula-sanciona-lei-altera-piso-saude-educacao/"],
+      ["Gazeta do Povo: governo terá de rever R$ 53,7 bi em despesas (20/10)", "https://www.gazetadopovo.com.br/economia/governo-admite-que-tera-de-rever-53-7-bi-em-despesas-para-cumprir-limite-fiscal/"],
+    ],
+  },
+  {
+    id: "bolsa-familia-corte",
+    data: "28/10/2026",
+    titulo: "\"Depois da eleição, vão cortar o Bolsa Família\"",
+    texto: `[frase que circula em vários posts desde o fim do 2º turno, com variações como "suspensão de pagamentos" e "redução do benefício"; nenhum post original com texto mais longo foi localizado]
+Depois da eleição, vão cortar o Bolsa Família`,
+    frase: "O Bolsa Família segue pago, <b>sem suspensão</b>, e acabou de ter <b>aumento</b>: o mínimo por família passou de R$ 600 para <b>R$ 691</b> em outubro. Não há decreto, lei ou proposta de corte.",
+    nums: [["R$ 691", "mínimo por família desde outubro (era R$ 600), reajuste de 15%"], ["19,3 mi", "famílias pagas em outubro"], ["R$ 22,7 bi", "custo do reajuste em 2027, que ainda precisa entrar no Orçamento"]],
+    curto: "Não procede. O governo reajustou o Bolsa Família em 15% por decreto de 17/09, e os pagamentos com o valor novo começaram em 19/10. Não existe ato de corte ou suspensão, e o boato de \"suspensão depois da eleição\" já tinha sido desmentido em agosto. O ponto real é outro: o Orçamento de 2027 foi enviado antes do reajuste e ainda precisa ser ajustado em cerca de R$ 22,7 bilhões.",
+    parecer: `
+      <ul>
+        <li><b>O benefício subiu, não caiu.</b> O decreto 13.120, de 17/09, reajustou o programa em 15% (inflação do INPC desde março de 2023). O mínimo por família foi de R$ 600 para R$ 691 e o benefício médio, de R$ 675 para cerca de R$ 777. O adicional por criança de até 6 anos foi para R$ 173. Os pagamentos com o valor novo começaram em 19/10.</li>
+        <li><b>Não há suspensão.</b> Em 27/10, a Secom chamou o boato de falso e disse que o programa segue "sem qualquer suspensão de pagamentos ou redução dos benefícios". Em agosto, a Lupa já tinha desmentido um post que dizia que o governo "confirmou suspensão temporária no Bolsa Família pós-eleições".</li>
+        <li><b>Quem sai do programa sai por regra, não por corte.</b> Todo mês famílias entram e saem por revisão de cadastro (renda acima de R$ 218 por pessoa, por exemplo). Isso já acontecia antes da eleição e não muda o calendário.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> perguntar de onde vem o dinheiro. O reajuste foi dado um mês antes da eleição, e o Ministério Público junto ao TCU pediu sua suspensão por falta de estimativa de impacto. O Orçamento de 2027, enviado em 31/08, previa R$ 157 bilhões para o programa com o mínimo de R$ 600; com o reajuste, a conta passa de R$ 179 bilhões. O governo terá de remanejar outras despesas ou buscar receita. Mas isso é um problema para o Orçamento, não um corte no benefício.</p>
+      <p><b>Dúvida sobre o seu benefício?</b> Confira no app Bolsa Família ou Caixa Tem, no 111 da Caixa ou no Disque Social 121. Não clique em link que promete "desbloquear" pagamento.</p>`,
+    fontes: [
+      ["Diário do Grande ABC: Bolsa Família é reajustado em 15% (17/09)", "https://www.dgabc.com.br/Noticia/4347515/bolsa-familia-e-reajustado-em-15-medida-vale-a-partir-de-outubro"],
+      ["CNN Brasil: governo terá de realocar o Orçamento para o reajuste", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/governo-tera-que-realocar-novo-orcamento-para-reajuste-do-bolsa-familia/"],
+      ["Movimento Econômico: MP pede ao TCU suspensão do reajuste", "https://movimentoeconomico.com.br/politica/2026/09/18/mp-pede-ao-tcu-suspensao-de-reajuste-do-bolsa-familia/"],
+      ["Lupa: governo não confirmou fim do Bolsa Família após as eleições (25/08)", "https://www.agencialupa.org/verificacao/2026/08/25/governo-nao-confirmou-fim-do-bolsa-familia-apos-as-eleicoes/"],
+      ["Sou Brasília: governo desmente cortes (27/10)", "https://soubrasilia.com/governo-desmente-corte-bolsa-familia-gas-do-povo-recuo-fim-escala-6x1-secom-27-outubro-2026/"],
+    ],
+  },
+  {
+    id: "gas-do-povo-corte",
+    data: "28/10/2026",
+    titulo: "\"Depois da eleição, vão cortar o Gás do Povo\"",
+    texto: `[frase que circula em vários posts desde o fim do 2º turno, junto com o boato do Bolsa Família; nenhum post original com texto mais longo foi localizado]
+Depois da eleição, vão cortar o Gás do Povo`,
+    frase: "O Gás do Povo continua com a <b>recarga grátis do botijão de 13 kg</b> para cerca de 15 milhões de famílias, e não há ato de corte. As próximas liberações estão marcadas para <b>10/11 e 10/12</b>.",
+    nums: [["~15 mi", "famílias no programa, contra 5,1 milhões do antigo Auxílio Gás"], ["13 kg", "botijão com recarga gratuita, de 4 a 6 por ano conforme o tamanho da família"], ["10/11 e 10/12", "próximas liberações, segundo a Caixa"]],
+    curto: "Não procede. O Gás do Povo, criado por lei em 2026 no lugar do Auxílio Gás, segue liberando vales de recarga gratuita, com as próximas datas em 10/11 e 10/12. Nenhum decreto ou lei reduziu o programa, e o governo diz que ele tem dinheiro garantido em 2026 e previsto no Orçamento de 2027, que ainda está em votação.",
+    parecer: `
+      <ul>
+        <li><b>Como funciona hoje.</b> O programa dá vale para recarga grátis do botijão de 13 kg a famílias do CadÚnico com renda de até meio salário mínimo por pessoa. Famílias de 2 ou 3 pessoas têm até 4 recargas por ano; de 4 ou mais, até 6. Com a expansão de março, chegou a cerca de 15 milhões de famílias em todos os municípios.</li>
+        <li><b>Não há corte.</b> Em 27/10, a Secom chamou o boato de falso e disse que a recarga gratuita segue garantida. A Caixa mantém as liberações de 10/11 e 10/12.</li>
+        <li><b>O programa está em lei.</b> A Lei 15.348/2026 criou o Gás do Povo no lugar do Auxílio Gás. Acabar com ele exigiria outra lei aprovada pelo Congresso, não só uma decisão do governo depois da eleição.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> acompanhar o Orçamento de 2027. Quem garante que há dinheiro para o programa no ano que vem é o próprio governo, e o projeto ainda está em votação; o governo também admite que terá de rever despesas a partir de 2028 para caber no limite fiscal. Vale cobrar. Mas, até agora, não existe nenhum corte anunciado ou aprovado.</p>`,
+    fontes: [
+      ["Governo federal: perguntas e respostas do Gás do Povo", "https://www.gov.br/mds/pt-br/noticias-e-conteudos/desenvolvimento-social/noticias-desenvolvimento-social/com-nova-expansao-gas-do-povo-ja-alcanca-quase-15-milhoes-de-familias-em-todos-os-municipios-do-brasil/FAQProgramaGasdoPovoMME.pdf"],
+      ["Sou Brasília: governo desmente cortes (27/10)", "https://soubrasilia.com/governo-desmente-corte-bolsa-familia-gas-do-povo-recuo-fim-escala-6x1-secom-27-outubro-2026/"],
+      ["ND Mais: comunicado do governo sobre 6x1, Bolsa Família e Gás do Povo", "https://ndmais.com.br/politica/governo-emite-comunicado-e-coloca-ponto-final-sobre-mudancas-no-fim-da-escala-6x1-bolsa-familia-e-gas-do-povo/"],
+      ["Gazeta do Povo: governo terá de rever R$ 53,7 bi em despesas (20/10)", "https://www.gazetadopovo.com.br/economia/governo-admite-que-tera-de-rever-53-7-bi-em-despesas-para-cumprir-limite-fiscal/"],
+    ],
+  },
+  {
+    id: "pix-mei-363",
+    data: "28/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Promessa de Lula de pagar R$ 5 mil a MEIs pode virar apenas R$ 363 por profissional\"",
+    texto: `[título que circula em vários sites e posts desde 27/10]
+Promessa de Lula de pagar R$ 5 mil a MEIs pode virar apenas R$ 363 por profissional`,
+    frase: "R$ 363 é uma conta hipotética: R$ 5 bilhões divididos por todos os 13,78 milhões de MEIs. Mas o programa nunca foi para todos: a meta é <b>cerca de 1 milhão de MEIs</b>, com <b>até R$ 5 mil cada</b>. O problema real é que só uns 7 em cada 100 devem receber.",
+    nums: [["R$ 5 bi", "orçamento previsto para o Pix MEI, de 2027 a 2030"], ["~1 mi", "MEIs que devem receber, cerca de 7% dos 13,78 milhões ativos"], ["sem data", "de inscrição: o edital é esperado até o fim de 2026"]],
+    curto: "Enganoso. O cálculo de R$ 363 é real, mas só vale se o dinheiro fosse dividido igualmente entre todos os MEIs, o que ninguém propôs. O programa prevê até R$ 5 mil, sem devolução, para cerca de 1 milhão de MEIs, com prioridade para mulheres e para quem fatura até R$ 40,5 mil por ano. A crítica que se sustenta é outra: o anúncio, dez dias antes do 2º turno, falou em R$ 5 mil para MEIs sem dizer que só uma pequena parte vai receber.",
+    parecer: `
+      <p><b>De onde vem o número:</b> segundo o ContraFatos, o Poder360 publicou em 20/10 que os R$ 5 bilhões reservados para o Pix MEI dariam cerca de R$ 363 a cada MEI se fossem divididos igualmente entre os 13,78 milhões ativos. Pagar R$ 5 mil a todos custaria R$ 68,9 bilhões, quase 14 vezes mais. A conta está certa. O título que circula depois, "pode virar apenas R$ 363", é que distorce.</p>
+      <ul>
+        <li><b>Ninguém propôs dividir igualmente.</b> O Pix MEI, parte do pacote Prospera MEI anunciado em 15/10, prevê até R$ 5 mil por MEI, entre 2027 e 2030, como fomento não reembolsável (não precisa devolver), para comprar bens para o próprio negócio. A meta é cerca de 1 milhão de MEIs: 1 milhão vezes R$ 5 mil dá exatamente os R$ 5 bilhões previstos.</li>
+        <li><b>Quem tem prioridade.</b> Mulheres empreendedoras e MEIs com faturamento de até R$ 40,5 mil por ano. Os critérios finais ainda não foram publicados.</li>
+        <li><b>Ainda não há pagamento.</b> O edital é esperado até o fim de 2026. Qualquer link que cobre taxa ou peça dados para "liberar o Pix MEI" agora é golpe.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> criticar a forma do anúncio. A promessa foi feita dez dias antes do 2º turno, falando em R$ 5 mil para MEIs, sem dizer que só cerca de 7% deles devem receber. Quem tem CNPJ de MEI não tem garantia nenhuma. Mas a conclusão de que cada um vai receber R$ 363 não corresponde a nenhuma regra do programa.</p>`,
+    fontes: [
+      ["ContraFatos: os cálculos e a meta de 1 milhão de MEIs (27/10)", "https://www.contrafatos.com.br/pix-de-r-5-mil-prometido-a-meis-pode-se-reduzir-a-r-363-por-profissional-mostram-calculos"],
+      ["IstoÉ Dinheiro: regras e prazos do Pix MEI", "https://istoedinheiro.com.br/pix-mei-auxilio-5-mil-regras-prazos"],
+      ["CNN Brasil: tudo sobre o pacote para MEIs (21/10)", "https://www.cnnbrasil.com.br/economia/money/macroeconomia/perdao-de-dividas-e-pix-de-r-5-mil-veja-tudo-sobre-o-pacote-para-meis/"],
+    ],
+  },
+  {
     id: "flavio-nao-fugiu",
     data: "28/10/2026",
     selo: "Enganoso",
@@ -2307,7 +2432,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T08:25-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-28T09:10-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
