@@ -1841,6 +1841,36 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "escala-6x1-recuo",
+    data: "27/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Passada a eleição, governo Lula recua e vai manter escala 6x1 para vários setores\"",
+    texto: `[foto de Lula; selo "GOVERNO"; logotipo e endereço do site que publicou omitidos]
+
+Passada a eleição, governo Lula recua e vai manter escala 6x1 para vários setores
+
+Com as urnas fechadas, o Planalto prepara exclusões na proposta do fim da escala 6x1, e muito trabalhador que esperava folga extra seguirá na jornada atual`,
+    frase: "O fim da 6x1 já é <b>emenda constitucional</b> desde 16/10 e não foi revogado. Existe, sim, discussão sobre regras para setores específicos, mas ela é pública desde setembro e nenhum texto foi apresentado.",
+    nums: [["16/10", "data em que a Emenda Constitucional 141 foi promulgada, antes do 2º turno"], ["75 a 1", "votação no Senado, com voto a favor de Flávio Bolsonaro"], ["2/9", "data em que a PEC paralela para regimes especiais foi anunciada em público"]],
+    curto: "Enganoso. É verdade que senadores e a base do governo preparam regras para setores com jornada especial, como petróleo, aviação e plantões. Mas isso foi anunciado em setembro, antes da eleição; o fim da 6x1 já está na Constituição desde 16/10, o presidente não pode mudá-lo sozinho, e nenhum texto com exclusões foi apresentado. Dizer que \"muito trabalhador seguirá na jornada atual\" não tem base em nenhuma proposta conhecida.",
+    parecer: `
+      <p><b>O que está certo:</b> há uma discussão real sobre regras para setores que funcionam sem parar. A Coluna do Estadão informou em 15/10 que a base do governo prepara uma nova PEC com ajustes, a ser apresentada depois do 2º turno. O relator, Omar Aziz, citou trabalhadores de plataformas de petróleo e pilotos. Em 27/10, a líder do governo no Senado, Teresa Leitão, disse que o Ministério do Trabalho estuda regras para plantões e aviação, mas sem texto definido.</p>
+      <p><b>O que está errado:</b></p>
+      <ul>
+        <li><b>Não é recuo de depois da eleição.</b> A PEC paralela foi anunciada em público pelo líder do MDB, Eduardo Braga, em 2/9, durante a votação na CCJ do Senado, mais de um mês antes do 1º turno. Em outubro, ele disse ao Estadão que a ideia não mexe nos dois dias de descanso.</li>
+        <li><b>O fim da 6x1 já vale como regra da Constituição.</b> A Emenda Constitucional 141 foi aprovada no Senado por 75 a 1 em 14/10 (Flávio Bolsonaro votou a favor) e promulgada em 16/10, com Lula presente. Emenda constitucional não passa por sanção, e o presidente não pode retirar setores dela por conta própria: seria preciso outra PEC, com três quintos dos votos na Câmara e no Senado, em dois turnos.</li>
+        <li><b>As exceções que existem já estavam no texto aprovado.</b> A emenda permite escalas diferentes por acordo ou convenção coletiva, desde que a média seja de dois dias de descanso por semana no mês, e prevê lei para regimes especiais, sempre dentro do limite de 40 horas. Também há regras próprias para quem tem diploma e salário acima de cerca de R$ 21 mil, e prazo de até um ano para terceirizados de contratos públicos.</li>
+        <li><b>Não há lista de setores excluídos.</b> Até 27/10 nenhum texto com exclusões tinha sido apresentado. A frase "muito trabalhador que esperava folga extra seguirá na jornada atual" não aparece em nenhuma proposta conhecida.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar o governo por deixar para depois da eleição a discussão sobre os ajustes, como mostrou o Estadão, e acompanhar se a nova PEC vai preservar as duas folgas. Mas, até agora, o que há é uma proposta em discussão, não um recuo.</p>`,
+    fontes: [
+      ["Revista Oeste: Alcolumbre promulga o fim da 6x1 (16/10)", "https://revistaoeste.com/politica/ao-lado-de-lula-alcolumbre-promulga-fim-da-escala-6x1/"],
+      ["eixos: Braga anuncia PEC paralela na CCJ (2/9)", "https://eixos.com.br/politica/congresso/lider-do-mdb-propoe-pec-paralela-para-regimes-de-escala-apos-ccj-aprovar-fim-da-6x1/"],
+      ["Guia do Investidor, com a Coluna do Estadão: ajustes depois do 2º turno", "https://guiadoinvestidor.com.br/noticias/governo-lula-prepara-em-sigilo-alteracoes-na-lei-da-escala-6x1-apos-eleicoes-para-excluir-setores-diz-jornal/"],
+      ["Portal N10: checagem e o que a emenda prevê", "https://portaln10.com.br/politica/e-falso-que-lula-tenha-voltado-atras-no-fim-da-escala-6x1-apos-vencer-eleicao-356397/"],
+    ],
+  },
+  {
     id: "urna-conversor-de-voto",
     data: "27/10/2026",
     titulo: "\"Imaginem que existe um sistema dentro das urnas que possa converter uma certa porcentagem de votos para o concorrente\"",
@@ -2172,7 +2202,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-27T12:30-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-27T23:45-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
