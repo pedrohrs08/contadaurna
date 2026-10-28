@@ -1841,6 +1841,47 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "mapa-nomes-trocados",
+    data: "28/10/2026",
+    titulo: "\"O mapa está correto... os golpistas trocaram os nomes\"",
+    texto: `Vejam, o mapa está correto...os golpistas trocaram os nomes..???? .colocaram os números do Flávio para o Lula ladrão,?? e os dele para Flavio ..???.....foi Golpe!! Só no Brasil...
+
+[imagem de um mapa do Brasil por região, com fotos de Flávio e de Lula; nome do perfil que publicou o mapa omitido. Norte: Flávio 58,9%, Lula 41,1%. Nordeste (em vermelho): Flávio 45,5%, Lula 54,5%. Centro-Oeste: Flávio 59,5%, Lula 40,5%. Sudeste: Flávio 55,2%, Lula 44,8%. Sul: Flávio 55,8%, Lula 44,2%. Quadro "RESULTADO FINAL" com a foto de Flávio e o número cortado, começando com "54,0"]`,
+    frase: "O mapa não é do TSE e não bate com o resultado oficial, <b>nem do jeito que está, nem com os nomes trocados</b>. Pelo TSE, Lula teve <b>69,4%</b> no Nordeste; no mapa ele aparece com 54,5% e, trocando os nomes, com 45,5%.",
+    nums: [["69,4%", "de Lula no Nordeste pelo TSE (24,45 milhões de votos); o mapa diz 54,5%"], ["50,0%", "de Lula no Norte pelo TSE, praticamente empate; o mapa diz 41,1%"], ["9 de 9", "estados do Nordeste vencidos por Lula, cada um com boletins de urna públicos"]],
+    curto: "Não procede. Os números do mapa não são os do TSE em nenhuma região, e trocar os nomes deixa tudo ainda mais distante: Lula teria perdido o Nordeste e vencido o Sul, o contrário do que mostram os boletins de urna de cada seção. O mapa é uma montagem de origem desconhecida, não um resultado trocado.",
+    parecer: `
+      <p><b>Votos válidos de Flávio: no mapa, no mapa com os nomes trocados e no resultado oficial do TSE:</b></p>
+      <div class="tbl"><table>
+        <thead><tr><th>Região</th><th>Mapa</th><th>Trocado</th><th>TSE</th></tr></thead>
+        <tbody>
+          <tr><td>Norte</td><td>58,9%</td><td>41,1%</td><td>49,99%</td></tr>
+          <tr><td>Nordeste</td><td>45,5%</td><td>54,5%</td><td>30,63%</td></tr>
+          <tr><td>Centro-Oeste</td><td>59,5%</td><td>40,5%</td><td>60,01%</td></tr>
+          <tr><td>Sudeste</td><td>55,2%</td><td>44,8%</td><td>52,76%</td></tr>
+          <tr><td>Sul</td><td>55,8%</td><td>44,2%</td><td>62,58%</td></tr>
+          <tr><td><b>Brasil</b></td><td>54,0…%</td><td>–</td><td><b>48,22%</b></td></tr>
+        </tbody>
+      </table></div>
+      <p>Somas feitas a partir dos arquivos oficiais do TSE de cada UF. Lula teve 64.256.232 votos e Flávio 59.826.041 (51,78% a 48,22%).</p>
+      <ul>
+        <li><b>O mapa não é "o certo com nomes trocados".</b> Se fosse, os números da coluna do meio bateriam com os do TSE, e não batem em nenhuma região. Só o Centro-Oeste do mapa fica perto do real, e assim como está, sem troca.</li>
+        <li><b>A troca de nomes viraria o país de cabeça para baixo.</b> Lula teria perdido o Nordeste e ganhado com folga no Sul e no Centro-Oeste. Pelo TSE, Lula venceu nos nove estados do Nordeste (de 60,77% em Alagoas a 75,88% no Piauí), e Flávio venceu nos três do Sul e em todo o Centro-Oeste.</li>
+        <li><b>Também não é o 1º turno.</b> No 1º turno, considerando só os dois, Flávio teve 52,4% no Norte e 32,6% no Nordeste, segundo o Congresso em Foco. Nada parecido com o mapa.</li>
+        <li><b>Trocar nomes no sistema não passaria despercebido.</b> Cada urna imprime o boletim com os votos de cada candidato ao fim da votação, e ele fica afixado na seção. Fiscais de partido, incluindo os do PL, recebem cópias e podem conferir a soma com o site do TSE, seção por seção. Uma troca do Nordeste inteiro apareceria em centenas de milhares de boletins.</li>
+        <li><b>Nem a campanha de Flávio alega isso.</b> Em 26/10, Flávio criticou a prorrogação de Zanin e disse que vai pedir a cassação da chapa de Lula por abuso de poder, mas não disse que a contagem dos votos foi trocada.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> conferir os números. Qualquer pessoa pode baixar os boletins de urna e os resultados por UF no site do TSE e refazer as somas, como fizemos aqui. O mapa do post não traz fonte nenhuma.</p>`,
+    fontes: [
+      ["Resultados oficiais do TSE (2º turno de 2026)", "https://resultados.tse.jus.br/"],
+      ["InfoMoney: como cada estado votou no 2º turno", "https://www.infomoney.com.br/politica/como-cada-estado-votou-no-2o-turno-veja-onde-lula-e-flavio-venceram/"],
+      ["Gazeta do Povo: o mapa do voto em São Paulo", "https://www.gazetadopovo.com.br/eleicoes/2026/sao-paulo-2026/mapa-voto-sao-paulo-lula-segundo-turno/"],
+      ["Jamildo: Lula venceu em todos os estados do Nordeste", "https://jamildo.com/amp/politica/lula-venceu-em-todos-os-estados-do-nordeste-veja-os-votos-no-primeiro-e-no-segundo-turno.html"],
+      ["Congresso em Foco: 1º turno por região", "https://www.congressoemfoco.com.br/noticia/122894/flavio-vence-em-quatro-regioes-lula-domina-nordeste"],
+      ["Metrópoles: Flávio diz que pedirá cassação da chapa de Lula", "https://www.metropoles.com/brasil/flavio-diz-que-pedira-cassacao-da-chapa-de-lula-a-lei-tem-que-valer"],
+    ],
+  },
+  {
     id: "escala-6x1-recuo",
     data: "27/10/2026",
     selo: "Enganoso",
@@ -2220,7 +2261,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T07:50-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-28T08:15-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
