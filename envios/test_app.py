@@ -16,7 +16,7 @@ def ctx(tmp_path):
     enviados = []
     arm = ArmazemLocal(str(tmp_path))
     app = criar_app(armazem=arm, verificar_captcha=lambda t: t == "ok",
-                    enviar_email=lambda para, assunto, texto: enviados.append((para, assunto, texto)) or True, env=ENV)
+                    enviar_email=lambda para, assunto, texto, html_: enviados.append((para, assunto, texto, html_)) or True, env=ENV)
     return app.test_client(), arm, enviados
 
 
@@ -89,8 +89,17 @@ def test_concluir_avisa_e_apaga_email(ctx):
                                                          "link": "https://contadaurna.com.br/#fake-x"})
     assert r.get_json() == {"status": "publicado", "email": "enviado"}
     assert enviados[0][0] == "pessoa@exemplo.com" and "#fake-x" in enviados[0][2]
+    assert 'href="https://contadaurna.com.br/#fake-x"' in enviados[0][3] and p in enviados[0][3]
     assert arm.pegar(f"contatos/{p}.bin") is None
     assert c.get("/status/" + p).get_json()["status"] == "publicado"
+
+
+def test_email_html_escapa_link(ctx):
+    c, arm, enviados = ctx
+    p = enviar(c, email="pessoa@exemplo.com").get_json()["protocolo"]
+    c.post("/admin/api/concluir", headers=ADM, json={"protocolo": p, "resultado": "publicado",
+                                                     "link": 'https://contadaurna.com.br/"><script>x</script>'})
+    assert "<script>" not in enviados[0][3] and "&quot;&gt;&lt;script&gt;" in enviados[0][3]
 
 
 def test_email_falha_mantem_contato(tmp_path):

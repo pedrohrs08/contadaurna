@@ -11,6 +11,7 @@ Rodar:  gunicorn -w 1 --threads 4 'app:criar_app()'
 import base64
 import hashlib
 import hmac
+import html
 import io
 import json
 import os
@@ -52,6 +53,57 @@ TEXTOS = {
 }
 RODAPE = ("\n\nProtocolo: {p}\n\nEste e-mail foi enviado automaticamente. Seu endereço foi apagado "
           "logo após o envio e não fica guardado em lugar nenhum do Conta da Urna.\n\nhttps://contadaurna.com.br/")
+
+# Versão em HTML do mesmo aviso, com a marca do site. Só estilos inline e tabelas, que é o que os
+# programas de e-mail entendem. A única imagem é o ícone servido pelo próprio site.
+SITE = "https://contadaurna.com.br/"
+HTML_RES = {
+    "publicado": ("Publicado", "Seu envio virou parecer",
+                  "O boato que você enviou foi checado e o parecer já está publicado no site.", "Ler o parecer"),
+    "procede": ("Procede", "A informação procede",
+                "Checamos o que você enviou e, pelo que apuramos, a informação procede. "
+                "Por isso não publicamos um parecer de fake news.", "Ver no site"),
+    "descartado": ("Não checado", "Seu envio não entrou na checagem",
+                   "O que você enviou ficou fora da checagem: fora do tema, sem como verificar "
+                   "com dados públicos ou repetido.", "Ver no site"),
+}
+FONTE = "Arial,Helvetica,sans-serif"
+FONTE_MARCA = "'Archivo Narrow','Arial Narrow',Arial,sans-serif"
+
+
+def aviso_html(res, link, p):
+    selo, titulo, texto, botao = HTML_RES[res]
+    e = html.escape
+    alvo = e(link or SITE, quote=True)
+    return f"""<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light"><title>{e(titulo)}</title></head>
+<body style="margin:0;padding:0;background:#f3f6f4">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f6f4"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;border:1px solid #dfe7e2">
+<tr><td style="padding:22px 28px;border-bottom:4px solid #11875b">
+<table role="presentation" cellpadding="0" cellspacing="0"><tr>
+<td style="padding-right:12px"><img src="{SITE}icone.png" width="40" height="40" alt="" style="display:block;border:0;border-radius:50%"></td>
+<td style="font-family:{FONTE_MARCA};font-size:20px;font-weight:700;letter-spacing:3px;color:#14211b">CONTA <span style="color:#11875b">DA</span> URNA</td>
+</tr></table></td></tr>
+<tr><td style="padding:28px 28px 8px;font-family:{FONTE}">
+<span style="display:inline-block;background:#dcf3e8;color:#0b5e40;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 10px;border-radius:999px">{e(selo)}</span>
+<h1 style="margin:16px 0 10px;font-size:24px;line-height:1.25;color:#14211b">{e(titulo)}</h1>
+<p style="margin:0 0 22px;font-size:16px;line-height:1.55;color:#33443b">{e(texto)}</p>
+<table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#11875b;border-radius:8px">
+<a href="{alvo}" style="display:inline-block;padding:12px 22px;font-family:{FONTE};font-size:16px;font-weight:700;color:#ffffff;text-decoration:none">{e(botao)}</a>
+</td></tr></table>
+</td></tr>
+<tr><td style="padding:22px 28px 26px;font-family:{FONTE}">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f6f4;border-radius:8px"><tr><td style="padding:12px 16px;font-size:14px;color:#33443b">
+Protocolo: <strong style="font-family:Consolas,Menlo,monospace;letter-spacing:1px;color:#14211b">{e(p)}</strong></td></tr></table>
+</td></tr>
+<tr><td style="padding:18px 28px 24px;border-top:1px solid #dfe7e2;font-family:{FONTE};font-size:12px;line-height:1.5;color:#5f6f66">
+Este e-mail foi enviado automaticamente. Seu endereço foi apagado logo após o envio e não fica guardado em lugar nenhum do Conta da Urna.<br>
+<a href="{SITE}" style="color:#0b5e40">contadaurna.com.br</a>
+</td></tr>
+</table></td></tr></table>
+</body></html>"""
 
 
 # ---------- Armazenamento: Cloudflare R2 em produção, pasta local em testes ----------
@@ -150,10 +202,13 @@ def turnstile(segredo, hosts):
 
 
 def brevo(chave_api, remetente):
-    """Manda e-mail só de texto (sem pixel de rastreio) pela API transacional do Brevo."""
-    def enviar(para, assunto, texto):
-        corpo = json.dumps({"sender": {"email": remetente, "name": "Conta da Urna"},
-                            "to": [{"email": para}], "subject": assunto, "textContent": texto}).encode()
+    """Manda o aviso pela API transacional do Brevo: texto puro e, se houver, a versão em HTML."""
+    def enviar(para, assunto, texto, html_=None):
+        msg = {"sender": {"email": remetente, "name": "Conta da Urna"},
+               "to": [{"email": para}], "subject": assunto, "textContent": texto}
+        if html_:
+            msg["htmlContent"] = html_
+        corpo = json.dumps(msg).encode()
         status, _ = _post("https://api.brevo.com/v3/smtp/email", corpo,
                           {"api-key": chave_api, "Content-Type": "application/json", "Accept": "application/json"})
         return 200 <= status < 300
@@ -441,7 +496,7 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             extra = f"\n{link}" if link else ""
             texto = TEXTOS[res].format(link=link, extra=extra) + RODAPE.format(p=p)
             try:
-                ok = enviar_email(email, ASSUNTO.format(p=p), texto)
+                ok = enviar_email(email, ASSUNTO.format(p=p), texto, aviso_html(res, link, p))
             except Exception:
                 ok = False
             del email

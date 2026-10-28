@@ -21,7 +21,7 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 | Metadados (local, aparelho, autor) | Saem na regravação. Há teste automático que confere isso. |
 | E-mail exposto | É gravado **criptografado** (Fernet: AES-128 com HMAC-SHA256) num arquivo separado. A chave (`EMAIL_KEY`) é gerada pelo Render e não precisa ser copiada por ninguém. Nenhuma rota devolve o e-mail. Ele é apagado logo após o aviso. |
 | IP | Não é gravado. É usado só embaralhado (hash), na memória e por até 1 hora, para o limite de envios. Não é repassado ao Turnstile. |
-| Uso do servidor para mandar golpe por e-mail | O texto do aviso é fixo e só aceita links do próprio site. O e-mail é só texto, sem HTML e sem pixel de rastreio. |
+| Uso do servidor para mandar golpe por e-mail | O texto do aviso é fixo e só aceita links do próprio site. O e-mail tem versão em texto e em HTML com a marca do site, montada com tudo escapado; não carrega nada de terceiros além do ícone do próprio site. |
 | Senha de administração | `ADMIN_TOKEN` gerado pelo Render (256 bits), comparado em tempo constante. Após 10 erros em 1 hora, o IP fica bloqueado por 1 hora. |
 | Páginas e respostas | CSP restritiva, `nosniff`, sem cache, sem iframe. A página `/admin` monta tudo com `textContent`, sem HTML vindo do servidor. CORS liberado só para o domínio do site. |
 | Configuração incompleta | O servidor não sobe se faltar algum segredo (falha fechada). |
@@ -32,6 +32,7 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 - No uso normal, **não vê o e-mail de ninguém**: a página de administração não mostra, e o armazenamento guarda só o texto cifrado.
 - Como dono da conta no Render, ele *teria como* chegar a um e-mail se agisse de propósito (por exemplo, alterando o código para imprimi-lo). Toda mudança de código fica pública neste repositório. Proteção absoluta exigiria que o e-mail ficasse com um terceiro.
 - O Brevo, serviço que envia o aviso, guarda por tempo limitado um registro técnico de cada e-mail enviado (destinatário e assunto). A regra deste projeto é não consultar esses registros.
+- Em e-mails com HTML, o Brevo acrescenta por conta própria um pixel de abertura. Pela regra do Brevo, se a conta não tiver o consentimento da pessoa, a abertura é contada só no total, de forma anônima. Este projeto não coleta esse consentimento.
 
 ## Configuração (uma vez)
 
