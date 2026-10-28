@@ -136,3 +136,34 @@ def test_limite_por_ip(ctx):
 
 def test_email_invalido(ctx):
     assert enviar(ctx[0], email="nao é email").status_code == 400
+
+
+def test_limite_de_espaco(tmp_path):
+    arm = ArmazemLocal(str(tmp_path))
+    arm.por("envios/AAAA-BBBB-CCCC/print.jpg", b"x" * 2000, "image/jpeg")
+    c = criar_app(armazem=arm, verificar_captcha=lambda t: True, enviar_email=lambda *a: True,
+                  env={**ENV, "LIMITE_GB": str(1000 / 1024 ** 3)}).test_client()
+    assert c.get("/capacidade").get_json() == {"aceitando": False}
+    r = enviar(c)
+    assert r.status_code == 503 and "limite" in r.get_json()["erro"]
+    assert arm.listar("") == ["envios/AAAA-BBBB-CCCC/print.jpg"]
+
+
+def test_capacidade_e_uso(ctx):
+    c, _, _ = ctx
+    assert c.get("/capacidade").get_json() == {"aceitando": True}
+    enviar(c)
+    u = c.get("/admin/api/uso", headers=ADM).get_json()
+    assert u["envios"] == 1 and u["bytes"] > 0 and u["limite_bytes"] == 8 * 1024 ** 3
+    assert c.get("/admin/api/uso").status_code == 401
+
+
+def test_limite_gb_invalido():
+    with pytest.raises(RuntimeError):
+        criar_app(armazem=object(), verificar_captcha=lambda t: True, enviar_email=lambda *a: True, env={**ENV, "LIMITE_GB": "muito"})
+
+
+def test_limite_de_consultas(ctx):
+    c, _, _ = ctx
+    codigos = [c.get("/status/AAAA-BBBB-CCCC").status_code for _ in range(61)]
+    assert codigos[:60] == [404] * 60 and codigos[60] == 429

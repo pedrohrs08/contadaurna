@@ -16,6 +16,7 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 | Risco | O que o código faz |
 |---|---|
 | Robôs e spam | Turnstile obrigatório, limite de 5 envios por hora por IP e de 120 por hora no total, fila máxima de 500 envios. |
+| Ataque para gerar conta alta (encher o armazenamento ou disparar operações pagas) | Antes de aceitar cada imagem, o servidor soma o espaço usado no balde e recusa o envio ao chegar em **8 GB** (o grátis vai até 10 GB; ajustável pela variável `LIMITE_GB`) ou 500 envios guardados. O site consulta `/capacidade` antes de mostrar o formulário. Consultas e pedidos de apagar têm limite de 60 por hora por IP e 1.500 por hora no total. Com todos os limites no máximo durante um mês inteiro, o uso fica dentro da cota grátis do R2 (cerca de 400 mil das 1 milhão de gravações e 1,1 milhão das 10 milhões de leituras): um ataque deixa o envio indisponível, mas não gera cobrança. |
 | Arquivo malicioso | Só aceita JPEG, PNG ou WEBP de até 10 MB. A imagem é aberta e **regravada como JPEG novo**, o que descarta qualquer conteúdo escondido. Há proteção contra "bombas" de descompressão. |
 | Metadados (local, aparelho, autor) | Saem na regravação. Há teste automático que confere isso. |
 | E-mail exposto | É gravado **criptografado** (Fernet: AES-128 com HMAC-SHA256) num arquivo separado. A chave (`EMAIL_KEY`) é gerada pelo Render e não precisa ser copiada por ninguém. Nenhuma rota devolve o e-mail. Ele é apagado logo após o aviso. |
