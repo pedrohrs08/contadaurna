@@ -6,10 +6,11 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 
 1. A pessoa escolhe o print, diz onde viu (opcional) e, **se quiser**, deixa um e-mail.
 2. O servidor confere o anti-robô (Cloudflare Turnstile), regrava a imagem e devolve um **código de protocolo** (ex.: `ABCD-EFGH-2345`).
-3. Quem faz a checagem vê a fila na página `/admin`, só com protocolo, data, "onde viu", a imagem e se a pessoa pediu aviso. **O e-mail nunca aparece.**
-4. Ao concluir, o responsável marca o resultado: **publicado** (com o link do parecer), **procede** (a informação é verdadeira, então não vira parecer de fake news) ou **descartado**.
-5. Se havia e-mail, o servidor o decifra só naquele momento, manda o aviso e **apaga o e-mail**. Qualquer pessoa com o protocolo consulta o resultado no site.
-6. Tudo é apagado automaticamente em 30 dias. A pessoa também pode apagar o próprio envio a qualquer momento usando o protocolo.
+3. O responsável pelo site vê a fila na página `/admin`, só com protocolo, data, "onde viu", a imagem e se a pessoa pediu aviso. **O e-mail nunca aparece.**
+4. **A checagem é feita por uma rotina de inteligência artificial (IA), não por uma pessoa.** O responsável passa o print para essa rotina, que busca o assunto em várias fontes, de linhas editoriais diferentes (veículos vistos como à direita, à esquerda e de centro, além de dados oficiais), e escreve o parecer. O responsável revisa e publica.
+5. Ao concluir, o responsável marca o resultado: **publicado** (com o link do parecer), **procede** (a informação é verdadeira, então não vira parecer de fake news) ou **descartado**.
+6. Se havia e-mail, o servidor o decifra só naquele momento, manda o aviso e **apaga o e-mail**. Qualquer pessoa com o protocolo consulta o resultado no site.
+7. Tudo é apagado automaticamente em 30 dias. A pessoa também pode apagar o próprio envio a qualquer momento usando o protocolo.
 
 ## Desenho de segurança
 
@@ -73,7 +74,7 @@ No plano gratuito, o Render "dorme" depois de 15 minutos sem uso. O primeiro env
 
 ## Uso no dia a dia
 1. Abra `https://<endereço>.onrender.com/admin` e entre com o `ADMIN_TOKEN`.
-2. Toque em **Ver print** e mande o print para checagem, como já é feito hoje.
+2. Toque em **Ver print** e mande o print para a rotina de IA que faz a checagem, como já é feito hoje.
 3. Depois do merge do parecer, volte, escolha o resultado, cole o link (`https://contadaurna.com.br/#fake-...`) e toque em **Concluir**. Se a pessoa pediu aviso, o e-mail sai na hora.
 4. Conteúdo ofensivo ou ilegal: **Apagar envio**.
 
