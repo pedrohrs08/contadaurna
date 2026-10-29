@@ -13,7 +13,7 @@ services:
         value: public, max-age=600
 
   # Servidor de envio de prints da aba Fake news (veja envios/README.md).
-  # EMAIL_KEY e ADMIN_TOKEN são gerados pelo próprio Render; os demais segredos
+  # EMAIL_KEY, ADMIN_TOKEN e ROTINA_TOKEN são gerados pelo próprio Render; os demais segredos
   # (sync: false) são preenchidos à mão no painel e nunca entram no repositório.
   - type: web
     name: contadaurna-envios
@@ -30,6 +30,8 @@ services:
       - key: EMAIL_KEY
         generateValue: true
       - key: ADMIN_TOKEN
+        generateValue: true
+      - key: ROTINA_TOKEN
         generateValue: true
       - key: R2_CONTA
         sync: false

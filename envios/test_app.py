@@ -176,3 +176,62 @@ def test_limite_de_consultas(ctx):
     c, _, _ = ctx
     codigos = [c.get("/status/AAAA-BBBB-CCCC").status_code for _ in range(61)]
     assert codigos[:60] == [404] * 60 and codigos[60] == 429
+
+
+ENV_ROTINA = {**ENV, "ROTINA_TOKEN": "r" * 40}
+ROT = {"Authorization": "Bearer " + "r" * 40}
+PR = "https://github.com/pedrohrs08/contadaurna/pull/40"
+
+
+@pytest.fixture
+def rot(tmp_path):
+    enviados = []
+    app = criar_app(armazem=ArmazemLocal(str(tmp_path)), verificar_captcha=lambda t: t == "ok",
+                    enviar_email=lambda para, assunto, texto, html_: enviados.append(para) or True, env=ENV_ROTINA)
+    return app.test_client(), enviados
+
+
+def test_rotina_desligada_sem_token(ctx):
+    c, _, _ = ctx
+    assert c.get("/rotina/api/fila", headers=ADM).status_code == 401
+    assert c.get("/rotina/api/fila", headers={"Authorization": "Bearer "}).status_code == 401
+
+
+def test_rotina_token_igual_ao_admin():
+    with pytest.raises(RuntimeError):
+        criar_app(armazem=object(), verificar_captcha=lambda t: True, enviar_email=lambda *a: True,
+                  env={**ENV, "ROTINA_TOKEN": ENV["ADMIN_TOKEN"]})
+
+
+def test_rotina_fluxo_completo(rot):
+    c, enviados = rot
+    p = enviar(c, email="pessoa@exemplo.com").get_json()["protocolo"]
+    assert c.get("/rotina/api/fila", headers=ADM).status_code == 401  # admin não serve para a rotina
+    fila = c.get("/rotina/api/fila", headers=ROT).get_json()
+    assert len(fila) == 1 and set(fila[0]) == {"protocolo", "criado", "onde", "status", "pr"}
+    assert (fila[0]["protocolo"], fila[0]["status"]) == (p, "na_fila")
+    assert "email" not in json.dumps(fila) and "tem_email" not in fila[0]
+    assert c.get("/rotina/api/print/" + p, headers=ROT).mimetype == "image/jpeg"
+    # a rotina não pode concluir nem apagar pelas rotas de admin
+    assert c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "descartado"}, headers=ROT).status_code == 401
+    assert c.post("/admin/api/apagar", json={"protocolo": p}, headers=ROT).status_code == 401
+    # publicar antes do rascunho é recusado
+    assert c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://contadaurna.com.br/#fake-x"}, headers=ROT).status_code == 409
+    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": "https://github.com/outro/repo/pull/1"}, headers=ROT).status_code == 400
+    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT).status_code == 200
+    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT).status_code == 409
+    assert c.get("/status/" + p).get_json() == {"status": "rascunho", "link": ""}
+    assert c.get("/admin/api/fila", headers=ADM).get_json()[0]["pr"] == PR
+    assert c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://malicioso.example/#fake-x"}, headers=ROT).status_code == 400
+    r = c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://contadaurna.com.br/#fake-x"}, headers=ROT)
+    assert r.get_json() == {"status": "publicado", "email": "enviado"}
+    assert enviados == ["pessoa@exemplo.com"]
+    assert c.get("/rotina/api/fila", headers=ROT).get_json() == []
+
+
+def test_admin_conclui_rascunho(rot):
+    c, _ = rot
+    p = enviar(c).get_json()["protocolo"]
+    c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT)
+    r = c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "procede"}, headers=ADM)
+    assert r.get_json()["status"] == "procede"
