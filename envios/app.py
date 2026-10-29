@@ -35,7 +35,8 @@ FORMATOS = {"JPEG", "PNG", "WEBP"}
 LADO_MAX = 4000
 PROTOCOLO_RE = re.compile(r"^[A-Z2-7]{4}-[A-Z2-7]{4}-[A-Z2-7]{4}$")
 EMAIL_RE = re.compile(r"^[^@\s<>\"',;]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$")
-RESULTADOS = {"publicado", "procede", "descartado"}
+RESULTADOS = {"publicado", "ja_publicado", "procede", "descartado"}
+PENDENTES = ("na_fila", "rascunho", "repetido")  # ainda esperam o responsável ou a rotina
 PR_RE = re.compile(r"^https://github\.com/pedrohrs08/contadaurna/pull/[0-9]{1,6}$")
 FILA_MAX = 500            # envios guardados; acima disso, novos envios são recusados
 LIMITE_GB_PADRAO = 8      # espaço máximo no R2 (o plano grátis vai até 10 GB); muda com a variável LIMITE_GB
@@ -49,6 +50,7 @@ CONSULTAS_POR_HORA_TOTAL = 1500  # teto geral: cada consulta é uma leitura paga
 ASSUNTO = "Seu envio ao Conta da Urna ({p})"
 TEXTOS = {
     "publicado": "O boato que você enviou foi checado e o parecer está publicado:\n{link}",
+    "ja_publicado": "Olá! Obrigado por enviar. Verificamos e esse boato já tinha sido checado: o parecer foi publicado anteriormente. Confere lá:\n{link}",
     "procede": "Checamos o que você enviou e, pelo que apuramos, a informação procede. Por isso não publicamos um parecer de fake news.{extra}",
     "descartado": "O que você enviou não entrou na checagem (fora do tema, sem como verificar com dados públicos ou repetido).{extra}",
 }
@@ -61,6 +63,9 @@ SITE = "https://contadaurna.com.br/"
 HTML_RES = {
     "publicado": ("Publicado", "Seu envio virou parecer",
                   "O boato que você enviou foi checado e o parecer já está publicado no site.", "Ler o parecer"),
+    "ja_publicado": ("Já checado", "Obrigado por enviar!",
+                     "Olá! Verificamos e esse boato já tinha sido checado: o parecer foi publicado anteriormente no site. Confere lá.",
+                     "Ler o parecer"),
     "procede": ("Procede", "A informação procede",
                 "Checamos o que você enviou e, pelo que apuramos, a informação procede. "
                 "Por isso não publicamos um parecer de fake news.", "Ver no site"),
@@ -287,7 +292,7 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     # A chave do Fernet sai de um segredo longo (gerado pelo Render), para ninguém precisar copiá-la
     cofre = Fernet(base64.urlsafe_b64encode(hashlib.sha256(env["EMAIL_KEY"].encode()).digest()))
     token_admin = env["ADMIN_TOKEN"].encode()
-    # Senha da rotina de IA: só lê a fila, baixa o print, marca "rascunho" e conclui como "publicado"
+    # Senha da rotina de IA: só lê a fila, baixa o print, marca "rascunho" ou "repetido" e conclui como "publicado"
     token_rotina = (env.get("ROTINA_TOKEN") or "").encode()
     if token_rotina and (len(token_rotina) < 32 or hmac.compare_digest(token_rotina, token_admin)):
         raise RuntimeError("ROTINA_TOKEN precisa ter pelo menos 32 caracteres e ser diferente do ADMIN_TOKEN")
@@ -458,7 +463,7 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     @exige_admin
     def fila():
         itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
-        itens = sorted([m for m in itens if m], key=lambda m: (m["status"] not in ("na_fila", "rascunho"), m["criado"]))
+        itens = sorted([m for m in itens if m], key=lambda m: (m["status"] not in PENDENTES, m["criado"]))
         return jsonify(itens)  # sem e-mails: só diz se a pessoa pediu aviso (tem_email)
 
     @app.get("/admin/api/uso")
@@ -516,8 +521,8 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             return erro("Resultado inválido.", 400)
         if link and not link.startswith(link_ok):
             return erro("O link precisa ser de uma página do próprio site.", 400)
-        if res == "publicado" and not link:
-            return erro("Para 'publicado', informe o link do parecer.", 400)
+        if res in ("publicado", "ja_publicado") and not link:
+            return erro("Informe o link do parecer.", 400)
         return concluir_envio(p, m, res, link)
 
     @app.post("/admin/api/apagar")
@@ -584,5 +589,23 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         if not link.startswith(link_ok) or "#fake-" not in link:
             return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
         return concluir_envio(p, m, "publicado", link)
+
+    @app.post("/rotina/api/repetido")
+    @exige_rotina
+    def rotina_repetido():
+        # O boato já tem parecer no site: a rotina só guarda o link. O aviso de "já publicado"
+        # sai quando o responsável conclui pelo /admin.
+        d = request.get_json(silent=True) or {}
+        p, link = str(d.get("protocolo", "")).upper(), str(d.get("link") or "").strip()
+        m = PROTOCOLO_RE.match(p) and meta(p)
+        if not m:
+            return erro("Protocolo não encontrado.", 404)
+        if m["status"] != "na_fila":
+            return erro("Este envio já saiu da fila.", 409)
+        if not link.startswith(link_ok) or "#fake-" not in link:
+            return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
+        m.update(status="repetido", link=link)
+        salvar_meta(p, m)
+        return jsonify({"status": "repetido"})
 
     return app

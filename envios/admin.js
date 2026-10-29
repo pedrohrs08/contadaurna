@@ -15,9 +15,10 @@ function sair(texto) {
   $("painel").hidden = true; $("entrar").hidden = false; $("msg").textContent = texto || "";
 }
 
-const NOMES = {na_fila: "Na fila", rascunho: "Rascunho pronto", publicado: "Publicado", procede: "Procede", descartado: "Descartado"};
+const NOMES = {na_fila: "Na fila", rascunho: "Rascunho pronto", repetido: "Já tem parecer: pronto para avisar",
+  publicado: "Publicado", ja_publicado: "Avisado: já publicado", procede: "Procede", descartado: "Descartado"};
 
-const RESULTADOS = ["publicado", "procede", "descartado"];
+const RESULTADOS = ["publicado", "ja_publicado", "procede", "descartado"];
 
 async function carregar() {
   $("msg").textContent = "Carregando…";
@@ -29,7 +30,8 @@ async function carregar() {
       " GB · " + u.envios + " de " + u.limite_envios + " envios guardados. Ao chegar no limite, o site para de aceitar envios.";
   }).catch(() => {});
   $("entrar").hidden = true; $("painel").hidden = false;
-  $("msg").textContent = itens.length ? itens.filter((i) => i.status === "na_fila").length + " na fila, " + itens.length + " no total." : "Nenhum envio.";
+  $("msg").textContent = itens.length ? itens.filter((i) => i.status === "na_fila").length + " na fila, " +
+    itens.filter((i) => i.status === "repetido").length + " repetidos para avisar, " + itens.length + " no total." : "Nenhum envio.";
   const lista = $("lista"); lista.replaceChildren();
   for (const it of itens) {
     const n = $("modelo").content.firstElementChild.cloneNode(true);
@@ -38,7 +40,9 @@ async function carregar() {
     n.querySelector(".onde").textContent = it.onde ? "Onde viu: " + it.onde : "";
     n.querySelector(".link").value = it.link || "";
     if (RESULTADOS.includes(it.status)) n.querySelector(".res").value = it.status;
+    if (it.status === "repetido") n.querySelector(".res").value = "ja_publicado";  // a rotina já pôs o link do parecer
     if (it.pr) { const a = n.querySelector(".pr"); a.href = it.pr; a.textContent = "Ver o PR com o parecer"; a.hidden = false; }
+    else if (it.status === "repetido" && it.link) { const a = n.querySelector(".pr"); a.href = it.link; a.textContent = "Ver o parecer que já existe"; a.hidden = false; }
     n.querySelector(".ver").onclick = async () => {
       const img = n.querySelector("img");
       const resp = await api("/admin/api/print/" + encodeURIComponent(it.protocolo));

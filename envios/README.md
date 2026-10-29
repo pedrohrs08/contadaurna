@@ -8,7 +8,7 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 2. O servidor confere o anti-robô (Cloudflare Turnstile), regrava a imagem e devolve um **código de protocolo** (ex.: `ABCD-EFGH-2345`).
 3. O responsável pelo site vê a fila na página `/admin`, só com protocolo, data, "onde viu", a imagem e se a pessoa pediu aviso. **O e-mail nunca aparece.**
 4. **A checagem é feita por uma rotina de inteligência artificial (IA), não por uma pessoa.** Duas vezes por dia a rotina pega os envios da fila (veja [ROTINA.md](ROTINA.md)), que busca o assunto em várias fontes, de linhas editoriais diferentes (veículos vistos como à direita, à esquerda e de centro, além de dados oficiais), escreve o parecer e abre um PR neste repositório. O envio passa a constar como **rascunho**. **Todo parecer publicado lista as fontes consultadas, com link**, para que qualquer pessoa confira. **Nada vai ao ar sem o responsável revisar e aceitar (merge) o PR.**
-5. Depois do merge, a própria rotina marca o envio como **publicado**. Nos outros casos, o responsável marca o resultado: **publicado** (com o link do parecer), **procede** (a informação é verdadeira, então não vira parecer de fake news) ou **descartado**.
+5. Depois do merge, a própria rotina marca o envio como **publicado**. Se o boato já tem parecer no site, a rotina liga o envio a esse parecer e o responsável só dispara o aviso de **já publicado** (com o link). Nos outros casos, o responsável marca o resultado: **publicado** (com o link do parecer), **procede** (a informação é verdadeira, então não vira parecer de fake news) ou **descartado**.
 6. Se havia e-mail, o servidor o decifra só naquele momento, manda o aviso e **apaga o e-mail**. Qualquer pessoa com o protocolo consulta o resultado no site.
 7. Tudo é apagado automaticamente em 30 dias. A pessoa também pode apagar o próprio envio a qualquer momento usando o protocolo.
 
@@ -23,7 +23,7 @@ Recebe os prints de boatos enviados pela aba **Fake news** de [contadaurna.com.b
 | E-mail exposto | É gravado **criptografado** (Fernet: AES-128 com HMAC-SHA256) num arquivo separado. A chave (`EMAIL_KEY`) é gerada pelo Render e não precisa ser copiada por ninguém. Nenhuma rota devolve o e-mail. Ele é apagado logo após o aviso. |
 | IP | Não é gravado. É usado só embaralhado (hash), na memória e por até 1 hora, para o limite de envios. Não é repassado ao Turnstile. |
 | Uso do servidor para mandar golpe por e-mail | O texto do aviso é fixo e só aceita links do próprio site. O e-mail tem versão em texto e em HTML com a marca do site, montada com tudo escapado; não carrega nada de terceiros além do ícone do próprio site. |
-| Senha da rotina de IA | `ROTINA_TOKEN`, separado do `ADMIN_TOKEN` e também gerado pelo Render. Só lista a fila (sem saber quem pediu aviso), baixa o print, marca "rascunho" com o link do PR e conclui como "publicado" um envio que já está em rascunho, com link de parecer do site. Não pode apagar envios, marcar "procede" ou "descartado", nem ver e-mails. Sem a variável, essas rotas ficam desligadas. |
+| Senha da rotina de IA | `ROTINA_TOKEN`, separado do `ADMIN_TOKEN` e também gerado pelo Render. Só lista a fila (sem saber quem pediu aviso), baixa o print, marca "rascunho" com o link do PR, marca "repetido" com o link de um parecer que já existe (sem mandar e-mail) e conclui como "publicado" um envio que já está em rascunho, com link de parecer do site. Não pode apagar envios, marcar "procede" ou "descartado", nem ver e-mails. Sem a variável, essas rotas ficam desligadas. |
 | Senha de administração | `ADMIN_TOKEN` gerado pelo Render (256 bits), comparado em tempo constante. Após 10 erros em 1 hora, o IP fica bloqueado por 1 hora. |
 | Páginas e respostas | CSP restritiva, `nosniff`, sem cache, sem iframe. A página `/admin` monta tudo com `textContent`, sem HTML vindo do servidor. CORS liberado só para o domínio do site. |
 | Configuração incompleta | O servidor não sobe se faltar algum segredo (falha fechada). |
@@ -76,8 +76,9 @@ No plano gratuito, o Render "dorme" depois de 15 minutos sem uso. O primeiro env
 ## Uso no dia a dia
 1. Abra `https://<endereço>.onrender.com/admin` e entre com o `ADMIN_TOKEN`.
 2. Envios em **Rascunho pronto** têm o link do PR. Revise o parecer na versão de teste e dê merge se estiver certo. Na rodada seguinte, a rotina marca como publicado e o aviso sai.
-3. Se o veredito for "procede" ou o envio não servir, feche o PR sem merge, escolha o resultado aqui e toque em **Concluir**. Se a pessoa pediu aviso, o e-mail sai na hora.
-4. Conteúdo ofensivo ou ilegal: **Apagar envio**.
+3. Envios em **Já tem parecer: pronto para avisar** são boatos repetidos: a rotina já escolheu "Já publicado antes" e preencheu o link do parecer existente. Confira o link e toque em **Concluir**. Se a pessoa pediu aviso, ela recebe um e-mail agradecendo o envio e dizendo que o boato já tinha sido checado, com o link para o parecer.
+4. Se o veredito for "procede" ou o envio não servir, feche o PR sem merge, escolha o resultado aqui e toque em **Concluir**. Se a pessoa pediu aviso, o e-mail sai na hora.
+5. Conteúdo ofensivo ou ilegal: **Apagar envio**.
 
 ## Testes
 ```
