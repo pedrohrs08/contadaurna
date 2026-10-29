@@ -2662,6 +2662,9 @@ const FONTES_CRON = {
   bppfnota: ["BPMoney", "https://bpmoney.com.br/politica/pf-restricao-passaporte-nao-torna-flavio-foragido/"],
   jpcarta: ["Jovem Pan", "https://jovempan.com.br/politica/em-carta-flavio-diz-que-e-o-verdadeiro-presidente-eleito-do-brasil/"],
   metrocarta: ["Metrópoles", "https://www.metropoles.com/brasil/veja-integra-de-carta-assinada-por-flavio-bolsonaro-apos-fugir-do-brasil"],
+  opovorecua: ["O Povo", "https://www.opovo.com.br/noticias/brasil/2026/10/29/flavio-se-autodeclara-presidente-do-brasil-e-depois-recua.html"],
+  euronewslider: ["Euronews (com AFP)", "https://pt.euronews.com/2026/10/29/bolsonaro-afirma-ser-o-verdadeiro-lider-do-brasil-depois-de-ter-fugido-para-os-eua"],
+  viseutrump: ["Diário de Viseu (agências)", "https://www.diarioviseu.pt/2026/10/29/brasil-eleicoes-trump-diz-que-nao-se-vai-meter-no-que-diz-respeito-a-flavio-bolsonaro/"],
   gzaije: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/republica/flavio-desiste-anular-eleicao-pedira-cassacao-chapa-lula/"],
   metaije: ["Metrópoles", "https://www.metropoles.com/brasil/flavio-diz-que-pedira-cassacao-da-chapa-de-lula-a-lei-tem-que-valer"],
   b247aije: ["Brasil 247", "https://www.brasil247.com/brasil/apos-pressao-de-aliados-flavio-bolsonaro-recua-da-ideia-de-pedir-anulacao-da-eleicao/"],
@@ -2711,6 +2714,8 @@ const CRONO = [
   {hora: "Quarta, 28/10, manhã", tipo: "fato", titulo: "Flávio desembarca em Miami com a família", texto: "O jato que saiu de Puerto Iguazú e parou em Guayaquil para abastecer pousou no aeroporto executivo de Opa-locka, perto de Miami, na Flórida. A CNN Brasil gravou o desembarque e a Reuters o fotografou. Segundo a imprensa argentina, Flávio embarcou com passaporte italiano, porque os brasileiros tinham sido cancelados; a PF não confirmou qual documento ele usou.", fontes: ["cnnmiami", "ajmiami", "gzpfnota"], prej: ["Nenhuma", "Fato posterior à votação, sem efeito sobre os votos."]},
   {hora: "Quarta, 28/10, tarde", tipo: "fato", titulo: "PF diz que Flávio não é foragido", texto: "Em nota, a Polícia Federal afirmou que “a existência de restrições relacionadas a documentos de viagem, por si só, não caracteriza a condição de foragido” e que isso não autoriza prisão, vigilância permanente ou outras medidas cautelares. A PF disse que não há registro oficial da saída dele por postos de controle migratório brasileiros e que investiga “as circunstâncias do descumprimento” da ordem de Moraes. Até esta nota, não havia decisão de Moraes sobre o pedido de prisão feito por deputados do PT.", fontes: ["gzpfnota", "bppfnota"], prej: ["Nenhuma", "Fato posterior à votação, sem efeito sobre os votos."]},
   {hora: "Quarta, 28/10, tarde", tipo: "opiniao", titulo: "De Miami, Flávio diz em carta ser o “verdadeiro presidente eleito”", texto: "Na carta, divulgada por aliados nos EUA, ele escreve: “Dirijo-me ao povo brasileiro e à comunidade internacional como o verdadeiro presidente eleito do Brasil”. Fala em “fraude eleitoral”, critica a decisão do STF que “estendeu a votação no apagar das luzes”, diz que trouxe a família para os Estados Unidos, “onde estamos em segurança”, e que vai liderar a oposição de lá. A carta não apresenta provas. Fontes do PL disseram à Jovem Pan que o partido não sabia da carta. Lula venceu com 4,43 milhões de votos de diferença, e o TSE registrou 34.393 votos depois das 17h (veja as abas Resultado e Impactos da Extensão).", fontes: ["metrocarta", "jpcarta"], prej: ["Nenhuma", "Carta escrita depois da apuração, sem efeito sobre os votos."]},
+  {hora: "Quarta, 28/10, noite", tipo: "fato", titulo: "Flávio troca “presidente eleito” por “líder” na carta", texto: "A primeira versão da carta, divulgada por um aliado nos EUA, abria com Flávio se apresentando como “verdadeiro presidente eleito do Brasil”. Na versão que ele mesmo publicou depois nas redes, a expressão virou “o líder do Brasil”, e a publicação anterior foi apagada. O restante da acusação de fraude, sem provas, foi mantido.", fontes: ["opovorecua", "euronewslider"], prej: ["Nenhuma", "Carta escrita depois da apuração, sem efeito sobre os votos."]},
+  {hora: "Quarta, 28/10, noite", tipo: "opiniao", titulo: "Trump diz que não vai “se meter” no caso de Flávio", texto: "Perguntado sobre a carta antes de um comício em Ohio, Trump disse: “Não vou me meter”, “Foi uma eleição estranha, com certeza” e “Acho que ele e a sua família foram tratados de forma muito injusta”. Ele não apresentou provas sobre a eleição.", fontes: ["viseutrump", "euronewslider"], prej: ["Nenhuma", "Declaração depois da apuração, sem efeito sobre os votos."]},
 ];
 // ---------- Pesquisas da véspera × urnas (site publicado) ----------
 const PESQ_VESPERA = [ // votos válidos; m = margem de erro em pontos (null se a compilação não informa)
@@ -2744,7 +2749,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-28T18:00-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-29T07:50-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
