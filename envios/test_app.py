@@ -235,3 +235,31 @@ def test_admin_conclui_rascunho(rot):
     c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT)
     r = c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "procede"}, headers=ADM)
     assert r.get_json()["status"] == "procede"
+
+
+def test_rotina_marca_repetido_e_admin_avisa(rot):
+    c, enviados = rot
+    p = enviar(c, email="pessoa@exemplo.com").get_json()["protocolo"]
+    link = "https://contadaurna.com.br/#fake-venezuela-prorrogacao"
+    assert c.post("/rotina/api/repetido", json={"protocolo": p, "link": "https://malicioso.example/#fake-x"}, headers=ROT).status_code == 400
+    assert c.post("/rotina/api/repetido", json={"protocolo": p, "link": link}, headers=ADM).status_code == 401
+    assert c.post("/rotina/api/repetido", json={"protocolo": p, "link": link}, headers=ROT).get_json() == {"status": "repetido"}
+    assert c.post("/rotina/api/repetido", json={"protocolo": p, "link": link}, headers=ROT).status_code == 409
+    assert enviados == []  # a rotina não dispara o aviso
+    assert c.get("/rotina/api/fila", headers=ROT).get_json() == []  # não volta para a rotina
+    item = c.get("/admin/api/fila", headers=ADM).get_json()[0]
+    assert (item["status"], item["link"]) == ("repetido", link)
+    assert c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "ja_publicado"}, headers=ADM).status_code == 400
+    r = c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "ja_publicado", "link": link}, headers=ADM)
+    assert r.get_json() == {"status": "ja_publicado", "email": "enviado"}
+    assert enviados == ["pessoa@exemplo.com"]
+
+
+def test_texto_do_aviso_ja_publicado(ctx):
+    c, _, enviados = ctx
+    p = enviar(c, email="pessoa@exemplo.com").get_json()["protocolo"]
+    link = "https://contadaurna.com.br/#fake-x"
+    c.post("/admin/api/concluir", json={"protocolo": p, "resultado": "ja_publicado", "link": link}, headers=ADM)
+    _, _, texto, html_ = enviados[0]
+    assert "Obrigado por enviar" in texto and "publicado anteriormente" in texto and link in texto
+    assert "Já checado" in html_ and link in html_
