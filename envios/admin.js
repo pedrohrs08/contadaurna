@@ -15,7 +15,9 @@ function sair(texto) {
   $("painel").hidden = true; $("entrar").hidden = false; $("msg").textContent = texto || "";
 }
 
-const NOMES = {na_fila: "Na fila", publicado: "Publicado", procede: "Procede", descartado: "Descartado"};
+const NOMES = {na_fila: "Na fila", rascunho: "Rascunho pronto", publicado: "Publicado", procede: "Procede", descartado: "Descartado"};
+
+const RESULTADOS = ["publicado", "procede", "descartado"];
 
 async function carregar() {
   $("msg").textContent = "Carregando…";
@@ -35,7 +37,8 @@ async function carregar() {
     n.querySelector(".meta").textContent = it.criado.replace("T", " ").replace("Z", " UTC") + " · " + NOMES[it.status] + (it.tem_email ? " · pediu aviso" : "");
     n.querySelector(".onde").textContent = it.onde ? "Onde viu: " + it.onde : "";
     n.querySelector(".link").value = it.link || "";
-    if (it.status !== "na_fila") n.querySelector(".res").value = it.status;
+    if (RESULTADOS.includes(it.status)) n.querySelector(".res").value = it.status;
+    if (it.pr) { const a = n.querySelector(".pr"); a.href = it.pr; a.textContent = "Ver o PR com o parecer"; a.hidden = false; }
     n.querySelector(".ver").onclick = async () => {
       const img = n.querySelector("img");
       const resp = await api("/admin/api/print/" + encodeURIComponent(it.protocolo));

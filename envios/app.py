@@ -36,6 +36,7 @@ LADO_MAX = 4000
 PROTOCOLO_RE = re.compile(r"^[A-Z2-7]{4}-[A-Z2-7]{4}-[A-Z2-7]{4}$")
 EMAIL_RE = re.compile(r"^[^@\s<>\"',;]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$")
 RESULTADOS = {"publicado", "procede", "descartado"}
+PR_RE = re.compile(r"^https://github\.com/pedrohrs08/contadaurna/pull/[0-9]{1,6}$")
 FILA_MAX = 500            # envios guardados; acima disso, novos envios são recusados
 LIMITE_GB_PADRAO = 8      # espaço máximo no R2 (o plano grátis vai até 10 GB); muda com a variável LIMITE_GB
 CACHE_USO_SEG = 60        # a consulta pública de capacidade relê o balde no máximo 1 vez por minuto
@@ -286,6 +287,10 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     # A chave do Fernet sai de um segredo longo (gerado pelo Render), para ninguém precisar copiá-la
     cofre = Fernet(base64.urlsafe_b64encode(hashlib.sha256(env["EMAIL_KEY"].encode()).digest()))
     token_admin = env["ADMIN_TOKEN"].encode()
+    # Senha da rotina de IA: só lê a fila, baixa o print, marca "rascunho" e conclui como "publicado"
+    token_rotina = (env.get("ROTINA_TOKEN") or "").encode()
+    if token_rotina and (len(token_rotina) < 32 or hmac.compare_digest(token_rotina, token_admin)):
+        raise RuntimeError("ROTINA_TOKEN precisa ter pelo menos 32 caracteres e ser diferente do ADMIN_TOKEN")
     link_ok = tuple(o.rstrip("/") + "/" for o in origens)
     limitador = Limitador()
     try:
@@ -326,11 +331,12 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         return (limitador.permite("consulta-ip:" + ip_hash(), CONSULTAS_POR_HORA_IP)
                 and limitador.permite("consulta-total", CONSULTAS_POR_HORA_TOTAL))
 
-    def admin_ok():
+    def admin_ok(token=None):
+        token = token_admin if token is None else token
         h = request.headers.get("Authorization", "")
-        if not h.startswith("Bearer "):
+        if not h.startswith("Bearer ") or not token:
             return False
-        if not hmac.compare_digest(h[7:].encode(), token_admin):
+        if not hmac.compare_digest(h[7:].encode(), token):
             limitador.permite("falha-admin:" + ip_hash(), 10**9)
             return False
         return True
@@ -452,7 +458,7 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     @exige_admin
     def fila():
         itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
-        itens = sorted([m for m in itens if m], key=lambda m: (m["status"] != "na_fila", m["criado"]))
+        itens = sorted([m for m in itens if m], key=lambda m: (m["status"] not in ("na_fila", "rascunho"), m["criado"]))
         return jsonify(itens)  # sem e-mails: só diz se a pessoa pediu aviso (tem_email)
 
     @app.get("/admin/api/uso")
@@ -461,29 +467,19 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         u = uso()
         return jsonify({**u, "limite_bytes": limite_bytes, "limite_envios": FILA_MAX})
 
-    @app.get("/admin/api/print/<p>")
-    @exige_admin
-    def print_(p):
+    def ler_print(p):
         p = p.upper()
         d = PROTOCOLO_RE.match(p) and armazem.pegar(f"envios/{p}/print.jpg")
         if not d:
             return erro("Não encontrado.", 404)
         return send_file(io.BytesIO(d), mimetype="image/jpeg", download_name=f"{p}.jpg")
 
-    @app.post("/admin/api/concluir")
+    @app.get("/admin/api/print/<p>")
     @exige_admin
-    def concluir():
-        d = request.get_json(silent=True) or {}
-        p, res, link = str(d.get("protocolo", "")).upper(), d.get("resultado"), str(d.get("link") or "").strip()
-        m = PROTOCOLO_RE.match(p) and meta(p)
-        if not m:
-            return erro("Protocolo não encontrado.", 404)
-        if res not in RESULTADOS:
-            return erro("Resultado inválido.", 400)
-        if link and not link.startswith(link_ok):
-            return erro("O link precisa ser de uma página do próprio site.", 400)
-        if res == "publicado" and not link:
-            return erro("Para 'publicado', informe o link do parecer.", 400)
+    def print_(p):
+        return ler_print(p)
+
+    def concluir_envio(p, m, res, link):
         m.update(status=res, link=link, concluido=agora())
         salvar_meta(p, m)
         enviado = "sem_email"
@@ -508,6 +504,22 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             enviado = "enviado"
         return jsonify({"status": res, "email": enviado})
 
+    @app.post("/admin/api/concluir")
+    @exige_admin
+    def concluir():
+        d = request.get_json(silent=True) or {}
+        p, res, link = str(d.get("protocolo", "")).upper(), d.get("resultado"), str(d.get("link") or "").strip()
+        m = PROTOCOLO_RE.match(p) and meta(p)
+        if not m:
+            return erro("Protocolo não encontrado.", 404)
+        if res not in RESULTADOS:
+            return erro("Resultado inválido.", 400)
+        if link and not link.startswith(link_ok):
+            return erro("O link precisa ser de uma página do próprio site.", 400)
+        if res == "publicado" and not link:
+            return erro("Para 'publicado', informe o link do parecer.", 400)
+        return concluir_envio(p, m, res, link)
+
     @app.post("/admin/api/apagar")
     @exige_admin
     def apagar_admin():
@@ -517,5 +529,60 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         for k in (f"envios/{p}/print.jpg", f"envios/{p}/meta.json", f"contatos/{p}.bin"):
             armazem.apagar(k)
         return jsonify({"apagado": True})
+
+    # ----- Rotina de IA (só com ROTINA_TOKEN; desligada se ele não existir) -----
+    # Ela prepara o parecer e abre um PR. Nada vai ao ar sem o merge do responsável: a rotina só
+    # conclui como "publicado" depois que o PR foi aceito. Não vê e-mails nem pode apagar envios.
+    def exige_rotina(f):
+        def g(*a, **k):
+            if admin_bloqueado():
+                return erro("Muitas tentativas. Espere uma hora.", 429)
+            if not admin_ok(token_rotina):
+                return erro("Senha da rotina incorreta.", 401)
+            return f(*a, **k)
+        g.__name__ = f.__name__
+        return g
+
+    @app.get("/rotina/api/fila")
+    @exige_rotina
+    def rotina_fila():
+        itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
+        itens = sorted([m for m in itens if m and m["status"] in ("na_fila", "rascunho")], key=lambda m: m["criado"])
+        return jsonify([{k: m.get(k, "") for k in ("protocolo", "criado", "onde", "status", "pr")} for m in itens])
+
+    @app.get("/rotina/api/print/<p>")
+    @exige_rotina
+    def rotina_print(p):
+        return ler_print(p)
+
+    @app.post("/rotina/api/rascunho")
+    @exige_rotina
+    def rotina_rascunho():
+        d = request.get_json(silent=True) or {}
+        p, pr = str(d.get("protocolo", "")).upper(), str(d.get("pr") or "").strip()
+        m = PROTOCOLO_RE.match(p) and meta(p)
+        if not m:
+            return erro("Protocolo não encontrado.", 404)
+        if m["status"] != "na_fila":
+            return erro("Este envio já saiu da fila.", 409)
+        if not PR_RE.match(pr):
+            return erro("Informe o link do PR no repositório do site.", 400)
+        m.update(status="rascunho", pr=pr)
+        salvar_meta(p, m)
+        return jsonify({"status": "rascunho"})
+
+    @app.post("/rotina/api/publicado")
+    @exige_rotina
+    def rotina_publicado():
+        d = request.get_json(silent=True) or {}
+        p, link = str(d.get("protocolo", "")).upper(), str(d.get("link") or "").strip()
+        m = PROTOCOLO_RE.match(p) and meta(p)
+        if not m:
+            return erro("Protocolo não encontrado.", 404)
+        if m["status"] != "rascunho":
+            return erro("Só dá para publicar um envio que está em rascunho.", 409)
+        if not link.startswith(link_ok) or "#fake-" not in link:
+            return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
+        return concluir_envio(p, m, "publicado", link)
 
     return app
