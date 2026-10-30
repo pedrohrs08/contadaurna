@@ -266,13 +266,16 @@ td.alto { color: var(--bad); font-weight: 600; }
 .cronfiltro { margin-bottom: 14px; }
 .crondias { display: grid; gap: 10px; }
 .crondia { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.crondia > summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; list-style: none; font: 700 1rem var(--f-narrow); }
+.crondia > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 12px; cursor: pointer; list-style: none; font: 700 1rem var(--f-narrow); }
 .crondia > summary::-webkit-details-marker { display: none; }
 .crondia > summary::before { content: "▸"; color: var(--brand); transition: transform .15s; }
 .crondia[open] > summary::before { transform: rotate(90deg); }
 .crondia > summary .qtd { margin-left: auto; white-space: nowrap; font: 600 .78rem var(--f-narrow); color: var(--muted); }
 .crondia > summary .novo { font: 800 .66rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--brand-soft); color: var(--brand-deep); }
 .crondia[open] > summary { border-bottom: 1px solid var(--line); }
+.crondia > summary .atu, .crono .atu { font: 800 .66rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); white-space: nowrap; }
+.crono .atu-nota { font-size: .86rem; color: var(--muted); }
+.crono .atu-nota b { color: var(--warn); font-weight: 600; }
 .crondia > .crono { margin: 12px 12px 14px 18px; }
 .crono .prej { margin: 6px 0 0; padding: 7px 9px; border-left: 3px solid var(--line); background: var(--surface); border-radius: 0 6px 6px 0; font-size: .86rem; }
 .crono .prej span { color: var(--muted); }
@@ -2863,13 +2866,19 @@ function cronHora(c) {   // tira o "Quarta, 28/10" do começo, que já está no 
   const h = c.hora.replace(/^[^\d,]+,\s*\d{1,2}\/\d{1,2},?\s*/, "");
   return h ? h[0].toUpperCase() + h.slice(1) : "";
 }
+// Item completado ou confirmado depois de publicado: atualizado = ["dd/mm", "o que mudou"]. Vira selo no item e no título do dia.
+const chaveData = t => { const m = t.match(/(\d{1,2})\/(\d{1,2})/); return m ? +m[2] * 100 + +m[1] : 0; };
+function cronAtualizado(itens) {   // a atualização mais recente entre os itens, ou null
+  return itens.filter(c => c.atualizado).sort((a, b) => chaveData(b.atualizado[0]) - chaveData(a.atualizado[0]))[0] || null;
+}
 const DIAS_CRONO = [...new Map(CRONO.map(c => [cronDia(c).chave, cronDia(c)])).values()].sort((a, b) => b.chave - a.chave);
 const cronAbertos = new Set([DIAS_CRONO[0].chave]);
 function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
   const item = c => `<li class="${c.tipo}">
-    <div class="topo">${cronHora(c) ? `<span class="hora">${cronHora(c)}</span>` : ""}<span class="tipo">${TIPO[c.tipo]}</span></div>
+    <div class="topo">${cronHora(c) ? `<span class="hora">${cronHora(c)}</span>` : ""}<span class="tipo">${TIPO[c.tipo]}</span>${c.atualizado ? `<span class="atu">Atualizado em ${c.atualizado[0]}</span>` : ""}</div>
     <h3>${c.titulo}</h3>
+    ${c.atualizado && c.atualizado[1] ? `<p class="atu-nota"><b>Atualização (${c.atualizado[0]}):</b> ${c.atualizado[1]}</p>` : ""}
     ${c.prej ? `<p class="prej-curto"><b>Prejudicada no resultado:</b> ${c.prej[0]}</p>` : ""}
     <details><summary>Detalhes</summary><p>${c.texto}</p>${c.prej ? `<p class="prej"><b>Por quê:</b> <span>${c.prej[1]}</span></p>` : ""}</details>
     ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
@@ -2879,8 +2888,9 @@ function renderCrono() {
     const itens = visiveis.filter(c => cronDia(c).chave === dia.chave).reverse();   // mais recente primeiro
     if (!itens.length) return "";
     const n = itens.length + (itens.length === 1 ? " item" : " itens");
+    const atu = cronAtualizado(itens);
     return `<details class="crondia" data-dia="${dia.chave}"${cronAbertos.has(dia.chave) ? " open" : ""}>
-      <summary>${dia.rotulo}${dia.chave === 1025 ? " · 2º turno" : ""}${dia === DIAS_CRONO[0] ? ' <span class="novo">Mais recente</span>' : ""}<span class="qtd">${n}</span></summary>
+      <summary>${dia.rotulo}${dia.chave === 1025 ? " · 2º turno" : ""}${dia === DIAS_CRONO[0] ? ' <span class="novo">Mais recente</span>' : ""}${atu ? ` <span class="atu" title="Algum item deste dia foi completado ou confirmado depois">Atualizado em ${atu.atualizado[0]}</span>` : ""}<span class="qtd">${n}</span></summary>
       <ol class="crono">${itens.map(item).join("")}</ol>
     </details>`;
   }).join("");
