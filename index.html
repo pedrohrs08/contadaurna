@@ -264,6 +264,16 @@ td.alto { color: var(--bad); font-weight: 600; }
 .simples p { margin: 4px 0; max-width: 70ch; font-size: .98rem; line-height: 1.55; }
 .simples p.ex { background: var(--ok-soft); border-radius: 8px; padding: 8px 12px; margin-top: 8px; }
 .cronfiltro { margin-bottom: 14px; }
+.crondias { display: grid; gap: 10px; }
+.crondia { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.crondia > summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; list-style: none; font: 700 1rem var(--f-narrow); }
+.crondia > summary::-webkit-details-marker { display: none; }
+.crondia > summary::before { content: "▸"; color: var(--brand); transition: transform .15s; }
+.crondia[open] > summary::before { transform: rotate(90deg); }
+.crondia > summary .qtd { margin-left: auto; white-space: nowrap; font: 600 .78rem var(--f-narrow); color: var(--muted); }
+.crondia > summary .novo { font: 800 .66rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--brand-soft); color: var(--brand-deep); }
+.crondia[open] > summary { border-bottom: 1px solid var(--line); }
+.crondia > .crono { margin: 12px 12px 14px 18px; }
 .crono .prej { margin: 6px 0 0; padding: 7px 9px; border-left: 3px solid var(--line); background: var(--surface); border-radius: 0 6px 6px 0; font-size: .86rem; }
 .crono .prej span { color: var(--muted); }
 .crono { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); display: grid; gap: 14px; }
@@ -518,9 +528,9 @@ window.goatcounter = {path: () => location.pathname + (/^#(fake|envie)/.test(loc
 
 
   <section class="panel so-cron" aria-label="Cronologia do dia da eleição">
-    <p class="eyebrow">Cronologia · domingo, 25 de outubro de 2026 (horário de Brasília)</p>
-    <h2 style="margin:0 0 6px">O dia do 2º turno, hora a hora</h2>
-    <p class="note" style="margin:0 0 4px">Cada item é <b>fato</b>, <b>opinião</b> ou <b>fake news</b> e diz qual candidatura foi prejudicada em votos. Toque em “Detalhes” para ler o item inteiro.</p>
+    <p class="eyebrow">Cronologia · desde domingo, 25 de outubro de 2026 (horário de Brasília)</p>
+    <h2 style="margin:0 0 6px">Do 2º turno até hoje, dia a dia</h2>
+    <p class="note" style="margin:0 0 4px">O mais recente vem primeiro. Toque num dia para abrir ou fechar. Cada item é <b>fato</b>, <b>opinião</b> ou <b>fake news</b> e diz qual candidatura foi prejudicada em votos; toque em “Detalhes” para ler o item inteiro.</p>
     <details class="note mais" style="margin:0 0 12px"><summary>Como ler a cronologia</summary><p>Cada item diz se é <b>fato</b> (aconteceu e está registrado), <b>opinião</b> (é o que alguém disse ou defende, inclusive as versões em disputa) ou <b>fake news</b> (afirmação desmentida pelos dados). Os horários vêm das próprias reportagens; quando os veículos dão horários diferentes, o item avisa. Cada item também diz <b>qual candidatura foi prejudicada no resultado</b>, isto é, em votos, e por quê. Prejuízo de imagem não conta. Quando não dá para saber de que lado eram os votos afetados, o item diz isso.</p></details>
     <div class="seg cronfiltro" role="group" aria-label="Filtrar a linha do tempo">
       <button type="button" data-tipo="todos" aria-pressed="true">Tudo</button>
@@ -528,7 +538,7 @@ window.goatcounter = {path: () => location.pathname + (/^#(fake|envie)/.test(loc
       <button type="button" data-tipo="opiniao" aria-pressed="false">Opiniões</button>
       <button type="button" data-tipo="fake" aria-pressed="false">Fake news</button>
     </div>
-    <ol class="crono" id="cronLista"></ol>
+    <div class="crondias" id="cronLista"></div>
     <p class="note" style="margin-top:12px">Veículos consultados, de linhas editoriais diferentes: Gazeta do Povo, Revista Oeste, Brasil Paralelo e Jovem Pan (costumam ser vistos como à direita); Exame, Bloomberg Línea, Metrópoles e Mix Vale, Poder360 e Band (mercado e generalistas); CartaCapital e Brasil 247 (costumam ser vistos como à esquerda); e as agências públicas Agência Brasil e Agência Senado, além do próprio TSE.</p>
   </section>
 
@@ -2795,20 +2805,48 @@ function marcarArquivos(raiz = document) {
 }
 
 let cronFiltro = "todos";
+// O dia de cada item sai do próprio campo hora ("Quarta, 28/10, manhã"); sem data = 25/10, dia da eleição.
+const SEMANA = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+function cronDia(c) {
+  const m = c.hora.match(/(\d{1,2})\/(\d{1,2})/);
+  const d = m ? +m[1] : 25, mes = m ? +m[2] : 10;
+  return {chave: mes * 100 + d, rotulo: `${SEMANA[new Date(2026, mes - 1, d).getDay()]}, ${String(d).padStart(2, "0")}/${String(mes).padStart(2, "0")}`};
+}
+function cronHora(c) {   // tira o "Quarta, 28/10" do começo, que já está no título do dia
+  const h = c.hora.replace(/^[^\d,]+,\s*\d{1,2}\/\d{1,2},?\s*/, "");
+  return h ? h[0].toUpperCase() + h.slice(1) : "";
+}
+const DIAS_CRONO = [...new Map(CRONO.map(c => [cronDia(c).chave, cronDia(c)])).values()].sort((a, b) => b.chave - a.chave);
+const cronAbertos = new Set([DIAS_CRONO[0].chave]);
 function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
-  $("cronLista").innerHTML = CRONO.filter(c => cronFiltro === "todos" || c.tipo === cronFiltro).map(c => `<li class="${c.tipo}">
-    <div class="topo"><span class="hora">${c.hora}</span><span class="tipo">${TIPO[c.tipo]}</span></div>
+  const item = c => `<li class="${c.tipo}">
+    <div class="topo">${cronHora(c) ? `<span class="hora">${cronHora(c)}</span>` : ""}<span class="tipo">${TIPO[c.tipo]}</span></div>
     <h3>${c.titulo}</h3>
     ${c.prej ? `<p class="prej-curto"><b>Prejudicada no resultado:</b> ${c.prej[0]}</p>` : ""}
     <details><summary>Detalhes</summary><p>${c.texto}</p>${c.prej ? `<p class="prej"><b>Por quê:</b> <span>${c.prej[1]}</span></p>` : ""}</details>
     ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
-  </li>`).join("");
+  </li>`;
+  const visiveis = CRONO.filter(c => cronFiltro === "todos" || c.tipo === cronFiltro);
+  $("cronLista").innerHTML = DIAS_CRONO.map(dia => {
+    const itens = visiveis.filter(c => cronDia(c).chave === dia.chave).reverse();   // mais recente primeiro
+    if (!itens.length) return "";
+    const n = itens.length + (itens.length === 1 ? " item" : " itens");
+    return `<details class="crondia" data-dia="${dia.chave}"${cronAbertos.has(dia.chave) ? " open" : ""}>
+      <summary>${dia.rotulo}${dia.chave === 1025 ? " · 2º turno" : ""}${dia === DIAS_CRONO[0] ? ' <span class="novo">Mais recente</span>' : ""}<span class="qtd">${n}</span></summary>
+      <ol class="crono">${itens.map(item).join("")}</ol>
+    </details>`;
+  }).join("");
+  $("cronLista").querySelectorAll(".crondia").forEach(d => d.addEventListener("toggle", () => {
+    d.open ? cronAbertos.add(+d.dataset.dia) : cronAbertos.delete(+d.dataset.dia);
+  }));
   marcarArquivos($("cronLista"));
 }
 document.querySelector(".cronfiltro").addEventListener("click", e => {
   const t = e.target.dataset && e.target.dataset.tipo; if (!t) return;
   cronFiltro = t;
+  cronAbertos.clear();   // filtro ligado: abre todos os dias com itens; "Tudo": volta a abrir só o mais recente
+  (t === "todos" ? [DIAS_CRONO[0]] : DIAS_CRONO).forEach(d => cronAbertos.add(d.chave));
   document.querySelectorAll(".cronfiltro button").forEach(b => b.setAttribute("aria-pressed", b.dataset.tipo === t));
   renderCrono();
 });
