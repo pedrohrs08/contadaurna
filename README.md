@@ -118,7 +118,7 @@ Tudo fica no `index.html`:
 
 | O que | Onde |
 |---|---|
-| Itens da cronologia | lista `CRONO` (campos `hora` (depois de 25/10, comece com o dia, como "Quinta, 29/10, manhã": é daí que sai o agrupamento por dia), `tipo` = fato/opiniao/fake, `titulo`, `texto`, `fontes`, `prej` = [candidatura prejudicada, motivo]) e mapa de fontes `FONTES_CRON` |
+| Itens da cronologia | lista `CRONO` (campos `hora` (depois de 25/10, comece com o dia, como "Quinta, 29/10, manhã": é daí que sai o agrupamento por dia), `tipo` = fato/opiniao/fake, `titulo`, `texto`, `fontes`, `prej` = [candidatura prejudicada, motivo], e `atualizado` = ["dd/mm", "o que mudou"] quando um item já publicado é completado ou confirmado: vira um selo "Atualizado em dd/mm" no item e no título recolhido do dia) e mapa de fontes `FONTES_CRON` |
 | Boatos checados | lista `FAKES` (o mais recente primeiro). Aparecem primeiro o `selo`, a `frase` (o veredito em uma linha) e os `nums` (três pares [número, o que é]); o `curto` + `parecer` e o texto do boato (`texto`, `outras`) ficam em "ver mais". Sem `frase`, o cartão mostra o `curto` |
 | Frase-resposta de cada aba | blocos `<div class="so-…">` dentro de `.sobre`, no HTML (a da aba Fake news é calculada a partir de `FAKES`) |
 | Pesquisas da véspera | lista `PESQ_VESPERA` |
