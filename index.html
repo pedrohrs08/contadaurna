@@ -1983,6 +1983,41 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "farmacia-popular-bloqueio-2024",
+    data: "30/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Governo Lula bloqueia R$ 1,7 bi do Farmácia Popular e R$ 580 milhões do Auxílio Gás\"",
+    texto: `[vídeo com foto de Lula de chapéu, sentado num estúdio, e a legenda:]
+Governo Lula bloqueia R$ 1,7 bi do
+Farmácia Popular e R$ 580 milhões
+do Auxílio Gás.
+Faz O L Petezada Jumenta
+🐴🐴🤡🤡🤡😂😂😂`,
+    frase: "O bloqueio <b>aconteceu, mas em agosto de 2024</b>, no congelamento de R$ 15 bilhões daquele ano. A notícia está sendo repostada agora como se fosse nova. Em 2026 não há bloqueio no Farmácia Popular, e o <b>Auxílio Gás nem existe mais</b>: virou o Gás do Povo.",
+    nums: [["ago/2024", "quando o governo detalhou o bloqueio de R$ 1,7 bi e R$ 580 mi"], ["R$ 15 bi", "congelamento total do Orçamento de 2024, do qual esses valores faziam parte"], ["2026", "ano em que o Auxílio Gás foi substituído pelo Gás do Povo"]],
+    curto: "Enganoso. Os números são de um bloqueio real, mas de agosto de 2024: no congelamento de R$ 15 bilhões daquele ano, o Farmácia Popular perdeu R$ 1,7 bilhão e o Auxílio Gás, R$ 580 milhões. O post circula agora sem data, como se fosse novidade depois da eleição. Não há bloqueio parecido em 2026, e o Auxílio Gás foi substituído pelo Gás do Povo.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>O bloqueio existiu.</b> Em 8/8/2024, o governo detalhou o congelamento de R$ 15 bilhões do Orçamento de 2024, anunciado no fim de julho para cumprir o limite de gastos do arcabouço fiscal. O Farmácia Popular foi o programa mais atingido, com R$ 1,7 bilhão; o Auxílio Gás perdeu R$ 580 milhões; e o Pé-de-Meia, R$ 500 milhões.</li>
+        <li><b>A crítica da época tinha fundamento.</b> Os R$ 1,7 bilhão eram cerca de um terço da parte gratuita do programa, e veículos de linhas diferentes destacaram o corte.</li>
+      </ul>
+      <p><b>O que é enganoso:</b></p>
+      <ul>
+        <li><b>A notícia tem mais de dois anos.</b> O post não traz data e reaparece agora, logo depois do 2º turno, como se o bloqueio fosse uma decisão nova. Nenhum relatório de despesas de 2026 nem reportagem deste ano fala em bloqueio do Farmácia Popular.</li>
+        <li><b>O Auxílio Gás nem existe mais.</b> A Lei 15.348/2026 criou o Gás do Povo no lugar dele, com recarga grátis do botijão para cerca de 15 milhões de famílias (veja o parecer <a href="#fake-gas-do-povo-corte">"Depois da eleição, vão cortar o Gás do Povo"</a>).</li>
+        <li><b>O Farmácia Popular cresceu depois disso.</b> Em fevereiro de 2025, todos os itens do programa passaram a ser gratuitos, e o orçamento previsto para 2026 é maior que o de 2024.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar que programas de saúde não sejam usados para fechar as contas, como aconteceu em 2024, e acompanhar o Orçamento de 2027, ainda em votação. Mas apresentar um bloqueio de 2024 como se fosse de agora engana quem lê.</p>`,
+    fontes: [
+      ["Poder360: bloqueio atinge Farmácia Popular, Auxílio Gás e Pé-de-Meia (ago/2024)", "https://www.poder360.com.br/poder-economia/bloqueio-atinge-farmacia-popular-auxilio-gas-e-pe-de-meia/"],
+      ["Jovem Pan: Farmácia Popular é o programa mais atingido por corte de gastos (ago/2024)", "https://jovempan.com.br/economia/macroeconomia/farmacia-popular-e-o-programa-mais-atingido-por-corte-de-gastos-do-governo-lula/"],
+      ["Gazeta do Povo: ministérios dizem que Farmácia Popular e Auxílio Gás não sofrerão com cortes (ago/2024)", "https://www.gazetadopovo.com.br/economia/ministerios-dizem-que-farmacia-popular-e-auxilio-gas-nao-sofrerao-com-cortes/"],
+      ["Metrópoles: governo Lula congela R$ 2,2 bi de Auxílio Gás e Farmácia Popular (ago/2024)", "https://www.metropoles.com/brasil/governo-lula-congela-r-22-bi-de-auxilio-gas-e-farmacia-popular"],
+      ["Futuro da Saúde: todos os medicamentos do Farmácia Popular passam a ter 100% de gratuidade (fev/2025)", "https://futurodasaude.com.br/farmacia-popular-gratuidade/"],
+    ],
+  },
+  {
     id: "nikolas-views-india",
     data: "29/10/2026",
     selo: "Enganoso",
@@ -2824,7 +2859,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-29T22:55-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-30T20:55-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
