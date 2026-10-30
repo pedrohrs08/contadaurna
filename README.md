@@ -20,7 +20,7 @@ Depois do 2º turno circularam muitas versões sobre o que aconteceu no dia: ôn
 
 | Aba | O que mostra | De onde vêm os dados |
 |---|---|---|
-| **Cronologia** | O dia da eleição hora a hora. Cada item é marcado como fato, opinião ou fake news e diz qual candidatura foi prejudicada **no resultado** (em votos) e por quê. Quando os veículos divergem em horário ou número, o item mostra as versões. | Reportagens com link (Gazeta do Povo, Revista Oeste, Brasil Paralelo, Jovem Pan, Exame, Bloomberg Línea, Mix Vale, Poder360, Band, CartaCapital, Brasil 247, Agência Brasil, Agência Senado, TSE) |
+| **Cronologia** | Do dia da eleição até hoje, agrupado por dia (o mais recente primeiro e aberto; os outros recolhidos). Cada item é marcado como fato, opinião ou fake news e diz qual candidatura foi prejudicada **no resultado** (em votos) e por quê. Quando os veículos divergem em horário ou número, o item mostra as versões. | Reportagens com link (Gazeta do Povo, Revista Oeste, Brasil Paralelo, Jovem Pan, Exame, Bloomberg Línea, Mix Vale, Poder360, Band, CartaCapital, Brasil 247, Agência Brasil, Agência Senado, TSE) |
 | **Resultado** | Placar oficial: votos válidos, seções totalizadas, resultado por região, por UF e no mapa. Clicando num estado, aparecem as grandes cidades. | Arquivos públicos de resultados do TSE |
 | **Impactos da Extensão** | Quanto a prorrogação até 19h poderia ter mudado o resultado: votos registrados depois das 17h, cenários de horário normal × estendido, o mínimo que o perdedor precisaria para virar e a hipótese contrária ("e se todas as seções ficassem abertas?"). Inclui uma explicação em linguagem simples. | Resultado do TSE e contagens dos registros (logs) das urnas feitas pelo G1 (35.521 votos) e pela Jovem Pan (34.319). As suposições por região são editáveis e marcadas como estimativa. |
 | **Pesquisas × urnas** | A média das pesquisas da véspera (Lula 49,1% dos válidos) comparada com o resultado (51,8%), instituto por instituto, com exemplos de erro de pesquisa em 2022 e por que essa diferença não indica fraude. | Compilação da RED (24/10/2026) e reportagens de 2022 |
@@ -118,7 +118,7 @@ Tudo fica no `index.html`:
 
 | O que | Onde |
 |---|---|
-| Itens da cronologia | lista `CRONO` (campos `hora`, `tipo` = fato/opiniao/fake, `titulo`, `texto`, `fontes`, `prej` = [candidatura prejudicada, motivo]) e mapa de fontes `FONTES_CRON` |
+| Itens da cronologia | lista `CRONO` (campos `hora` (depois de 25/10, comece com o dia, como "Quinta, 29/10, manhã": é daí que sai o agrupamento por dia), `tipo` = fato/opiniao/fake, `titulo`, `texto`, `fontes`, `prej` = [candidatura prejudicada, motivo]) e mapa de fontes `FONTES_CRON` |
 | Boatos checados | lista `FAKES` (o mais recente primeiro). Aparecem primeiro o `selo`, a `frase` (o veredito em uma linha) e os `nums` (três pares [número, o que é]); o `curto` + `parecer` e o texto do boato (`texto`, `outras`) ficam em "ver mais". Sem `frase`, o cartão mostra o `curto` |
 | Frase-resposta de cada aba | blocos `<div class="so-…">` dentro de `.sobre`, no HTML (a da aba Fake news é calculada a partir de `FAKES`) |
 | Pesquisas da véspera | lista `PESQ_VESPERA` |
