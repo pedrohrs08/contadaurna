@@ -1980,6 +1980,53 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "nikolas-views-india",
+    data: "29/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Internautas descobriram que 73% das visualizações de Nikolas Ferreira vêm da Índia\"",
+    texto: `[arte com foto de Nikolas Ferreira sobre fundo preto e estrela vermelha, e um print de painel de estatísticas de um post, destacado com moldura vermelha:]
+7,1mi · 1,3mi · 2,4mi · 3,2mi · 1,9mi
+Visão geral · Engajamento · Público
+Quem visualizou seu post
+Seguidores 67,0%
+Não seguidores 33,0%
+Detalhes do público
+Idade · País · Gênero
+Índia 72,4%
+Brasil 20,6%
+França 0,4%
+
+PROVA AQUI!
+
+INTERNAUTAS DESCOBRIRAM QUE 73% DAS VISUALIZAÇÕES DE NIKOLAS FERREIRA VÊM DA ÍNDIA.
+
+TÁ EXPLICADO!`,
+    frase: "O debate sobre o alcance <b>fora do padrão</b> dos vídeos de Nikolas é real e está no Ministério Público Eleitoral. Mas o print \"da Índia\" <b>não tem origem conhecida</b>: o painel de público de um post só aparece para o <b>dono da conta</b>, e nenhum relatório, reportagem ou checagem achou visualizações vindas da Índia.",
+    nums: [["410,5 mi", "views em 10 Reels de Nikolas, segundo o relatório entregue ao MPE"], ["16/10", "data em que entidades levaram o caso ao Ministério Público Eleitoral"], ["1", "post, sem identificação, no print que \"prova\" a tese"]],
+    curto: "Enganoso. Há um questionamento legítimo: entidades levaram ao Ministério Público Eleitoral um relatório que aponta alcance muito acima do normal nos Reels de Nikolas Ferreira. Mas o print que diz que 73% das visualizações vêm da Índia não tem origem conhecida, mostra um único post sem identificação e traz um painel que só o dono da conta vê. Nenhum relatório ou reportagem achou essa origem.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>O alcance dos vídeos de Nikolas está sendo questionado.</b> Em 16/10, Sleeping Giants Brasil, Artigo 19 e CTRL+Z entregaram ao Ministério Público Eleitoral um relatório que comparou 300 Reels de 30 perfis. Dos 24 que passaram do número de seguidores da conta, 10 eram de Nikolas, com 410,5 milhões de visualizações somadas.</li>
+        <li><b>O vídeo "O Nordeste que foi esquecido" passou de 146 milhões de visualizações</b> mesmo depois de perder o áudio por um pedido de direitos autorais, segundo a Meta.</li>
+      </ul>
+      <p><b>O que não tem base:</b></p>
+      <ul>
+        <li><b>Ninguém achou visualizações vindas da Índia.</b> O próprio relatório entregue ao MPE diz que os dados públicos não mostram a causa do alcance; o favorecimento pelo algoritmo é tratado como hipótese. Nem o relatório nem as reportagens sobre ele, de veículos de linhas diferentes, falam da Índia.</li>
+        <li><b>O print não pode ter sido \"descoberto por internautas\".</b> O painel \"Quem visualizou seu post\", com o país do público, faz parte das estatísticas (insights) do Instagram, que só o dono da conta profissional vê. Não há como consultar as estatísticas de outra conta.</li>
+        <li><b>O print não mostra de quem é o post.</b> Não aparece o nome da conta, a data nem o conteúdo. Ainda que fosse verdadeiro, seria um post só, e não \"73% das visualizações de Nikolas\".</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar da Meta transparência sobre como o algoritmo distribui conteúdo político em ano de eleição, como fizeram as entidades no MPE. Mas um print sem origem não é prova de que as visualizações vêm de outro país.</p>`,
+    fontes: [
+      ["Diário de Cuiabá: Reels de Nikolas têm mais views que estrelas globais, diz relatório", "https://www.diariodecuiaba.com.br/brasil/reels-de-nikolas-tem-mais-views-que-videos-de-selena-gomez-kim-kardashian-e-estrelas-globais-diz-relatorio/758600"],
+      ["Exame: entidades apontam desempenho atípico de vídeos de Nikolas no Instagram", "https://exame.com/brasil/entidades-apontam-desempenho-atipico-de-videos-de-nikolas-no-instagram/"],
+      ["Mídia NINJA: 410 milhões de views de Nikolas no Instagram levantam suspeitas", "https://midianinja.org/meta-na-berlinda-410-milhoes-de-views-de-nikolas-no-instagram-levantam-suspeitas/"],
+      ["Metrópoles: mesmo sem áudio, vídeo de Nikolas chega a 146 milhões de visualizações", "https://www.metropoles.com/minas-gerais/mesmo-sem-audio-video-de-nikolas-chega-a-146-milhoes-de-visualizacoes"],
+      ["Revista Oeste: o embate entre um deputado digital e um governo analógico", "https://www.revistaoeste.com/revista/edicao-269/o-embate-entre-um-deputado-digital-e-um-governo-analogico/"],
+      ["Canaltech: dá para ver os insights do Instagram de outra conta?", "https://canaltech.com.br/apps/como-ver-os-insights-do-instagram-de-outra-conta/"],
+    ],
+  },
+  {
     id: "flavio-106-urnas-zeradas",
     data: "28/10/2026",
     selo: "Enganoso",
@@ -2774,7 +2821,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-29T19:55-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-29T22:55-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
