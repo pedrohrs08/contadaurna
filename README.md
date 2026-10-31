@@ -85,6 +85,10 @@ Os parâmetros não foram calibrados com 2018 e 2022.
 | `arquivo-fontes.json` | Registro gerado automaticamente com a cópia arquivada de cada fonte. |
 | `.github/workflows/pages.yml` | A cada push na `main`, publica o site no GitHub Pages (branch `gh-pages`). |
 | `.github/workflows/arquivar.yml` | A cada mudança no `index.html`, arquiva as fontes no archive.org. Também pode ser rodado à mão em Actions. |
+| `banco/` | Banco de dados (Cloudflare D1) com envios, pareceres e histórico, e o serviço que entrega os pareceres ao site. Veja [`banco/README.md`](banco/README.md). |
+| `fakes.json` | Cópia automática dos pareceres publicados: reserva do site e histórico público. Não edite à mão. |
+| `.github/workflows/banco.yml` | Testa o serviço dos pareceres nos PRs e, na `main`, aplica as migrações do banco e publica o serviço. |
+| `.github/workflows/copia-pareceres.yml` | A cada 20 minutos, copia os pareceres publicados para `fakes.json` (só faz commit se mudou) e republica o site. |
 | `envios/` | Servidor de envio de prints da aba Fake news (Render), com página de administração e testes. Desenho de segurança e configuração em [`envios/README.md`](envios/README.md). |
 | `.github/workflows/envios.yml` | Roda os testes do servidor de envios a cada PR que mexe em `envios/`. |
 | `render.yaml` | Configuração do Render: o site estático e o servidor de envios. |
@@ -119,7 +123,7 @@ Tudo fica no `index.html`:
 | O que | Onde |
 |---|---|
 | Itens da cronologia | lista `CRONO` (campos `hora` (depois de 25/10, comece com o dia, como "Quinta, 29/10, manhã": é daí que sai o agrupamento por dia), `tipo` = fato/opiniao/fake, `titulo`, `texto`, `fontes`, `prej` = [candidatura prejudicada, motivo], e `atualizado` = ["dd/mm", "o que mudou"] quando um item já publicado é completado ou confirmado: vira um selo "Atualizado em dd/mm" no item e no título recolhido do dia) e mapa de fontes `FONTES_CRON` |
-| Boatos checados | lista `FAKES` (o mais recente primeiro). Aparecem primeiro o `selo`, a `frase` (o veredito em uma linha) e os `nums` (três pares [número, o que é]); o `curto` + `parecer` e o texto do boato (`texto`, `outras`) ficam em "ver mais". Sem `frase`, o cartão mostra o `curto` |
+| Boatos checados | **no banco de dados**, não no `index.html`: crie e corrija pelo `/admin` do servidor de envios (aba Pareceres) ou pela rotina (veja [`banco/README.md`](banco/README.md)). Cada parecer tem os campos abaixo; `fakes.json` é a cópia automática dos publicados. O site os lê do serviço em `FAKES_API` (o mais recente primeiro). Aparecem primeiro o `selo`, a `frase` (o veredito em uma linha) e os `nums` (três pares [número, o que é]); o `curto` + `parecer` e o texto do boato (`texto`, `outras`) ficam em "ver mais". Sem `frase`, o cartão mostra o `curto` |
 | Frase-resposta de cada aba | blocos `<div class="so-…">` dentro de `.sobre`, no HTML (a da aba Fake news é calculada a partir de `FAKES`) |
 | Pesquisas da véspera | lista `PESQ_VESPERA` |
 | Data da última atualização | constante `ATUALIZADO` (atualizar a cada mudança de conteúdo) |

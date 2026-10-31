@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Fila de envios</title>
+<title>Administração · Conta da Urna</title>
 <style>
-  :root { color-scheme: light dark; --linha: #8884; --ok: #127a5a; --ruim: #b3261e; }
-  body { font: 16px/1.45 system-ui, sans-serif; margin: 0 auto; max-width: 760px; padding: 16px; }
-  h1 { font-size: 1.3rem; }
-  input, select, button { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linha); }
+  :root { color-scheme: light dark; --linha: #8884; --ok: #127a5a; --ruim: #b3261e; --pend: #b26a00; }
+  body { font: 16px/1.45 system-ui, sans-serif; margin: 0 auto; max-width: 820px; padding: 16px; }
+  h1 { font-size: 1.3rem; } h2 { font-size: 1.1rem; margin: 20px 0 4px; }
+  input, select, button, textarea { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linha); }
+  textarea { width: 100%; box-sizing: border-box; min-height: 5em; font: 14px/1.4 ui-monospace, monospace; }
+  label { display: grid; gap: 4px; font-size: .9rem; }
   button { cursor: pointer; }
   .item { border: 1px solid var(--linha); border-radius: 12px; padding: 12px; margin: 12px 0; display: grid; gap: 8px; }
   .item img { max-width: 100%; border-radius: 8px; }
@@ -19,27 +21,63 @@
   .aviso { font-size: .9rem; }
   .erro { color: var(--ruim); }
   .apagar { color: var(--ruim); }
+  .selo { font-size: .8rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; }
+  .no-ar { color: var(--ok); } .pend { color: var(--pend); }
+  .abas button[aria-pressed="true"] { background: var(--ok); color: #fff; border-color: var(--ok); }
+  .hist { font-size: .85rem; white-space: pre-wrap; max-height: 320px; overflow: auto; border-top: 1px solid var(--linha); padding-top: 6px; }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
-<h1>Fila de envios</h1>
+<h1>Administração · Conta da Urna</h1>
 <form id="entrar" class="linha">
   <input id="senha" type="password" autocomplete="current-password" placeholder="Senha de administração (ADMIN_TOKEN)" required style="flex:1;min-width:220px">
   <button>Entrar</button>
 </form>
 <p id="msg" class="aviso"></p>
 <div id="painel" hidden>
-  <div class="linha"><button id="atualizar" type="button">Atualizar</button><button id="sair" type="button">Sair</button></div>
+  <div class="linha abas">
+    <button id="abaEnvios" type="button" aria-pressed="true">Envios</button>
+    <button id="abaPareceres" type="button" aria-pressed="false">Pareceres</button>
+    <button id="atualizar" type="button">Atualizar</button><button id="sair" type="button">Sair</button>
+  </div>
   <p class="aviso" id="uso"></p>
-  <p class="aviso">Os e-mails nunca aparecem aqui. “Pediu aviso” só indica que a pessoa deixou um e-mail, que o servidor guarda criptografado e apaga depois de avisar.</p>
-  <div id="lista"></div>
+
+  <section id="secEnvios">
+    <p class="aviso">Os e-mails nunca aparecem aqui. “Pediu aviso” só indica que a pessoa deixou um e-mail, que o servidor guarda criptografado e apaga depois de avisar.</p>
+    <div id="lista"></div>
+  </section>
+
+  <section id="secPareceres" hidden>
+    <p class="aviso">Pendente é a versão que espera você. <b>Publicar</b> põe no ar e avisa por e-mail quem enviou o boato. O site atualiza em até 1 minuto.</p>
+    <div class="linha"><input id="novoId" placeholder="id do novo parecer (ex.: boato-do-dia)" style="flex:1;min-width:200px"><button id="novo" type="button">Novo parecer</button></div>
+    <div id="editor" class="item" hidden>
+      <div class="linha"><b id="edId"></b><span class="meta" id="edEstado"></span></div>
+      <label>Título (o boato, entre aspas)<input id="edTitulo"></label>
+      <div class="linha">
+        <label>Data<input id="edData" placeholder="dd/mm/aaaa" size="10"></label>
+        <label>Selo<select id="edSelo"><option value="">Não procede</option><option>Enganoso</option><option>Procede</option></select></label>
+      </div>
+      <label>Veredito em uma frase (aceita &lt;b&gt;)<textarea id="edFrase"></textarea></label>
+      <label>Números em destaque, um por linha: número | rótulo<textarea id="edNums"></textarea></label>
+      <label>Resumo curto<textarea id="edCurto"></textarea></label>
+      <label>Parecer completo (HTML: &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;b&gt;, &lt;a&gt;, tabelas)<textarea id="edParecer" style="min-height:14em"></textarea></label>
+      <label>Fontes, uma por linha: nome | link<textarea id="edFontes"></textarea></label>
+      <label>Texto do boato, na íntegra (sem @ nem nome do autor)<textarea id="edTexto" style="min-height:8em"></textarea></label>
+      <label>Outras versões do mesmo boato (JSON, opcional)<textarea id="edOutras"></textarea></label>
+      <div class="linha"><button id="edSalvar" type="button">Salvar como pendente</button><button id="edFechar" type="button">Fechar</button></div>
+      <div id="edRetorno" class="aviso"></div>
+    </div>
+    <div id="pareceres"></div>
+  </section>
 </div>
+
 <template id="modelo">
   <div class="item">
     <div class="linha"><span class="prot"></span><span class="meta"></span></div>
     <div class="onde"></div>
-    <div class="linha"><button type="button" class="ver">Ver print</button><a class="pr" target="_blank" rel="noopener" hidden></a><button type="button" class="apagar">Apagar envio</button></div>
+    <div class="avaliacao aviso"></div>
+    <div class="linha"><button type="button" class="ver">Ver print</button><a class="pr" target="_blank" rel="noopener" hidden></a><button type="button" class="hist-bt">Histórico</button><button type="button" class="apagar">Apagar envio</button></div>
     <img alt="Print enviado" hidden>
     <div class="linha">
       <select class="res">
@@ -52,6 +90,26 @@
       <button type="button" class="concluir">Concluir</button>
     </div>
     <div class="retorno aviso"></div>
+    <div class="hist" hidden></div>
+  </div>
+</template>
+
+<template id="modeloParecer">
+  <div class="item">
+    <div class="linha"><span class="selo estado"></span><b class="titulo"></b></div>
+    <div class="meta"></div>
+    <div class="envios aviso"></div>
+    <div class="linha">
+      <a class="previa" target="_blank" rel="noopener">Ver prévia</a>
+      <a class="site" target="_blank" rel="noopener">Ver no site</a>
+      <button type="button" class="editar">Editar</button>
+      <button type="button" class="publicar">Publicar</button>
+      <button type="button" class="descartar apagar">Descartar pendente</button>
+      <button type="button" class="tirar apagar">Tirar do ar</button>
+      <button type="button" class="hist-bt">Histórico</button>
+    </div>
+    <div class="retorno aviso"></div>
+    <div class="hist" hidden></div>
   </div>
 </template>
 <script src="/admin.js"></script>

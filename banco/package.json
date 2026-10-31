@@ -1,0 +1,11 @@
+{
+  "name": "contadaurna-banco",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test teste.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}

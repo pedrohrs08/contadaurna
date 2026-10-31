@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Guarda no archive.org uma cópia de cada página citada como fonte no index.html.
+"""Guarda no archive.org uma cópia de cada página citada como fonte no index.html e nos pareceres (fakes.json).
 
 Roda no GitHub Actions (ver .github/workflows/arquivar.yml). Pula as páginas que já têm
 cópia de 2026 e pede uma nova cópia das outras, com pausa entre os pedidos para respeitar
@@ -15,7 +15,7 @@ PULAR = re.compile(r"^https?://(localhost|www\.w3\.org|fonts\.googleapis\.com|fo
 
 
 def links():
-    html = open("index.html", encoding="utf-8").read()
+    html = open("index.html", encoding="utf-8").read() + open("fakes.json", encoding="utf-8").read()
     achados = re.findall(r'https?://[^\s"\'<>`)]+', html)
     return sorted({u.rstrip(".,;") for u in achados if not PULAR.match(u) and "." in urllib.parse.urlparse(u).netloc})
 
