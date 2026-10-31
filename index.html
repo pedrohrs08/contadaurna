@@ -266,13 +266,16 @@ td.alto { color: var(--bad); font-weight: 600; }
 .cronfiltro { margin-bottom: 14px; }
 .crondias { display: grid; gap: 10px; }
 .crondia { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.crondia > summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; list-style: none; font: 700 1rem var(--f-narrow); }
+.crondia > summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 10px 12px; cursor: pointer; list-style: none; font: 700 1rem var(--f-narrow); }
 .crondia > summary::-webkit-details-marker { display: none; }
 .crondia > summary::before { content: "▸"; color: var(--brand); transition: transform .15s; }
 .crondia[open] > summary::before { transform: rotate(90deg); }
 .crondia > summary .qtd { margin-left: auto; white-space: nowrap; font: 600 .78rem var(--f-narrow); color: var(--muted); }
 .crondia > summary .novo { font: 800 .66rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--brand-soft); color: var(--brand-deep); }
 .crondia[open] > summary { border-bottom: 1px solid var(--line); }
+.crondia > summary .atu, .crono .atu { font: 800 .66rem var(--f-narrow); letter-spacing: .08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); white-space: nowrap; }
+.crono .atu-nota { font-size: .86rem; color: var(--muted); }
+.crono .atu-nota b { color: var(--warn); font-weight: 600; }
 .crondia > .crono { margin: 12px 12px 14px 18px; }
 .crono .prej { margin: 6px 0 0; padding: 7px 9px; border-left: 3px solid var(--line); background: var(--surface); border-radius: 0 6px 6px 0; font-size: .86rem; }
 .crono .prej span { color: var(--muted); }
@@ -1980,6 +1983,41 @@ proPadrao();
 // Cada boato: o texto como circulou, na íntegra, e o parecer. Para acrescentar, inclua um item no começo da lista.
 const FAKES = [
   {
+    id: "farmacia-popular-bloqueio-2024",
+    data: "30/10/2026",
+    selo: "Enganoso",
+    titulo: "\"Governo Lula bloqueia R$ 1,7 bi do Farmácia Popular e R$ 580 milhões do Auxílio Gás\"",
+    texto: `[vídeo com foto de Lula de chapéu, sentado num estúdio, e a legenda:]
+Governo Lula bloqueia R$ 1,7 bi do
+Farmácia Popular e R$ 580 milhões
+do Auxílio Gás.
+Faz O L Petezada Jumenta
+🐴🐴🤡🤡🤡😂😂😂`,
+    frase: "O bloqueio <b>aconteceu, mas em agosto de 2024</b>, no congelamento de R$ 15 bilhões daquele ano. A notícia está sendo repostada agora como se fosse nova. Em 2026 não há bloqueio no Farmácia Popular, e o <b>Auxílio Gás nem existe mais</b>: virou o Gás do Povo.",
+    nums: [["ago/2024", "quando o governo detalhou o bloqueio de R$ 1,7 bi e R$ 580 mi"], ["R$ 15 bi", "congelamento total do Orçamento de 2024, do qual esses valores faziam parte"], ["2026", "ano em que o Auxílio Gás foi substituído pelo Gás do Povo"]],
+    curto: "Enganoso. Os números são de um bloqueio real, mas de agosto de 2024: no congelamento de R$ 15 bilhões daquele ano, o Farmácia Popular perdeu R$ 1,7 bilhão e o Auxílio Gás, R$ 580 milhões. O post circula agora sem data, como se fosse novidade depois da eleição. Não há bloqueio parecido em 2026, e o Auxílio Gás foi substituído pelo Gás do Povo.",
+    parecer: `
+      <p><b>O que é verdade:</b></p>
+      <ul>
+        <li><b>O bloqueio existiu.</b> Em 8/8/2024, o governo detalhou o congelamento de R$ 15 bilhões do Orçamento de 2024, anunciado no fim de julho para cumprir o limite de gastos do arcabouço fiscal. O Farmácia Popular foi o programa mais atingido, com R$ 1,7 bilhão; o Auxílio Gás perdeu R$ 580 milhões; e o Pé-de-Meia, R$ 500 milhões.</li>
+        <li><b>A crítica da época tinha fundamento.</b> Os R$ 1,7 bilhão eram cerca de um terço da parte gratuita do programa, e veículos de linhas diferentes destacaram o corte.</li>
+      </ul>
+      <p><b>O que é enganoso:</b></p>
+      <ul>
+        <li><b>A notícia tem mais de dois anos.</b> O post não traz data e reaparece agora, logo depois do 2º turno, como se o bloqueio fosse uma decisão nova. Nenhum relatório de despesas de 2026 nem reportagem deste ano fala em bloqueio do Farmácia Popular.</li>
+        <li><b>O Auxílio Gás nem existe mais.</b> A Lei 15.348/2026 criou o Gás do Povo no lugar dele, com recarga grátis do botijão para cerca de 15 milhões de famílias (veja o parecer <a href="#fake-gas-do-povo-corte">"Depois da eleição, vão cortar o Gás do Povo"</a>).</li>
+        <li><b>O Farmácia Popular cresceu depois disso.</b> Em fevereiro de 2025, todos os itens do programa passaram a ser gratuitos, e o orçamento previsto para 2026 é maior que o de 2024.</li>
+      </ul>
+      <p><b>O que é legítimo:</b> cobrar que programas de saúde não sejam usados para fechar as contas, como aconteceu em 2024, e acompanhar o Orçamento de 2027, ainda em votação. Mas apresentar um bloqueio de 2024 como se fosse de agora engana quem lê.</p>`,
+    fontes: [
+      ["Poder360: bloqueio atinge Farmácia Popular, Auxílio Gás e Pé-de-Meia (ago/2024)", "https://www.poder360.com.br/poder-economia/bloqueio-atinge-farmacia-popular-auxilio-gas-e-pe-de-meia/"],
+      ["Jovem Pan: Farmácia Popular é o programa mais atingido por corte de gastos (ago/2024)", "https://jovempan.com.br/economia/macroeconomia/farmacia-popular-e-o-programa-mais-atingido-por-corte-de-gastos-do-governo-lula/"],
+      ["Gazeta do Povo: ministérios dizem que Farmácia Popular e Auxílio Gás não sofrerão com cortes (ago/2024)", "https://www.gazetadopovo.com.br/economia/ministerios-dizem-que-farmacia-popular-e-auxilio-gas-nao-sofrerao-com-cortes/"],
+      ["Metrópoles: governo Lula congela R$ 2,2 bi de Auxílio Gás e Farmácia Popular (ago/2024)", "https://www.metropoles.com/brasil/governo-lula-congela-r-22-bi-de-auxilio-gas-e-farmacia-popular"],
+      ["Futuro da Saúde: todos os medicamentos do Farmácia Popular passam a ter 100% de gratuidade (fev/2025)", "https://futurodasaude.com.br/farmacia-popular-gratuidade/"],
+    ],
+  },
+  {
     id: "nikolas-views-india",
     data: "29/10/2026",
     selo: "Enganoso",
@@ -2833,7 +2871,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-10-30T07:55-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-10-30T20:55-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
@@ -2875,13 +2913,19 @@ function cronHora(c) {   // tira o "Quarta, 28/10" do começo, que já está no 
   const h = c.hora.replace(/^[^\d,]+,\s*\d{1,2}\/\d{1,2},?\s*/, "");
   return h ? h[0].toUpperCase() + h.slice(1) : "";
 }
+// Item completado ou confirmado depois de publicado: atualizado = ["dd/mm", "o que mudou"]. Vira selo no item e no título do dia.
+const chaveData = t => { const m = t.match(/(\d{1,2})\/(\d{1,2})/); return m ? +m[2] * 100 + +m[1] : 0; };
+function cronAtualizado(itens) {   // a atualização mais recente entre os itens, ou null
+  return itens.filter(c => c.atualizado).sort((a, b) => chaveData(b.atualizado[0]) - chaveData(a.atualizado[0]))[0] || null;
+}
 const DIAS_CRONO = [...new Map(CRONO.map(c => [cronDia(c).chave, cronDia(c)])).values()].sort((a, b) => b.chave - a.chave);
 const cronAbertos = new Set([DIAS_CRONO[0].chave]);
 function renderCrono() {
   const TIPO = {fato: "Fato", opiniao: "Opinião", fake: "Fake news"};
   const item = c => `<li class="${c.tipo}">
-    <div class="topo">${cronHora(c) ? `<span class="hora">${cronHora(c)}</span>` : ""}<span class="tipo">${TIPO[c.tipo]}</span></div>
+    <div class="topo">${cronHora(c) ? `<span class="hora">${cronHora(c)}</span>` : ""}<span class="tipo">${TIPO[c.tipo]}</span>${c.atualizado ? `<span class="atu">Atualizado em ${c.atualizado[0]}</span>` : ""}</div>
     <h3>${c.titulo}</h3>
+    ${c.atualizado && c.atualizado[1] ? `<p class="atu-nota"><b>Atualização (${c.atualizado[0]}):</b> ${c.atualizado[1]}</p>` : ""}
     ${c.prej ? `<p class="prej-curto"><b>Prejudicada no resultado:</b> ${c.prej[0]}</p>` : ""}
     <details><summary>Detalhes</summary><p>${c.texto}</p>${c.prej ? `<p class="prej"><b>Por quê:</b> <span>${c.prej[1]}</span></p>` : ""}</details>
     ${c.fontes.length ? `<p class="fontes">Fontes: ${c.fontes.map(k => `<a href="${FONTES_CRON[k][1]}" target="_blank" rel="noopener">${FONTES_CRON[k][0]}</a>`).join(" · ")}</p>` : ""}
@@ -2891,8 +2935,9 @@ function renderCrono() {
     const itens = visiveis.filter(c => cronDia(c).chave === dia.chave).reverse();   // mais recente primeiro
     if (!itens.length) return "";
     const n = itens.length + (itens.length === 1 ? " item" : " itens");
+    const atu = cronAtualizado(itens);
     return `<details class="crondia" data-dia="${dia.chave}"${cronAbertos.has(dia.chave) ? " open" : ""}>
-      <summary>${dia.rotulo}${dia.chave === 1025 ? " · 2º turno" : ""}${dia === DIAS_CRONO[0] ? ' <span class="novo">Mais recente</span>' : ""}<span class="qtd">${n}</span></summary>
+      <summary>${dia.rotulo}${dia.chave === 1025 ? " · 2º turno" : ""}${dia === DIAS_CRONO[0] ? ' <span class="novo">Mais recente</span>' : ""}${atu ? ` <span class="atu" title="Algum item deste dia foi completado ou confirmado depois">Atualizado em ${atu.atualizado[0]}</span>` : ""}<span class="qtd">${n}</span></summary>
       <ol class="crono">${itens.map(item).join("")}</ol>
     </details>`;
   }).join("");
