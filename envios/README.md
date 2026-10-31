@@ -75,7 +75,7 @@ No plano gratuito, o Render "dorme" depois de 15 minutos sem uso. O primeiro env
 
 ## Uso no dia a dia
 1. Abra `https://<endereço>.onrender.com/admin` e entre com o `ADMIN_TOKEN`.
-2. Envios em **Rascunho pronto** têm o link do PR. Revise o parecer na versão de teste e dê merge se estiver certo. Na rodada seguinte, a rotina marca como publicado e o aviso sai.
+2. Envios em **Rascunho pronto** têm o link do PR e já vêm com "Publicado" escolhido e o link do parecer preenchido. Revise o parecer na versão de teste e dê merge se estiver certo. Depois do merge, toque em **Concluir** para mandar o aviso na hora; se não tocar, a rotina marca como publicado na rodada seguinte e o aviso sai.
 3. Envios em **Já tem parecer: pronto para avisar** são boatos repetidos: a rotina já escolheu "Já publicado antes" e preencheu o link do parecer existente. Confira o link e toque em **Concluir**. Se a pessoa pediu aviso, ela recebe um e-mail agradecendo o envio e dizendo que o boato já tinha sido checado, com o link para o parecer.
 4. Se o veredito for "procede" ou o envio não servir, feche o PR sem merge, escolha o resultado aqui e toque em **Concluir**. Se a pessoa pediu aviso, o e-mail sai na hora.
 5. Conteúdo ofensivo ou ilegal: **Apagar envio**.

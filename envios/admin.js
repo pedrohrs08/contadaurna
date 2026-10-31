@@ -38,7 +38,7 @@ async function carregar() {
     n.querySelector(".prot").textContent = it.protocolo;
     n.querySelector(".meta").textContent = it.criado.replace("T", " ").replace("Z", " UTC") + " · " + NOMES[it.status] + (it.tem_email ? " · pediu aviso" : "");
     n.querySelector(".onde").textContent = it.onde ? "Onde viu: " + it.onde : "";
-    n.querySelector(".link").value = it.link || "";
+    n.querySelector(".link").value = it.link || it.parecer || "";  // no rascunho, a rotina já deixa o link do parecer
     if (RESULTADOS.includes(it.status)) n.querySelector(".res").value = it.status;
     if (it.status === "repetido") n.querySelector(".res").value = "ja_publicado";  // a rotina já pôs o link do parecer
     if (it.pr) { const a = n.querySelector(".pr"); a.href = it.pr; a.textContent = "Ver o PR com o parecer"; a.hidden = false; }
