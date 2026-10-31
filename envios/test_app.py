@@ -218,10 +218,12 @@ def test_rotina_fluxo_completo(rot):
     # publicar antes do rascunho é recusado
     assert c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://contadaurna.com.br/#fake-x"}, headers=ROT).status_code == 409
     assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": "https://github.com/outro/repo/pull/1"}, headers=ROT).status_code == 400
-    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT).status_code == 200
+    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR, "link": "https://malicioso.example/#fake-x"}, headers=ROT).status_code == 400
+    assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR, "link": "https://contadaurna.com.br/#fake-x"}, headers=ROT).status_code == 200
     assert c.post("/rotina/api/rascunho", json={"protocolo": p, "pr": PR}, headers=ROT).status_code == 409
-    assert c.get("/status/" + p).get_json() == {"status": "rascunho", "link": ""}
-    assert c.get("/admin/api/fila", headers=ADM).get_json()[0]["pr"] == PR
+    assert c.get("/status/" + p).get_json() == {"status": "rascunho", "link": ""}  # o link só aparece depois de publicado
+    item = c.get("/admin/api/fila", headers=ADM).get_json()[0]
+    assert (item["pr"], item["parecer"]) == (PR, "https://contadaurna.com.br/#fake-x")
     assert c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://malicioso.example/#fake-x"}, headers=ROT).status_code == 400
     r = c.post("/rotina/api/publicado", json={"protocolo": p, "link": "https://contadaurna.com.br/#fake-x"}, headers=ROT)
     assert r.get_json() == {"status": "publicado", "email": "enviado"}

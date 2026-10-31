@@ -14,7 +14,7 @@ Roda duas vezes por dia como tarefa agendada do Claude, num ambiente que tem ace
    2. Se **repete um parecer que já existe** em `FAKES` (mesmo boato, mesmo que com outra imagem ou outro autor), não abre PR: chama `POST /rotina/api/repetido` com `{"protocolo", "link": "https://contadaurna.com.br/#fake-<id do parecer existente>"}`. O envio passa a constar no `/admin` como "Já tem parecer", com o link preenchido; o responsável só toca em **Concluir** para mandar o aviso de agradecimento com o link. A rotina não dispara esse e-mail.
    3. Se não tem a ver com a eleição, é ofensivo ou ilegível, não abre PR: deixa na fila e lista no resumo para o responsável descartar.
    4. Senão, segue a skill de checagem (fontes de linhas editoriais diferentes, dados oficiais, links arquivados), cria o item no topo de `FAKES` e abre o PR `fake-<id>`, com o protocolo e o veredito na descrição. **Nunca põe nome, @ ou foto do autor do post.**
-   5. Chama `POST /rotina/api/rascunho` com `{"protocolo", "pr": "<link do PR>"}`.
+   5. Chama `POST /rotina/api/rascunho` com `{"protocolo", "pr": "<link do PR>", "link": "https://contadaurna.com.br/#fake-<id>"}`. O `link` é o endereço que o parecer terá depois do merge: o `/admin` já abre esse envio com "Publicado" escolhido e o link preenchido, e o responsável só precisa dar merge e tocar em **Concluir**. Ele não aparece na consulta pública do protocolo antes da publicação.
 4. Termina com um resumo curto: quantos PRs abriu, quais envios repetidos foram ligados a um parecer existente, quais ficaram para o responsável decidir e quais foram marcados como publicados.
 
 ## Limites

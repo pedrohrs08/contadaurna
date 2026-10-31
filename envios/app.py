@@ -572,7 +572,11 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             return erro("Este envio já saiu da fila.", 409)
         if not PR_RE.match(pr):
             return erro("Informe o link do PR no repositório do site.", 400)
-        m.update(status="rascunho", pr=pr)
+        # Link que o parecer terá depois do merge: só pré-preenche o /admin; o /status público não o mostra
+        parecer = str(d.get("link") or "").strip()
+        if parecer and (not parecer.startswith(link_ok) or "#fake-" not in parecer):
+            return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
+        m.update(status="rascunho", pr=pr, parecer=parecer)
         salvar_meta(p, m)
         return jsonify({"status": "rascunho"})
 
