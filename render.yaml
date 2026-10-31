@@ -5,7 +5,7 @@ services:
   - type: web
     name: placar2026
     runtime: static
-    buildCommand: mkdir -p site && cp -r index.html tse site/
+    buildCommand: mkdir -p site && cp -r index.html fakes.json tse site/
     staticPublishPath: site
     headers:
       - path: /*
@@ -46,4 +46,9 @@ services:
       - key: BREVO_API_KEY
         sync: false
       - key: EMAIL_REMETENTE
+        sync: false
+      # Banco D1 (veja banco/README.md): id do banco e token da Cloudflare só com a permissão "D1: Edit"
+      - key: D1_BANCO
+        sync: false
+      - key: D1_TOKEN
         sync: false
