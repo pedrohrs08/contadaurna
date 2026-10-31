@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Privacidade e termos · Conta da Urna</title>
+<meta name="description" content="Política de privacidade e termos de uso do Conta da Urna.">
+<link rel="icon" href="icone.png">
+<meta name="theme-color" content="#11875b">
+<style>
+/* Página de texto: mesma marca do site, sem dependências externas */
+:root {
+  --bg: #fbfdfc; --surface: #ffffff; --fg: #17201c; --muted: #5b6862; --line: #dde8e2;
+  --brand: #11875b; --brand-deep: #0b5e40; --brand-soft: #dcf3e8;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 "Helvetica Neue", Arial, sans-serif; }
+header { border-bottom: 4px solid var(--brand); background: var(--surface); }
+header a { display: inline-flex; align-items: center; gap: 10px; padding: 14px 16px; text-decoration: none; color: var(--fg);
+  font: 700 18px/1 "Arial Narrow", Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; }
+header svg { width: 34px; height: 34px; }
+header b { color: var(--brand); }
+main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.7rem; line-height: 1.2; margin: 8px 0 4px; }
+h2 { font-size: 1.2rem; margin: 32px 0 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 4px; }
+p, li { color: #2a3630; }
+ul { padding-left: 20px; }
+a { color: var(--brand-deep); }
+.data { color: var(--muted); font-size: .9rem; margin: 0 0 16px; }
+.resumo { background: var(--brand-soft); border-radius: 10px; padding: 14px 16px; }
+.resumo p { margin: 0; color: var(--brand-deep); }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; }
+.tabela { overflow-x: auto; }
+footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 16px 32px; }
+</style>
+</head>
+<body>
+<header><a href="./" aria-label="Conta da Urna, página inicial"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#11875b"/><path d="M15 14v20M21 14v20M27 14v20M33 14v20M10.5 31L37.5 17" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><span>Conta <b>da</b> Urna</span></a></header>
+<main>
+<h1>Privacidade e termos de uso</h1>
+<p class="data">Atualizado em 29 de outubro de 2026.</p>
+
+<div class="resumo"><p>Em resumo: o site não usa cookies nem pede cadastro. Quem quiser pode enviar um print para checagem e, se preferir, um e-mail para receber o resultado. O print é apagado em até 30 dias, e o e-mail é guardado cifrado e apagado assim que o aviso sai.</p></div>
+
+<h2>1. Quem é o responsável</h2>
+<p>O Conta da Urna é um projeto pessoal, sem fins lucrativos e sem ligação com o TSE nem com partidos. Para a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018), o controlador dos dados é <strong>Pedro Resende</strong>. O contato para qualquer assunto de privacidade é <a href="mailto:contato@contadaurna.com.br">contato@contadaurna.com.br</a>.</p>
+
+<h2>2. Que dados o site trata</h2>
+<h3>Quando você só visita o site</h3>
+<ul>
+  <li><strong>Estatística de visitas:</strong> usamos o GoatCounter, que conta visitas sem cookies e sem guardar seu endereço IP. Ele registra a página vista, o site de origem, o tamanho da tela e o país aproximado.</li>
+  <li><strong>Preferência de tema:</strong> se você ligar o modo escuro, essa escolha fica guardada só no seu aparelho (armazenamento local do navegador), não com a gente.</li>
+  <li><strong>Hospedagem e fontes:</strong> o site fica no GitHub Pages, e as letras vêm do Google Fonts. Como em qualquer site, esses serviços recebem o endereço IP de quem acessa para conseguir entregar a página.</li>
+</ul>
+<h3>Quando você envia um print para checagem</h3>
+<ul>
+  <li><strong>A imagem:</strong> ela é recodificada no envio, o que remove dados ocultos como localização e modelo do celular. Fica guardada por no máximo 30 dias e depois é apagada automaticamente.</li>
+  <li><strong>Onde você viu o boato:</strong> campo opcional, guardado junto com a imagem.</li>
+  <li><strong>Seu e-mail:</strong> campo opcional, usado só para mandar o resultado da checagem. Ele é guardado cifrado, não aparece na página de administração e é apagado assim que o aviso é enviado.</li>
+  <li><strong>Endereço IP:</strong> usado só na hora, para limitar o número de envios e barrar robôs. O servidor guarda apenas uma versão embaralhada (hash), na memória, por no máximo uma hora; o código do site não grava o IP em lugar nenhum. A Cloudflare, que faz a verificação contra robôs, também recebe o IP nessa hora.</li>
+</ul>
+<p><strong>Quem faz a checagem é uma rotina de inteligência artificial (IA), não uma pessoa.</strong> Ela recebe a imagem e o campo “onde você viu” (nunca o e-mail), busca o assunto em várias fontes, de linhas editoriais diferentes, além de dados oficiais, e escreve o parecer, que lista as fontes consultadas com link. O responsável pelo site revisa antes de publicar.</p>
+<p>Prints costumam mostrar nomes e fotos de outras pessoas. Eles servem só para a checagem. <strong>O site não publica nome, @ nem foto de quem escreveu o boato.</strong></p>
+
+<h2>3. Para que e com que base legal</h2>
+<ul>
+  <li>Os dados do envio são tratados porque <strong>você decidiu enviá-los</strong> (consentimento, art. 7º, I, da LGPD), com a única finalidade de checar a informação e, se você pedir, avisar o resultado.</li>
+  <li>A estatística de visitas e a proteção contra robôs se apoiam no <strong>legítimo interesse</strong> (art. 7º, IX) de manter o site funcionando e seguro, com o mínimo de dados possível.</li>
+</ul>
+<p>Nenhum dado é vendido, usado para propaganda ou usado para traçar seu perfil.</p>
+
+<h2>4. Com quem os dados são compartilhados</h2>
+<p>Só com os serviços necessários para o site funcionar. Alguns ficam fora do Brasil (art. 33 da LGPD):</p>
+<div class="tabela"><table>
+  <tr><th>Serviço</th><th>Para quê</th><th>Onde</th></tr>
+  <tr><td>GitHub Pages</td><td>hospedar o site</td><td>EUA</td></tr>
+  <tr><td>Google Fonts</td><td>letras do site</td><td>EUA</td></tr>
+  <tr><td>GoatCounter</td><td>contar visitas, sem cookies</td><td>União Europeia</td></tr>
+  <tr><td>Render</td><td>servidor que recebe os envios</td><td>EUA</td></tr>
+  <tr><td>Cloudflare (R2 e Turnstile)</td><td>guardar os prints por até 30 dias e barrar robôs</td><td>EUA e rede global</td></tr>
+  <tr><td>Brevo</td><td>enviar o e-mail com o resultado</td><td>União Europeia</td></tr>
+  <tr><td>Anthropic (Claude)</td><td>rotina de IA que faz a checagem; recebe o print e o “onde você viu”, nunca o e-mail</td><td>EUA</td></tr>
+</table></div>
+<p>O Brevo guarda por tempo limitado um registro técnico de cada e-mail enviado (destinatário e assunto), e, em e-mails com HTML, conta as aberturas de forma anônima. A regra deste projeto é não consultar esses registros.</p>
+
+<h2>5. Seus direitos</h2>
+<p>Pela LGPD, você pode pedir para confirmar, acessar, corrigir ou apagar seus dados, além de revogar o consentimento. Na prática:</p>
+<ul>
+  <li><strong>Para apagar um envio na hora,</strong> use o código de protocolo na aba <a href="./#envie">Envie para checagem</a>, botão "Apagar meu envio". Isso apaga a imagem e o e-mail.</li>
+  <li><strong>Para qualquer outro pedido,</strong> escreva para <a href="mailto:contato@contadaurna.com.br">contato@contadaurna.com.br</a>. Como o site não identifica quem enviou, informe o código de protocolo.</li>
+  <li>Você também pode reclamar à Autoridade Nacional de Proteção de Dados (<a href="https://www.gov.br/anpd/">ANPD</a>).</li>
+</ul>
+
+<h2>6. Segurança e código aberto</h2>
+<p>Todo o código do site e do servidor de envios é público e pode ser auditado no <a href="https://github.com/pedrohrs08/contadaurna">GitHub</a>. A explicação das medidas de segurança, incluindo o que o responsável pelo site consegue e não consegue ver, está no <a href="https://github.com/pedrohrs08/contadaurna/tree/main/envios">README do servidor de envios</a>.</p>
+
+<h2>7. Termos de uso</h2>
+<ul>
+  <li><strong>Conteúdo informativo.</strong> Os pareceres são feitos com dados e fontes públicas, citadas em cada texto. Estimativas e simulações não substituem o resultado oficial do TSE.</li>
+  <li><strong>Correções.</strong> Se você encontrar um erro, avise pelo contato acima ou abra uma issue no GitHub. Correções ficam registradas no próprio site.</li>
+  <li><strong>Envios.</strong> Quem envia um print declara que pode compartilhá-lo e responde pelo que enviou. É proibido enviar conteúdo ilegal, como pornografia, dados pessoais sensíveis de terceiros ou material que viole direitos autorais.</li>
+  <li><strong>Escolha do que publicar.</strong> O site decide livremente o que checa e publica. Um envio pode ser descartado sem explicação, por exemplo quando está fora do tema eleição, não pode ser verificado com dados públicos ou repete outro.</li>
+  <li><strong>Uso abusivo.</strong> Envios automáticos ou em massa são bloqueados.</li>
+  <li><strong>Reprodução.</strong> Você pode compartilhar os pareceres, citando o Conta da Urna e o link.</li>
+</ul>
+
+<h2>8. Mudanças nesta página</h2>
+<p>Se esta política mudar, a data no topo será atualizada, e o histórico completo fica público no GitHub.</p>
+</main>
+<footer><a href="./">Voltar ao Conta da Urna</a></footer>
+</body>
+</html>
