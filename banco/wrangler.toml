@@ -1,0 +1,13 @@
+# Serviço da Cloudflare que entrega os pareceres ao site (veja banco/README.md).
+# Publicado pelo GitHub Actions (.github/workflows/banco.yml), que também cria o banco na primeira vez
+# e troca o database_id abaixo pelo id real antes de publicar.
+name = "contadaurna-pareceres"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "contadaurna"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

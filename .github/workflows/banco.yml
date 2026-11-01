@@ -1,0 +1,97 @@
+# Banco de dados (Cloudflare D1) e serviço que entrega os pareceres ao site (banco/).
+# Nos PRs: roda os testes. Na main: cria o banco se ainda não existir, aplica as migrações
+# (banco/migrations, cada uma roda uma vez só) e publica o serviço.
+name: Banco e serviço dos pareceres
+
+on:
+  pull_request:
+    paths: ["banco/**", ".github/workflows/banco.yml"]
+  push:
+    branches: [main]
+    paths: ["banco/**", ".github/workflows/banco.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: banco
+  cancel-in-progress: false
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: banco } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npm test
+
+  # Nos PRs, confere se a configuração da Cloudflare está pronta para a publicação (só leitura).
+  conferir-configuracao:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: banco } }
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - name: Segredos, banco e endereço workers.dev
+        run: |
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::Falta o segredo CLOUDFLARE_API_TOKEN"; exit 1; }
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || { echo "::error::Falta o segredo CLOUDFLARE_ACCOUNT_ID"; exit 1; }
+          echo "Segredos presentes."
+          npx wrangler d1 list --json > bancos.json || { echo "::error::O token não consegue listar os bancos D1 (falta a permissão D1 Editar ou o Account ID está errado)"; exit 1; }
+          id=$(jq -r '.[] | select(.name == "contadaurna") | .uuid' bancos.json)
+          [ -n "$id" ] && echo "Banco contadaurna encontrado: $id" || echo "::warning::Banco contadaurna ainda não existe (o deploy cria sozinho)"
+          sub=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | jq -r '.result.subdomain // empty') \
+            || { echo "::error::O token não consegue ler os Workers (use o modelo Editar Cloudflare Workers)"; exit 1; }
+          [ -n "$sub" ] && echo "Endereço do serviço será: https://contadaurna-pareceres.$sub.workers.dev" \
+            || { echo "::error::A conta ainda não tem subdomínio workers.dev (abra Workers e Pages uma vez)"; exit 1; }
+
+  publicar:
+    needs: testes
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: banco } }
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - name: Conferir os segredos
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Faltam os segredos CLOUDFLARE_API_TOKEN e CLOUDFLARE_ACCOUNT_ID (veja banco/README.md)."
+            exit 1
+          fi
+      - name: Criar o banco na primeira vez e apontar o wrangler.toml para ele
+        run: |
+          id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name == "contadaurna") | .uuid')
+          if [ -z "$id" ]; then
+            npx wrangler d1 create contadaurna
+            id=$(npx wrangler d1 list --json | jq -r '.[] | select(.name == "contadaurna") | .uuid')
+          fi
+          sed -i "s/^database_id = .*/database_id = \"$id\"/" wrangler.toml
+          echo "BANCO_ID=$id" >> "$GITHUB_ENV"
+      - name: Aplicar as migrações
+        run: npx wrangler d1 migrations apply contadaurna --remote
+      - name: Publicar o serviço
+        run: |
+          npx wrangler deploy | tee saida.txt
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' saida.txt | head -1)
+          {
+            echo "### Banco e serviço publicados"
+            echo "- Endereço do serviço (vai em \`FAKES_API\` no index.html): $url"
+            echo "- Id do banco (vai em \`D1_BANCO\` no Render): $BANCO_ID"
+          } >> "$GITHUB_STEP_SUMMARY"
