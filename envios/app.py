@@ -17,11 +17,13 @@ import json
 import os
 import re
 import secrets
+import sqlite3
 import threading
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from html.parser import HTMLParser
 
 from cryptography.fernet import Fernet, InvalidToken
 from flask import Flask, jsonify, request, send_file
@@ -37,10 +39,11 @@ PROTOCOLO_RE = re.compile(r"^[A-Z2-7]{4}-[A-Z2-7]{4}-[A-Z2-7]{4}$")
 EMAIL_RE = re.compile(r"^[^@\s<>\"',;]{1,64}@[A-Za-z0-9.-]{1,190}\.[A-Za-z]{2,24}$")
 RESULTADOS = {"publicado", "ja_publicado", "procede", "descartado"}
 PENDENTES = ("na_fila", "rascunho", "repetido")  # ainda esperam o responsável ou a rotina
-PR_RE = re.compile(r"^https://github\.com/pedrohrs08/contadaurna/pull/[0-9]{1,6}$")
-FILA_MAX = 500            # envios guardados; acima disso, novos envios são recusados
+FILA_MAX = 500            # envios com print guardado; acima disso, novos envios são recusados
 LIMITE_GB_PADRAO = 8      # espaço máximo no R2 (o plano grátis vai até 10 GB); muda com a variável LIMITE_GB
-CACHE_USO_SEG = 60        # a consulta pública de capacidade relê o balde no máximo 1 vez por minuto
+LIMITE_BANCO_MB_PADRAO = 400  # tamanho máximo do banco D1 (o grátis vai até 500 MB); muda com LIMITE_BANCO_MB
+CACHE_USO_SEG = 60        # o uso do balde e do banco é recalculado no máximo 1 vez por minuto
+DIAS_GUARDA = 30          # depois disso, o print e o "onde viu" são apagados (o registro sem dados pessoais fica)
 ENVIOS_POR_HORA_IP = 5
 ENVIOS_POR_HORA_TOTAL = 120
 FALHAS_ADMIN_POR_HORA = 10
@@ -184,6 +187,159 @@ class ArmazemLocal:
         return saida
 
 
+# ---------- Banco: Cloudflare D1 em produção, SQLite local em testes ----------
+# O D1 é SQLite, então as mesmas consultas valem nos dois. O esquema está em banco/migrations/.
+class BancoD1:
+    """Fala com o D1 pela API da Cloudflare. O token precisa só da permissão "D1: Edit"."""
+    def __init__(self, conta, banco_id, token):
+        self.base = f"https://api.cloudflare.com/client/v4/accounts/{conta}/d1/database/{banco_id}"
+        self.cab = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}
+
+    def _pedir(self, caminho="", corpo=None):
+        req = urllib.request.Request(self.base + caminho, data=json.dumps(corpo).encode() if corpo is not None else None,
+                                     headers=self.cab, method="POST" if corpo is not None else "GET")
+        with urllib.request.urlopen(req, timeout=20) as r:
+            d = json.load(r)
+        if not d.get("success"):
+            raise RuntimeError("D1: " + json.dumps(d.get("errors"))[:300])
+        return d["result"]
+
+    def consultar(self, sql, params=()):
+        return self._pedir("/query", {"sql": sql, "params": list(params)})[0].get("results") or []
+
+    def tamanho(self):
+        return int(self._pedir().get("file_size") or 0)
+
+
+class BancoLocal:
+    """Só para testes e desenvolvimento: aplica as migrações em um SQLite na memória."""
+    def __init__(self, pasta_migracoes=os.path.join(AQUI, "..", "banco", "migrations")):
+        self.con = sqlite3.connect(":memory:", check_same_thread=False)
+        self.con.row_factory = sqlite3.Row
+        self.trava = threading.Lock()
+        for nome in sorted(os.listdir(pasta_migracoes)):
+            if nome.endswith(".sql"):
+                self.con.executescript(open(os.path.join(pasta_migracoes, nome), encoding="utf-8").read())
+
+    def consultar(self, sql, params=()):
+        with self.trava:
+            cur = self.con.execute(sql, list(params))
+            linhas = [dict(r) for r in cur.fetchall()]
+            self.con.commit()
+            return linhas
+
+    def tamanho(self):
+        return self.consultar("SELECT page_count * page_size AS t FROM pragma_page_count(), pragma_page_size()")[0]["t"]
+
+
+# ---------- Pareceres: conferência do conteúdo antes de gravar ----------
+# O site monta alguns campos como HTML. Para que nem um token vazado consiga pôr script na página,
+# só passam as marcações que os pareceres usam.
+ID_PARECER_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+DATA_RE = re.compile(r"^[0-3][0-9]/[01][0-9]/20[0-9]{2}$")
+URL_FONTE_RE = re.compile(r"^https?://[^\s\"'<>`]+$")
+SELOS = {"Não procede", "Enganoso", "Procede"}
+TAGS_OK = {"p", "b", "strong", "i", "em", "u", "ul", "ol", "li", "a", "br", "div", "span", "small", "sup", "sub",
+           "table", "thead", "tbody", "tr", "th", "td"}
+CLASSE_RE = re.compile(r"^[\w -]{1,60}$")
+
+
+class _ConfereHTML(HTMLParser):
+    def __init__(self, tags):
+        super().__init__(convert_charrefs=True)
+        self.tags, self.problemas = tags, []
+
+    def handle_starttag(self, tag, attrs):
+        if tag not in self.tags:
+            self.problemas.append(f"<{tag}>")
+            return
+        for nome, valor in attrs:
+            valor = valor or ""
+            if nome == "class" and CLASSE_RE.match(valor):
+                continue
+            if tag == "a" and nome == "href" and (URL_FONTE_RE.match(valor) or re.match(r"^#fake-[a-z0-9-]+$", valor)):
+                continue
+            if tag == "a" and nome in ("target", "rel") and valor in ("_blank", "noopener", "noopener noreferrer"):
+                continue
+            self.problemas.append(f'{nome}="{valor[:40]}" em <{tag}>')
+
+    def handle_comment(self, _):
+        self.problemas.append("comentário HTML")
+
+
+def html_seguro(t, tags=TAGS_OK):
+    p = _ConfereHTML(tags)
+    p.feed(t)
+    p.close()
+    return p.problemas
+
+
+def validar_parecer(d):
+    """Devolve (dados limpos, lista de erros). Os campos são os do item da aba Fake news."""
+    erros, saida = [], {}
+    if not isinstance(d, dict):
+        return None, ["Mande um objeto JSON."]
+
+    def texto(nome, n, obrigatorio=True, html=False):
+        v = d.get(nome)
+        if v in (None, "") and not obrigatorio:
+            return
+        if not isinstance(v, str) or not v.strip():
+            erros.append(f"Falta o campo {nome}.")
+            return
+        if len(v) > n:
+            erros.append(f"{nome} passa de {n} caracteres.")
+        if html:
+            erros.extend(f"{nome}: marcação não aceita {x}" for x in html_seguro(v))
+        saida[nome] = v
+
+    texto("titulo", 400)
+    texto("data", 10)
+    if "data" in saida and not DATA_RE.match(saida["data"]):
+        erros.append("data precisa estar no formato dd/mm/aaaa.")
+    if d.get("selo") not in (None, ""):
+        if d["selo"] not in SELOS:
+            erros.append("selo precisa ser " + ", ".join(sorted(SELOS)) + ".")
+        else:
+            saida["selo"] = d["selo"]
+    texto("texto", 30000)
+    texto("frase", 2000, obrigatorio=False, html=True)
+    texto("curto", 5000, html=True)
+    texto("parecer", 80000, html=True)
+    nums = d.get("nums")
+    if nums not in (None, []):
+        if (not isinstance(nums, list) or len(nums) > 8 or
+                not all(isinstance(x, list) and len(x) == 2 and all(isinstance(y, str) and len(y) < 400 for y in x) for x in nums)):
+            erros.append("nums precisa ser uma lista de pares [número, rótulo].")
+        else:
+            erros.extend(f"nums: marcação não aceita {x}" for par in nums for y in par for x in html_seguro(y))
+            saida["nums"] = nums
+    fontes = d.get("fontes")
+    if (not isinstance(fontes, list) or not 1 <= len(fontes) <= 60 or
+            not all(isinstance(x, list) and len(x) == 2 and all(isinstance(y, str) for y in x) for x in fontes)):
+        erros.append("fontes precisa ser uma lista (de 1 a 60) de pares [nome, link].")
+    else:
+        for nome, link in fontes:
+            if not URL_FONTE_RE.match(link):
+                erros.append(f"Link de fonte inválido: {link[:80]}")
+            erros.extend(f"fontes: marcação não aceita {x}" for x in html_seguro(nome, {"b", "i", "em", "strong"}))
+        saida["fontes"] = fontes
+    outras = d.get("outras")
+    if outras not in (None, []):
+        if (not isinstance(outras, list) or len(outras) > 20 or
+                not all(isinstance(o, dict) and isinstance(o.get("texto"), str) and DATA_RE.match(str(o.get("data", "")))
+                        for o in outras)):
+            erros.append("outras precisa ser uma lista de {\"data\": \"dd/mm/aaaa\", \"texto\": \"...\"}.")
+        else:
+            saida["outras"] = [{"data": o["data"], "texto": o["texto"]} for o in outras]
+    sobra = set(d) - {"id", "titulo", "data", "selo", "texto", "frase", "curto", "parecer", "nums", "fontes", "outras", "previa"}
+    if sobra:
+        erros.append("Campos desconhecidos: " + ", ".join(sorted(sobra)))
+    if len(json.dumps(saida, ensure_ascii=False)) > 150_000:
+        erros.append("O parecer está grande demais.")
+    return saida, erros
+
+
 # ---------- Serviços externos ----------
 def _post(url, dados, cabecalhos):
     req = urllib.request.Request(url, data=dados, headers=cabecalhos, method="POST")
@@ -268,17 +424,21 @@ class Limitador:
             return ok
 
 
+
+
 # ---------- Aplicação ----------
-def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None):
+def criar_app(armazem=None, banco=None, verificar_captcha=None, enviar_email=None, env=None):
     env = os.environ if env is None else env
     exigidas = ["EMAIL_KEY", "ADMIN_TOKEN", "ORIGENS"]
     if armazem is None:
         exigidas += ["R2_CONTA", "R2_CHAVE", "R2_SEGREDO", "R2_BALDE"]
+    if banco is None:
+        exigidas += ["R2_CONTA", "D1_BANCO", "D1_TOKEN"]
     if verificar_captcha is None:
         exigidas += ["TURNSTILE_SECRET"]
     if enviar_email is None:
         exigidas += ["BREVO_API_KEY", "EMAIL_REMETENTE"]
-    faltam = [k for k in exigidas if not env.get(k)]
+    faltam = sorted({k for k in exigidas if not env.get(k)})
     if faltam:
         raise RuntimeError("Configuração faltando: " + ", ".join(faltam))  # falha fechada: não sobe sem tudo
     if len(env["ADMIN_TOKEN"]) < 32 or len(env["EMAIL_KEY"]) < 32:
@@ -287,22 +447,28 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     origens = [o.strip() for o in env["ORIGENS"].split(",") if o.strip()]
     hosts = {urllib.parse.urlparse(o).hostname for o in origens}
     armazem = armazem or ArmazemR2(env["R2_CONTA"], env["R2_CHAVE"], env["R2_SEGREDO"], env["R2_BALDE"])
+    banco = banco or BancoD1(env["R2_CONTA"], env["D1_BANCO"], env["D1_TOKEN"])
     verificar_captcha = verificar_captcha or turnstile(env["TURNSTILE_SECRET"], hosts)
     enviar_email = enviar_email or brevo(env["BREVO_API_KEY"], env["EMAIL_REMETENTE"])
     # A chave do Fernet sai de um segredo longo (gerado pelo Render), para ninguém precisar copiá-la
     cofre = Fernet(base64.urlsafe_b64encode(hashlib.sha256(env["EMAIL_KEY"].encode()).digest()))
     token_admin = env["ADMIN_TOKEN"].encode()
-    # Senha da rotina de IA: só lê a fila, baixa o print, marca "rascunho" ou "repetido" e conclui como "publicado"
+    # Senha da rotina de IA: lê a fila e os prints, escreve pareceres pendentes e diz se cada envio é publicável.
+    # Não publica, não apaga e não vê e-mails.
     token_rotina = (env.get("ROTINA_TOKEN") or "").encode()
     if token_rotina and (len(token_rotina) < 32 or hmac.compare_digest(token_rotina, token_admin)):
         raise RuntimeError("ROTINA_TOKEN precisa ter pelo menos 32 caracteres e ser diferente do ADMIN_TOKEN")
     link_ok = tuple(o.rstrip("/") + "/" for o in origens)
+    site = origens[0].rstrip("/") + "/"
     limitador = Limitador()
     try:
         limite_bytes = int(float(env.get("LIMITE_GB") or LIMITE_GB_PADRAO) * 1024 ** 3)
+        limite_banco = int(float(env.get("LIMITE_BANCO_MB") or LIMITE_BANCO_MB_PADRAO) * 1024 ** 2)
     except ValueError:
-        raise RuntimeError("LIMITE_GB precisa ser um número (em GB)")
+        raise RuntimeError("LIMITE_GB e LIMITE_BANCO_MB precisam ser números")
     cache_uso = {"t": 0.0, "uso": None}
+    limpeza = {"t": 0.0}
+    importacao = {"feita": False}
 
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = TAMANHO_MAX + 64 * 1024
@@ -314,41 +480,120 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     def erro(msg, status):
         return jsonify({"erro": msg}), status
 
-    def meta(p):
-        d = armazem.pegar(f"envios/{p}/meta.json")
-        return json.loads(d) if d else None
+    # ----- Banco -----
+    def um(sql, params=()):
+        r = banco.consultar(sql, params)
+        return r[0] if r else None
 
-    def salvar_meta(p, m):
-        armazem.por(f"envios/{p}/meta.json", json.dumps(m).encode(), "application/json")
+    def registrar(quem, tipo, ref, acao, dados=None):
+        banco.consultar("INSERT INTO historico (quando, quem, tipo, ref, acao, dados) VALUES (?, ?, ?, ?, ?, ?)",
+                        (agora(), quem, tipo, ref, acao, json.dumps(dados, ensure_ascii=False) if dados is not None else None))
 
-    def uso():
-        """Quantos envios e quantos bytes estão guardados no balde (uma listagem só)."""
-        itens = armazem.listar_com_tamanho("")
-        r = {"envios": sum(1 for k, _ in itens if k.startswith("envios/") and k.endswith("/meta.json")),
-             "bytes": sum(t for _, t in itens)}
-        cache_uso.update(t=time.time(), uso=r)
-        return r
+    def envio_(p):
+        return um("SELECT * FROM envios WHERE protocolo = ?", (p,)) if PROTOCOLO_RE.match(p) else None
+
+    def mudar_envio(p, quem, acao, **campos):
+        banco.consultar(f"UPDATE envios SET {', '.join(k + ' = ?' for k in campos)} WHERE protocolo = ?",
+                        (*campos.values(), p))
+        registrar(quem, "envio", p, acao, campos)
+
+    def apagar_envio(p):
+        for k in (f"envios/{p}/print.jpg", f"contatos/{p}.bin"):
+            armazem.apagar(k)
+        banco.consultar("DELETE FROM envios WHERE protocolo = ?", (p,))
+        banco.consultar("DELETE FROM historico WHERE tipo = 'envio' AND ref = ?", (p,))
+
+    def limpar_expirados():
+        """Depois de 30 dias o balde apaga o print sozinho (regra de ciclo de vida); aqui o banco acompanha."""
+        if time.time() - limpeza["t"] < 600:
+            return
+        limpeza["t"] = time.time()
+        corte = (datetime.now(timezone.utc) - timedelta(days=DIAS_GUARDA)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        vencidos = banco.consultar("SELECT protocolo, status FROM envios WHERE expirado = '' AND criado < ?", (corte,))
+        for v in vencidos:
+            campos = {"print_chave": None, "print_bytes": 0, "onde": "", "tem_email": 0, "expirado": agora()}
+            if v["status"] in PENDENTES:
+                campos["status"] = "expirado"
+            mudar_envio(v["protocolo"], "sistema", f"apagados print e dados após {DIAS_GUARDA} dias", **campos)
+            armazem.apagar(f"contatos/{v['protocolo']}.bin")
+
+    def uso(forcar=False):
+        """Espaço usado no balde (somado pelo banco, sem listar o balde) e tamanho do banco."""
+        if not forcar and cache_uso["uso"] and time.time() - cache_uso["t"] < CACHE_USO_SEG:
+            return cache_uso["uso"]
+        r = um("SELECT COUNT(*) AS envios, COALESCE(SUM(print_bytes), 0) AS bytes FROM envios WHERE print_chave IS NOT NULL")
+        u = {"envios": int(r["envios"]), "bytes": int(r["bytes"]), "banco_bytes": int(banco.tamanho())}
+        cache_uso.update(t=time.time(), uso=u)
+        return u
 
     def tem_espaco(u, extra=0):
-        return u["envios"] < FILA_MAX and u["bytes"] + extra <= limite_bytes
+        return u["envios"] < FILA_MAX and u["bytes"] + extra <= limite_bytes and u["banco_bytes"] + 64 * 1024 <= limite_banco
 
-    def consulta_permitida():
-        return (limitador.permite("consulta-ip:" + ip_hash(), CONSULTAS_POR_HORA_IP)
-                and limitador.permite("consulta-total", CONSULTAS_POR_HORA_TOTAL))
+    def importar_do_balde():
+        """Até 31/10/2026 cada envio tinha um meta.json no balde. Passa esses envios para o banco, uma vez
+        (no primeiro uso depois de o servidor subir, para não depender de o banco já estar pronto na hora do deploy)."""
+        if importacao["feita"]:
+            return
+        tamanhos = dict(armazem.listar_com_tamanho("envios/"))
+        for k in [k for k in tamanhos if k.endswith("/meta.json")]:
+            m = json.loads(armazem.pegar(k) or b"null")
+            if not m:
+                continue
+            p = m["protocolo"]
+            chave = f"envios/{p}/print.jpg" if f"envios/{p}/print.jpg" in tamanhos else None
+            banco.consultar("INSERT OR IGNORE INTO envios (protocolo, criado, onde, status, link, print_chave, print_bytes, "
+                            "tem_email, concluido) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (p, m["criado"], m.get("onde", ""), m.get("status", "na_fila"), m.get("link") or m.get("parecer") or "",
+                             chave, tamanhos.get(chave, 0), int(bool(m.get("tem_email"))), m.get("concluido", "")))
+            registrar("sistema", "envio", p, "importado do balde", {"status": m.get("status"), "pr": m.get("pr", "")})
+            armazem.apagar(k)
+        importacao["feita"] = True
 
-    def admin_ok(token=None):
-        token = token_admin if token is None else token
-        h = request.headers.get("Authorization", "")
-        if not h.startswith("Bearer ") or not token:
-            return False
-        if not hmac.compare_digest(h[7:].encode(), token):
-            limitador.permite("falha-admin:" + ip_hash(), 10**9)
-            return False
-        return True
+    # ----- Pareceres -----
+    def ler_parecer(i):
+        r = um("SELECT * FROM pareceres WHERE id = ?", (i,)) if ID_PARECER_RE.match(i or "") else None
+        if r:
+            r["publicado"] = json.loads(r["publicado"]) if r["publicado"] else None
+            r["pendente"] = json.loads(r["pendente"]) if r["pendente"] else None
+        return r
 
-    def admin_bloqueado():
-        return len([x for x in limitador.reg.get("falha-admin:" + ip_hash(), []) if time.time() - x < 3600]) >= FALHAS_ADMIN_POR_HORA
+    def link_previa(r):
+        return f"{site}?previa={r['id']}.{r['chave']}#fake-{r['id']}"
 
+    def link_parecer(i):
+        return f"{site}#fake-{i}"
+
+    def resumo_parecer(r):
+        versao = r["pendente"] or r["publicado"] or {}
+        return {"id": r["id"], "titulo": versao.get("titulo", ""), "frase": versao.get("frase", ""), "selo": versao.get("selo", ""),
+                "no_ar": r["publicado"] is not None, "pendente": r["pendente"] is not None,
+                "atualizado": r["atualizado"], "link": link_parecer(r["id"]), "previa": link_previa(r)}
+
+    def todos_pareceres():
+        linhas = banco.consultar("SELECT * FROM pareceres ORDER BY pendente IS NULL, posicao IS NULL DESC, posicao DESC, atualizado DESC")
+        for r in linhas:
+            r["publicado"] = json.loads(r["publicado"]) if r["publicado"] else None
+            r["pendente"] = json.loads(r["pendente"]) if r["pendente"] else None
+        return linhas
+
+    def gravar_pendente(i, quem):
+        if not ID_PARECER_RE.match(i) or len(i) > 80:
+            return erro("O id do parecer usa só letras minúsculas, números e hífens (até 80).", 400)
+        dados, erros = validar_parecer(request.get_json(silent=True))
+        if erros:
+            return jsonify({"erro": "O parecer tem problemas.", "detalhes": erros}), 400
+        r = ler_parecer(i)
+        corpo = json.dumps(dados, ensure_ascii=False)
+        if r:
+            banco.consultar("UPDATE pareceres SET pendente = ?, atualizado = ? WHERE id = ?", (corpo, agora(), i))
+        else:
+            banco.consultar("INSERT INTO pareceres (id, pendente, chave, criado, atualizado) VALUES (?, ?, ?, ?, ?)",
+                            (i, corpo, secrets.token_hex(16), agora(), agora()))
+        registrar(quem, "parecer", i, "versão pendente gravada" if r else "parecer criado", dados)
+        r = ler_parecer(i)
+        return jsonify(resumo_parecer(r))
+
+    # ----- Cabeçalhos -----
     @app.after_request
     def cabecalhos(r):
         o = request.headers.get("Origin")
@@ -377,6 +622,10 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         return jsonify({"ok": True})
 
     # ----- Público -----
+    def consulta_permitida():
+        return (limitador.permite("consulta-ip:" + ip_hash(), CONSULTAS_POR_HORA_IP)
+                and limitador.permite("consulta-total", CONSULTAS_POR_HORA_TOTAL))
+
     @app.route("/envio", methods=["POST", "OPTIONS"])
     def envio():
         if request.method == "OPTIONS":
@@ -387,7 +636,9 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             return erro("Muitos envios seguidos. Tente de novo em uma hora.", 429)
         if not limitador.permite("total", ENVIOS_POR_HORA_TOTAL):
             return erro("Recebemos muitos envios agora. Tente de novo mais tarde.", 503)
-        u = uso()
+        importar_do_balde()
+        limpar_expirados()
+        u = uso(forcar=True)
         if not tem_espaco(u):
             return erro("Atingimos o limite de envios guardados. Tente de novo em alguns dias.", 503)
         arq = request.files.get("imagem")
@@ -403,11 +654,14 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         if not tem_espaco(u, len(jpeg) + 4096):
             return erro("Atingimos o limite de envios guardados. Tente de novo em alguns dias.", 503)
         p = novo_protocolo()
-        armazem.por(f"envios/{p}/print.jpg", jpeg, "image/jpeg")
+        chave = f"envios/{p}/print.jpg"
+        armazem.por(chave, jpeg, "image/jpeg")
         if email:
             armazem.por(f"contatos/{p}.bin", cofre.encrypt(email.encode()), "application/octet-stream")
-        salvar_meta(p, {"protocolo": p, "criado": agora(), "onde": limpar_texto(request.form.get("onde"), 300),
-                        "status": "na_fila", "link": "", "concluido": "", "tem_email": bool(email)})
+        banco.consultar("INSERT INTO envios (protocolo, criado, onde, print_chave, print_bytes, tem_email) VALUES (?, ?, ?, ?, ?, ?)",
+                        (p, agora(), limpar_texto(request.form.get("onde"), 300), chave, len(jpeg), int(bool(email))))
+        registrar("pessoa", "envio", p, "recebido", {"pediu_aviso": bool(email)})
+        cache_uso["uso"] = None
         return jsonify({"protocolo": p}), 201
 
     @app.get("/capacidade")
@@ -415,30 +669,51 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
         """O site pergunta isto antes de mostrar o formulário, para ninguém enviar à toa."""
         if not consulta_permitida():
             return erro("Muitas consultas. Tente de novo mais tarde.", 429)
-        u = cache_uso["uso"] if time.time() - cache_uso["t"] < CACHE_USO_SEG else uso()
-        return jsonify({"aceitando": tem_espaco(u)})
+        return jsonify({"aceitando": tem_espaco(uso())})
 
     @app.get("/status/<p>")
     def status(p):
         if not consulta_permitida():
             return erro("Muitas consultas. Tente de novo mais tarde.", 429)
-        p = p.upper()
-        m = PROTOCOLO_RE.match(p) and meta(p)
+        m = envio_(p.upper())
         if not m:
             return erro("Protocolo não encontrado. Os envios são apagados em 30 dias.", 404)
-        return jsonify({"status": m["status"], "link": m["link"]})
+        # O link só aparece depois de concluído: antes disso o parecer pode nem estar no ar
+        return jsonify({"status": m["status"], "link": m["link"] if m["concluido"] else ""})
 
     @app.delete("/envio/<p>")
     def apagar_proprio(p):
-        """Quem tem o protocolo pode apagar o próprio envio a qualquer momento (LGPD)."""
+        """Quem tem o protocolo pode apagar o próprio envio a qualquer momento (LGPD): some do balde e do banco."""
         if not consulta_permitida():
             return erro("Muitas consultas. Tente de novo mais tarde.", 429)
         p = p.upper()
-        if not (PROTOCOLO_RE.match(p) and meta(p)):
+        if not envio_(p):
             return erro("Protocolo não encontrado.", 404)
-        for k in (f"envios/{p}/print.jpg", f"envios/{p}/meta.json", f"contatos/{p}.bin"):
-            armazem.apagar(k)
+        apagar_envio(p)
+        cache_uso["uso"] = None
         return jsonify({"apagado": True})
+
+    # ----- Senhas -----
+    def bloqueado():
+        return len([x for x in limitador.reg.get("falha-admin:" + ip_hash(), []) if time.time() - x < 3600]) >= FALHAS_ADMIN_POR_HORA
+
+    def exige(nome, token, msg):
+        """Só deixa passar com "Authorization: Bearer <token>". Após 10 erros em 1 hora, o IP fica bloqueado por 1 hora."""
+        def deco(f):
+            def g(*a, **k):
+                if bloqueado():
+                    return erro("Muitas tentativas. Espere uma hora.", 429)
+                h = request.headers.get("Authorization", "")
+                if not (token and h.startswith("Bearer ") and hmac.compare_digest(h[7:].encode(), token)):
+                    limitador.permite("falha-admin:" + ip_hash(), 10**9)
+                    return erro(msg, 401)
+                return f(*a, quem=nome, **k)
+            g.__name__ = f.__name__
+            return g
+        return deco
+
+    exige_admin = exige("admin", token_admin, "Senha de administração incorreta.")
+    exige_rotina = exige("rotina", token_rotina, "Senha da rotina incorreta.")
 
     # ----- Administração (só com ADMIN_TOKEN) -----
     @app.get("/admin")
@@ -449,73 +724,73 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
     def admin_js():
         return send_file(os.path.join(AQUI, "admin.js"), mimetype="text/javascript")
 
-    def exige_admin(f):
-        def g(*a, **k):
-            if admin_bloqueado():
-                return erro("Muitas tentativas. Espere uma hora.", 429)
-            if not admin_ok():
-                return erro("Senha de administração incorreta.", 401)
-            return f(*a, **k)
-        g.__name__ = f.__name__
-        return g
+    def lista_envios(onde="", params=()):
+        itens = banco.consultar(
+            "SELECT e.protocolo, e.criado, e.onde, e.status, e.publicavel, e.motivo, e.parecer, e.link, e.tem_email, e.concluido, "
+            "e.print_chave IS NOT NULL AS tem_print, p.publicado IS NOT NULL AS parecer_no_ar, p.pendente IS NOT NULL AS parecer_pendente "
+            f"FROM envios e LEFT JOIN pareceres p ON p.id = e.parecer {onde} ORDER BY e.criado", params)
+        for it in itens:
+            for k in ("tem_email", "tem_print", "parecer_no_ar", "parecer_pendente"):
+                it[k] = bool(it[k])
+            it["publicavel"] = None if it["publicavel"] is None else bool(it["publicavel"])
+        return itens
 
     @app.get("/admin/api/fila")
     @exige_admin
-    def fila():
-        itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
-        itens = sorted([m for m in itens if m], key=lambda m: (m["status"] not in PENDENTES, m["criado"]))
+    def fila(quem):
+        importar_do_balde()
+        limpar_expirados()
+        itens = lista_envios()
+        itens.sort(key=lambda m: (m["status"] not in PENDENTES, m["criado"] if m["status"] in PENDENTES else ""), reverse=False)
         return jsonify(itens)  # sem e-mails: só diz se a pessoa pediu aviso (tem_email)
 
     @app.get("/admin/api/uso")
     @exige_admin
-    def uso_admin():
-        u = uso()
-        return jsonify({**u, "limite_bytes": limite_bytes, "limite_envios": FILA_MAX})
+    def uso_admin(quem):
+        u = uso(forcar=True)
+        return jsonify({**u, "limite_bytes": limite_bytes, "limite_envios": FILA_MAX, "limite_banco_bytes": limite_banco})
 
     def ler_print(p):
-        p = p.upper()
-        d = PROTOCOLO_RE.match(p) and armazem.pegar(f"envios/{p}/print.jpg")
+        m = envio_(p.upper())
+        d = m and m["print_chave"] and armazem.pegar(m["print_chave"])
         if not d:
             return erro("Não encontrado.", 404)
-        return send_file(io.BytesIO(d), mimetype="image/jpeg", download_name=f"{p}.jpg")
+        return send_file(io.BytesIO(d), mimetype="image/jpeg", download_name=f"{m['protocolo']}.jpg")
 
     @app.get("/admin/api/print/<p>")
     @exige_admin
-    def print_(p):
+    def print_(p, quem):
         return ler_print(p)
 
-    def concluir_envio(p, m, res, link):
-        m.update(status=res, link=link, concluido=agora())
-        salvar_meta(p, m)
-        enviado = "sem_email"
+    def concluir_envio(p, res, link, quem):
+        """Marca o resultado e, se a pessoa pediu aviso, manda o e-mail e apaga o endereço. Devolve (corpo, status)."""
+        mudar_envio(p, quem, "concluído: " + res, status=res, link=link, concluido=agora())
         cifrado = armazem.pegar(f"contatos/{p}.bin")
-        if cifrado:
-            try:
-                email = cofre.decrypt(cifrado).decode()
-            except InvalidToken:
-                return erro("Não foi possível abrir o contato (chave mudou?).", 500)
-            extra = f"\n{link}" if link else ""
-            texto = TEXTOS[res].format(link=link, extra=extra) + RODAPE.format(p=p)
-            try:
-                ok = enviar_email(email, ASSUNTO.format(p=p), texto, aviso_html(res, link, p))
-            except Exception:
-                ok = False
-            del email
-            if not ok:
-                return jsonify({"status": res, "email": "falhou"}), 502  # o contato fica para tentar de novo
-            armazem.apagar(f"contatos/{p}.bin")
-            m["tem_email"] = False
-            salvar_meta(p, m)
-            enviado = "enviado"
-        return jsonify({"status": res, "email": enviado})
+        if not cifrado:
+            return {"status": res, "email": "sem_email"}, 200
+        try:
+            email = cofre.decrypt(cifrado).decode()
+        except InvalidToken:
+            return {"status": res, "erro": "Não foi possível abrir o contato (chave mudou?)."}, 500
+        extra = f"\n{link}" if link else ""
+        texto = TEXTOS[res].format(link=link, extra=extra) + RODAPE.format(p=p)
+        try:
+            ok = enviar_email(email, ASSUNTO.format(p=p), texto, aviso_html(res, link, p))
+        except Exception:
+            ok = False
+        del email
+        if not ok:
+            return {"status": res, "email": "falhou"}, 502  # o contato fica para tentar de novo
+        armazem.apagar(f"contatos/{p}.bin")
+        mudar_envio(p, "sistema", "aviso enviado por e-mail e endereço apagado", tem_email=0)
+        return {"status": res, "email": "enviado"}, 200
 
     @app.post("/admin/api/concluir")
     @exige_admin
-    def concluir():
+    def concluir(quem):
         d = request.get_json(silent=True) or {}
         p, res, link = str(d.get("protocolo", "")).upper(), d.get("resultado"), str(d.get("link") or "").strip()
-        m = PROTOCOLO_RE.match(p) and meta(p)
-        if not m:
+        if not envio_(p):
             return erro("Protocolo não encontrado.", 404)
         if res not in RESULTADOS:
             return erro("Resultado inválido.", 400)
@@ -523,89 +798,162 @@ def criar_app(armazem=None, verificar_captcha=None, enviar_email=None, env=None)
             return erro("O link precisa ser de uma página do próprio site.", 400)
         if res in ("publicado", "ja_publicado") and not link:
             return erro("Informe o link do parecer.", 400)
-        return concluir_envio(p, m, res, link)
+        corpo, st = concluir_envio(p, res, link, quem)
+        return jsonify(corpo), st
 
     @app.post("/admin/api/apagar")
     @exige_admin
-    def apagar_admin():
+    def apagar_admin(quem):
         p = str((request.get_json(silent=True) or {}).get("protocolo", "")).upper()
         if not PROTOCOLO_RE.match(p):
             return erro("Protocolo inválido.", 400)
-        for k in (f"envios/{p}/print.jpg", f"envios/{p}/meta.json", f"contatos/{p}.bin"):
-            armazem.apagar(k)
+        apagar_envio(p)
+        cache_uso["uso"] = None
         return jsonify({"apagado": True})
 
-    # ----- Rotina de IA (só com ROTINA_TOKEN; desligada se ele não existir) -----
-    # Ela prepara o parecer e abre um PR. Nada vai ao ar sem o merge do responsável: a rotina só
-    # conclui como "publicado" depois que o PR foi aceito. Não vê e-mails nem pode apagar envios.
-    def exige_rotina(f):
-        def g(*a, **k):
-            if admin_bloqueado():
-                return erro("Muitas tentativas. Espere uma hora.", 429)
-            if not admin_ok(token_rotina):
-                return erro("Senha da rotina incorreta.", 401)
-            return f(*a, **k)
-        g.__name__ = f.__name__
-        return g
+    @app.get("/admin/api/pareceres")
+    @exige_admin
+    def pareceres_admin(quem):
+        ligados = {}
+        for e in banco.consultar("SELECT protocolo, parecer, status FROM envios WHERE parecer IS NOT NULL"):
+            ligados.setdefault(e["parecer"], []).append({"protocolo": e["protocolo"], "status": e["status"]})
+        return jsonify([{**resumo_parecer(r), "envios": ligados.get(r["id"], [])} for r in todos_pareceres()])
 
+    @app.get("/admin/api/parecer/<i>")
+    @exige_admin
+    def parecer_admin(i, quem):
+        r = ler_parecer(i)
+        if not r:
+            return erro("Parecer não encontrado.", 404)
+        return jsonify({**resumo_parecer(r), "publicado": r["publicado"], "pendente": r["pendente"]})
+
+    @app.put("/admin/api/parecer/<i>")
+    @exige_admin
+    def parecer_gravar_admin(i, quem):
+        return gravar_pendente(i, quem)
+
+    @app.post("/admin/api/parecer/<i>/publicar")
+    @exige_admin
+    def parecer_publicar(i, quem):
+        """Põe no ar a versão pendente. Os envios ligados a este parecer viram "publicado" e o aviso sai na hora."""
+        r = ler_parecer(i)
+        if not r or not r["pendente"]:
+            return erro("Não há versão pendente para publicar.", 404)
+        primeira = r["posicao"] is None
+        banco.consultar("UPDATE pareceres SET publicado = pendente, pendente = NULL, atualizado = ?, publicado_em = ?, "
+                        "posicao = COALESCE(posicao, (SELECT COALESCE(MAX(posicao), 0) + 1 FROM pareceres)) WHERE id = ?",
+                        (agora(), agora(), i))
+        registrar(quem, "parecer", i, "publicado" if primeira else "nova versão publicada", r["pendente"])
+        avisos = []
+        for e in banco.consultar("SELECT protocolo FROM envios WHERE parecer = ? AND status IN ('na_fila', 'rascunho') "
+                                 "AND publicavel = 1", (i,)):
+            corpo, _ = concluir_envio(e["protocolo"], "publicado", link_parecer(i), quem)
+            avisos.append({"protocolo": e["protocolo"], **corpo})
+        return jsonify({**resumo_parecer(ler_parecer(i)), "avisos": avisos})
+
+    @app.post("/admin/api/parecer/<i>/descartar")
+    @exige_admin
+    def parecer_descartar(i, quem):
+        """Joga fora a versão pendente. Se o parecer nunca foi ao ar, ele some e os envios voltam para a fila."""
+        r = ler_parecer(i)
+        if not r or not r["pendente"]:
+            return erro("Não há versão pendente.", 404)
+        if r["publicado"]:
+            banco.consultar("UPDATE pareceres SET pendente = NULL, atualizado = ? WHERE id = ?", (agora(), i))
+            registrar(quem, "parecer", i, "versão pendente descartada", r["pendente"])
+        else:
+            banco.consultar("DELETE FROM pareceres WHERE id = ?", (i,))
+            registrar(quem, "parecer", i, "rascunho descartado", r["pendente"])
+            for e in banco.consultar("SELECT protocolo FROM envios WHERE parecer = ? AND concluido = ''", (i,)):
+                mudar_envio(e["protocolo"], quem, "parecer descartado; volta para a fila", parecer=None, status="na_fila", link="")
+        return jsonify({"descartado": True})
+
+    @app.post("/admin/api/parecer/<i>/tirar")
+    @exige_admin
+    def parecer_tirar(i, quem):
+        """Tira o parecer do ar. A versão que estava no ar vira pendente (se não houver outra), para não se perder."""
+        r = ler_parecer(i)
+        if not r or not r["publicado"]:
+            return erro("Este parecer não está no ar.", 404)
+        banco.consultar("UPDATE pareceres SET pendente = COALESCE(pendente, publicado), publicado = NULL, atualizado = ? WHERE id = ?",
+                        (agora(), i))
+        registrar(quem, "parecer", i, "tirado do ar", r["publicado"])
+        return jsonify(resumo_parecer(ler_parecer(i)))
+
+    @app.get("/admin/api/historico")
+    @exige_admin
+    def historico(quem):
+        tipo, ref = request.args.get("tipo", ""), request.args.get("ref", "")
+        if tipo and ref:
+            linhas = banco.consultar("SELECT * FROM historico WHERE tipo = ? AND ref = ? ORDER BY n DESC LIMIT 200", (tipo, ref))
+        else:
+            linhas = banco.consultar("SELECT * FROM historico ORDER BY n DESC LIMIT 200")
+        for h in linhas:
+            h["dados"] = json.loads(h["dados"]) if h["dados"] else None
+        return jsonify(linhas)
+
+    # ----- Rotina de IA (só com ROTINA_TOKEN; desligada se ele não existir) -----
+    # Ela escreve pareceres como versão pendente e diz se cada envio é publicável. Nada vai ao ar sem
+    # o responsável tocar em Publicar no /admin. Não vê e-mails, não apaga e não conclui envios.
     @app.get("/rotina/api/fila")
     @exige_rotina
-    def rotina_fila():
-        itens = [meta(k.split("/")[1]) for k in armazem.listar("envios/") if k.endswith("/meta.json")]
-        itens = sorted([m for m in itens if m and m["status"] in ("na_fila", "rascunho")], key=lambda m: m["criado"])
-        return jsonify([{k: m.get(k, "") for k in ("protocolo", "criado", "onde", "status", "pr")} for m in itens])
+    def rotina_fila(quem):
+        importar_do_balde()
+        limpar_expirados()
+        campos = ("protocolo", "criado", "onde", "status", "publicavel", "motivo", "parecer", "tem_print")
+        return jsonify([{k: m[k] for k in campos} for m in lista_envios("WHERE e.status IN ('na_fila', 'rascunho')")])
 
     @app.get("/rotina/api/print/<p>")
     @exige_rotina
-    def rotina_print(p):
+    def rotina_print(p, quem):
         return ler_print(p)
 
-    @app.post("/rotina/api/rascunho")
+    @app.get("/rotina/api/pareceres")
     @exige_rotina
-    def rotina_rascunho():
-        d = request.get_json(silent=True) or {}
-        p, pr = str(d.get("protocolo", "")).upper(), str(d.get("pr") or "").strip()
-        m = PROTOCOLO_RE.match(p) and meta(p)
-        if not m:
-            return erro("Protocolo não encontrado.", 404)
-        if m["status"] != "na_fila":
-            return erro("Este envio já saiu da fila.", 409)
-        if not PR_RE.match(pr):
-            return erro("Informe o link do PR no repositório do site.", 400)
-        m.update(status="rascunho", pr=pr)
-        salvar_meta(p, m)
-        return jsonify({"status": "rascunho"})
+    def rotina_pareceres(quem):
+        return jsonify([resumo_parecer(r) for r in todos_pareceres()])
 
-    @app.post("/rotina/api/publicado")
+    @app.get("/rotina/api/parecer/<i>")
     @exige_rotina
-    def rotina_publicado():
-        d = request.get_json(silent=True) or {}
-        p, link = str(d.get("protocolo", "")).upper(), str(d.get("link") or "").strip()
-        m = PROTOCOLO_RE.match(p) and meta(p)
-        if not m:
-            return erro("Protocolo não encontrado.", 404)
-        if m["status"] != "rascunho":
-            return erro("Só dá para publicar um envio que está em rascunho.", 409)
-        if not link.startswith(link_ok) or "#fake-" not in link:
-            return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
-        return concluir_envio(p, m, "publicado", link)
+    def rotina_parecer(i, quem):
+        r = ler_parecer(i)
+        if not r:
+            return erro("Parecer não encontrado.", 404)
+        return jsonify({**resumo_parecer(r), "publicado": r["publicado"], "pendente": r["pendente"]})
 
-    @app.post("/rotina/api/repetido")
+    @app.put("/rotina/api/parecer/<i>")
     @exige_rotina
-    def rotina_repetido():
-        # O boato já tem parecer no site: a rotina só guarda o link. O aviso de "já publicado"
-        # sai quando o responsável conclui pelo /admin.
+    def rotina_parecer_gravar(i, quem):
+        return gravar_pendente(i, quem)
+
+    @app.post("/rotina/api/avaliar")
+    @exige_rotina
+    def rotina_avaliar(quem):
+        """Diz se o envio é publicável e qual parecer responde a ele.
+        - publicavel false: fica na fila com o motivo, para o responsável marcar "procede" ou "descartado";
+        - publicavel true + parecer pendente: vira "rascunho" e é avisado quando o responsável publicar;
+        - publicavel true + parecer já no ar (boato repetido): vira "repetido", pronto para o aviso de "já publicado"."""
         d = request.get_json(silent=True) or {}
-        p, link = str(d.get("protocolo", "")).upper(), str(d.get("link") or "").strip()
-        m = PROTOCOLO_RE.match(p) and meta(p)
+        p = str(d.get("protocolo", "")).upper()
+        m = envio_(p)
         if not m:
             return erro("Protocolo não encontrado.", 404)
-        if m["status"] != "na_fila":
-            return erro("Este envio já saiu da fila.", 409)
-        if not link.startswith(link_ok) or "#fake-" not in link:
-            return erro("O link precisa ser de um parecer do site (#fake-...).", 400)
-        m.update(status="repetido", link=link)
-        salvar_meta(p, m)
-        return jsonify({"status": "repetido"})
+        if m["concluido"] or m["status"] not in ("na_fila", "rascunho", "repetido"):
+            return erro("Este envio já foi concluído.", 409)
+        if not isinstance(d.get("publicavel"), bool):
+            return erro("Informe publicavel: true ou false.", 400)
+        motivo = limpar_texto(str(d.get("motivo") or ""), 1000)
+        if not d["publicavel"]:
+            if not motivo:
+                return erro("Diga o motivo de não ser publicável.", 400)
+            mudar_envio(p, quem, "avaliado: não publicável", publicavel=0, motivo=motivo, parecer=None, status="na_fila", link="")
+            return jsonify({"protocolo": p, "status": "na_fila", "publicavel": False})
+        r = ler_parecer(str(d.get("parecer") or ""))
+        if not r:
+            return erro("Grave o parecer antes (PUT /rotina/api/parecer/<id>) e informe o id dele.", 400)
+        st = "repetido" if r["publicado"] else "rascunho"
+        mudar_envio(p, quem, "avaliado: publicável", publicavel=1, motivo=motivo, parecer=r["id"], status=st,
+                    link=link_parecer(r["id"]))
+        return jsonify({"protocolo": p, "status": st, "publicavel": True, "parecer": r["id"], "previa": link_previa(r)})
 
     return app

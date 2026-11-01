@@ -42,7 +42,7 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 
 <header><a href="./" aria-label="Conta da Urna, página inicial"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#11875b"/><path d="M15 14v20M21 14v20M27 14v20M33 14v20M10.5 31L37.5 17" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/></svg><span>Conta <b>da</b> Urna</span></a></header>
 <main>
 <h1>Privacidade e termos de uso</h1>
-<p class="data">Atualizado em 29 de outubro de 2026.</p>
+<p class="data">Atualizado em 31 de outubro de 2026.</p>
 
 <div class="resumo"><p>Em resumo: o site não usa cookies nem pede cadastro. Quem quiser pode enviar um print para checagem e, se preferir, um e-mail para receber o resultado. O print é apagado em até 30 dias, e o e-mail é guardado cifrado e apagado assim que o aviso sai.</p></div>
 
@@ -59,8 +59,9 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 
 <h3>Quando você envia um print para checagem</h3>
 <ul>
   <li><strong>A imagem:</strong> ela é recodificada no envio, o que remove dados ocultos como localização e modelo do celular. Fica guardada por no máximo 30 dias e depois é apagada automaticamente.</li>
-  <li><strong>Onde você viu o boato:</strong> campo opcional, guardado junto com a imagem.</li>
+  <li><strong>Onde você viu o boato:</strong> campo opcional, guardado no nosso banco de dados e apagado junto com a imagem, em até 30 dias.</li>
   <li><strong>Seu e-mail:</strong> campo opcional, usado só para mandar o resultado da checagem. Ele é guardado cifrado, não aparece na página de administração e é apagado assim que o aviso é enviado.</li>
+  <li><strong>Registro do envio:</strong> o banco de dados guarda o protocolo, a data, a situação da checagem e o parecer ligado ao envio. Depois de 30 dias, sobra só esse registro, sem imagem, sem “onde você viu” e sem e-mail, para manter o histórico do que foi checado. Se você apagar o envio pelo protocolo, o registro também é apagado.</li>
   <li><strong>Endereço IP:</strong> usado só na hora, para limitar o número de envios e barrar robôs. O servidor guarda apenas uma versão embaralhada (hash), na memória, por no máximo uma hora; o código do site não grava o IP em lugar nenhum. A Cloudflare, que faz a verificação contra robôs, também recebe o IP nessa hora.</li>
 </ul>
 <p><strong>Quem faz a checagem é uma rotina de inteligência artificial (IA), não uma pessoa.</strong> Ela recebe a imagem e o campo “onde você viu” (nunca o e-mail), busca o assunto em várias fontes, de linhas editoriais diferentes, além de dados oficiais, e escreve o parecer, que lista as fontes consultadas com link. O responsável pelo site revisa antes de publicar.</p>
@@ -81,7 +82,7 @@ footer { text-align: center; color: var(--muted); font-size: .85rem; padding: 0 
   <tr><td>Google Fonts</td><td>letras do site</td><td>EUA</td></tr>
   <tr><td>GoatCounter</td><td>contar visitas, sem cookies</td><td>União Europeia</td></tr>
   <tr><td>Render</td><td>servidor que recebe os envios</td><td>EUA</td></tr>
-  <tr><td>Cloudflare (R2 e Turnstile)</td><td>guardar os prints por até 30 dias e barrar robôs</td><td>EUA e rede global</td></tr>
+  <tr><td>Cloudflare (R2, D1, Workers e Turnstile)</td><td>guardar os prints por até 30 dias, guardar o registro dos envios e os pareceres, entregar os pareceres ao site e barrar robôs</td><td>EUA e rede global</td></tr>
   <tr><td>Brevo</td><td>enviar o e-mail com o resultado</td><td>União Europeia</td></tr>
   <tr><td>Anthropic (Claude)</td><td>rotina de IA que faz a checagem; recebe o print e o “onde você viu”, nunca o e-mail</td><td>EUA</td></tr>
 </table></div>

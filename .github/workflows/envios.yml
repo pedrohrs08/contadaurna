@@ -3,10 +3,10 @@ name: Testes do servidor de envios
 
 on:
   pull_request:
-    paths: ["envios/**", ".github/workflows/envios.yml"]
+    paths: ["envios/**", "banco/migrations/**", "fakes.json", ".github/workflows/envios.yml"]
   push:
     branches: [main]
-    paths: ["envios/**", ".github/workflows/envios.yml"]
+    paths: ["envios/**", "banco/migrations/**", "fakes.json", ".github/workflows/envios.yml"]
 
 permissions:
   contents: read
