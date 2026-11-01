@@ -1984,7 +1984,7 @@ proPadrao();
 // Os pareceres ficam no banco de dados (banco/README.md) e chegam por um serviço da Cloudflare que não dorme.
 // Se ele não responder, a página usa fakes.json, a cópia de segurança que o GitHub atualiza a cada mudança.
 // Para criar ou corrigir um parecer, use o /admin do servidor de envios; não edite esta lista.
-const FAKES_API = "";
+const FAKES_API = "https://contadaurna-pareceres.pedrohrs08.workers.dev";
 let FAKES = [];
 async function carregarFakes() {
   const pegar = async (url, ms) => {

@@ -44,7 +44,7 @@ O uso do balde e do banco aparece no topo do `/admin`.
 5. **GitHub › Settings › Secrets and variables › Actions › New repository secret**: `CLOUDFLARE_API_TOKEN` (token do passo 3) e `CLOUDFLARE_ACCOUNT_ID` (o mesmo Account ID de `R2_CONTA`).
 6. **Render › contadaurna-envios › Environment**: acrescente `D1_BANCO` (id do passo 1) e `D1_TOKEN` (token do passo 4).
 
-Depois do merge, o GitHub cria as tabelas, põe os 19 pareceres no banco e publica o serviço (Actions › "Banco e serviço dos pareceres"; o resumo da execução mostra o endereço do serviço). O Render publica o servidor novo, que passa para o banco, no primeiro uso, os envios que estavam no balde. Por último, o endereço do serviço vai em `FAKES_API`, no `index.html`. Até lá, o site usa `fakes.json`.
+Depois do merge, o GitHub cria as tabelas, põe os 19 pareceres no banco e publica o serviço (Actions › "Banco e serviço dos pareceres"; o resumo da execução mostra o endereço do serviço). O Render publica o servidor novo, que passa para o banco, no primeiro uso, os envios que estavam no balde. O endereço do serviço já está em `FAKES_API`, no `index.html`; se ele não responder, o site usa `fakes.json`.
 
 ## Testes
 
