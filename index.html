@@ -2163,6 +2163,9 @@ const FONTES_CRON = {
   gzaije: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/republica/flavio-desiste-anular-eleicao-pedira-cassacao-chapa-lula/"],
   metaije: ["Metrópoles", "https://www.metropoles.com/brasil/flavio-diz-que-pedira-cassacao-da-chapa-de-lula-a-lei-tem-que-valer"],
   b247aije: ["Brasil 247", "https://www.brasil247.com/brasil/apos-pressao-de-aliados-flavio-bolsonaro-recua-da-ideia-de-pedir-anulacao-da-eleicao/"],
+  metfant: ["Metrópoles", "https://www.metropoles.com/mundo/ex-agente-de-israel-cruzou-fronteira-com-advogado-antes-da-fuga-de-flavio"],
+  gzfant: ["Gazeta do Povo", "https://www.gazetadopovo.com.br/republica/flavio-diz-que-aceitou-dar-entrevista-mas-pediu-a-emissora-exibicao-sem-cortes/"],
+  b247fant: ["Brasil 247", "https://www.brasil247.com/brasil/ex-agente-do-mossad-e-investigado-por-suposta-ajuda-a-flavio-bolsonaro-em-fuga-para-os-eua/"],
 };
 const CRONO = [
   {hora: "08h", tipo: "fato", titulo: "Começa a votação do 2º turno", texto: "As seções abrem em todo o país. O horário oficial de encerramento é 17h.", fontes: ["bl"], prej: ["Nenhuma", "Abertura normal das seções, sem efeito sobre os votos."]},
@@ -2230,6 +2233,7 @@ const CRONO = [
   {hora: "Domingo, 01/11", tipo: "fato", titulo: "Clarín descreve bastidores da saída de Flávio pela Argentina", texto: "Em reportagens publicadas na sexta (30) e no domingo (1º), o jornal argentino Clarín relatou, sem identificar as fontes, que a família saiu de carro de Brasília até Foz do Iguaçu, que agentes estrangeiros cuidaram do embarque em Puerto Iguazú e que Milei mandou seu assessor Santiago Caputo a Misiones em sigilo. O governo argentino não tinha respondido. Rubio negou no sábado que os EUA tenham participado dos preparativos.", fontes: ["dsudclarin", "ggnclarin"], prej: ["Nenhuma", "Relato sobre fato depois da apuração, sem efeito sobre os votos."]},
   {hora: "Domingo, 01/11", tipo: "fato", titulo: "Atos de estudantes e do PT celebram a reeleição de Lula e criticam a carta de Flávio", texto: "A UNE convocou atos chamados “Brasil com S” em capitais como Goiânia, Belém, Recife, Rio de Janeiro, Porto Alegre e São Paulo, contra a carta de Flávio e em defesa do resultado, com outro ato marcado em Salvador na segunda. Em Brasília, um ato do PT para celebrar a vitória reuniu “centenas de pessoas”, segundo O Liberal. Não há estimativa de público nas outras cidades.", fontes: ["oliberalatos", "dgoiasatos"], prej: ["Nenhuma", "Atos depois da apuração, sem efeito sobre os votos."]},
   {hora: "Domingo, 01/11, noite", tipo: "opiniao", titulo: "Flávio diz em nota que não se arrepende e critica a Globo", texto: "Em nota publicada também no X, Flávio escreveu: “Não me arrependo de absolutamente nada do que fiz”, repetiu que saiu do Brasil “pelo Brasil” e se disse perseguido. Afirmou ainda que a Globo recusou exibir uma entrevista sem cortes com ele e que uma reportagem do Fantástico iria ao ar sem direito de resposta.", fontes: ["metronota"], prej: ["Nenhuma", "Declaração depois da apuração, sem efeito sobre os votos."]},
+  {hora: "Domingo, 01/11, noite", tipo: "fato", titulo: "Fantástico mostra registros argentinos da saída de Flávio e cita ex-agente israelense", texto: "Com base em documentos da imigração argentina, o Fantástico (TV Globo) mostrou que o nome de Flávio aparece três vezes na mesma noite, ligado à mesma van: às 22h37, com passaporte italiano (entrada que ficou válida), às 22h40, com carteira de motorista, e às 23h11, com passaporte brasileiro (as duas canceladas). Cerca de sete minutos antes, cruzou a fronteira em Foz do Iguaçu uma van com Menachem Booky Halevy, descrito como ex-agente do Mossad, e o advogado Roberto Jorge Alexandre, que já defendeu Jair Bolsonaro. A reconstrução dos investigadores, citada pelo programa, é que Flávio saiu de Brasília num jato ligado ao advogado Willer Tomaz até a região de Buenos Aires e depois voou a Puerto Iguazú; a mulher e as filhas teriam ido de avião a Cascavel e de van até a Argentina. Essa versão difere da do Clarín, que falava em viagem de carro de Brasília a Foz. O escritório de Tomaz negou ter cedido avião, o motorista da van disse não ter visto a família Bolsonaro e o advogado Frederick Wassef disse que nada sobre a viagem foi confirmado e negou que tenha sido fuga. Segundo o Brasil 247, os dados não comprovam que Halevy tenha organizado a saída. A PF não confirmou publicamente os detalhes.", fontes: ["metfant", "gzfant", "b247fant"], prej: ["Nenhuma", "Fatos depois da apuração, sem efeito sobre os votos."]},
 ];
 // ---------- Pesquisas da véspera × urnas (site publicado) ----------
 const PESQ_VESPERA = [ // votos válidos; m = margem de erro em pontos (null se a compilação não informa)
@@ -2263,7 +2267,7 @@ function renderPxu() {
 renderPxu();
 
 // ---------- Data de atualização, correções e cópias arquivadas ----------
-const ATUALIZADO = "2026-11-01T19:55-03:00"; // atualizar a cada mudança de conteúdo
+const ATUALIZADO = "2026-11-02T08:00-03:00"; // atualizar a cada mudança de conteúdo
 const CORRECOES = [ // {data: "dd/mm/aaaa", texto: "o que foi corrigido e por quê"}, mais recente primeiro
   {data: "26/10/2026", texto: "A abstenção do 2º turno aparecia como 19,21%. O TSE informa 19,22% (30.509.005 de 158.745.502 eleitores aptos); o número e as contas que usam ele foram corrigidos."},
 ];
